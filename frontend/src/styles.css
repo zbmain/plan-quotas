@@ -505,6 +505,11 @@ button:disabled {
   background: #e7f0f9;
   color: #397bb2;
 }
+.provider-opencode {
+  background: #edf0ed;
+  color: #47584e;
+  font-size: 11px;
+}
 .provider-volcengine {
   background: #faece8;
   color: #cf624e;

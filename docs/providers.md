@@ -15,9 +15,32 @@
 | Codex | 用户导入的 OAuth 凭据 | 订阅窗口剩余额度和重置时间 | 通过 | 尚未实测 |
 | Claude | OAuth 凭据或会话 Cookie | 会话、周额度及接口提供的专项窗口 | 通过 | 尚未实测 |
 | Cursor | 控制台 Cookie／会话凭据 | 套餐消费、额外消费、账单周期 | 通过 | 尚未实测 |
+| OpenCode | Go API Key；Console Cookie＋工作空间 ID | Go 订阅的短周期 5h、长周期 week、月度 month；Cookie 方式另可读取预付费 USD 余额 | 通过 | 尚未使用真实凭据核验 |
 | Google Antigravity | 用户导入的 OAuth 凭据 | 按模型的剩余额度及重置时间 | 通过 | 尚未实测 |
 
-样本解析测试使用测试夹具，不等同于真实供应商账号验证。当前 10 个渠道的样本解析用例均通过；MiniMax API Key、Kimi API Key 的实际用量查询已通过真实接口验证。
+样本解析测试使用测试夹具，不等同于真实供应商账号验证。当前 11 个渠道的样本解析用例均通过；MiniMax API Key、Kimi API Key 的实际用量查询已通过真实接口验证。
+
+## OpenCode
+
+OpenCode 在本面板中指 `opencode.ai` 提供的 Go 订阅和 Console 预付费余额。通过 OpenCode 使用其他厂商的模型时，请在对应厂商渠道中配置账号。
+
+**API Key 方式（Go 订阅）**
+
+1. 登录 [OpenCode Console](https://opencode.ai/console)，确认自己的 Go 订阅可用。
+2. 从账号菜单进入 Account／账户设置，创建或复制 Go 使用的 API Key。普通工作空间 Keys 页面生成的密钥可能不具有 Go 订阅权限；以官方页面实际权限为准。
+3. 在本项目 `/admin` 添加渠道，选择“OpenCode → API Key”，填写别名和密钥，测试连接后保存。
+
+该方式通过 `GET https://opencode.ai/inference/go/v1/usage`，使用 `Authorization: Bearer <Go API Key>` 查询。返回的 `percent` 是已用百分比，`0.5` 代表 `0.5%`；面板分别展示 `短周期 5h`、`长周期 week`、`月度额度 month`，支持已用／剩余切换和独立重置时间。API Key 用量接口不返回预付费余额，不从模型的估算请求数推算调用额度。
+
+**Cookie 方式（Console 工作空间）**
+
+1. 在已登录的 Console 中切换到需要查看的工作空间，打开 Go 或 Billing 页面。
+2. 打开浏览器开发者工具的 Network／网络面板，找到 `/console/api/go/status` 请求，复制请求头中的完整 `Cookie` 和 `x-org-id`。Cookie 通常包含 `__Host-console_session`；请使用实际请求中的值，勿使用响应中的 `Set-Cookie`。
+3. 在本项目选择“OpenCode → Cookie”，将这两项分别填入 Cookie 和“工作空间 ID”，测试连接后保存。不同工作空间分别添加账号，避免读错账户。
+
+Cookie 方式读取同一工作空间的 Go 额度，并在接口支持时另列预付费 USD 余额；额度与余额不合计。余额支持零值和负值，账单信用额度不视为预付费余额。未订阅 Go 的预付费账户可仅显示余额；会话失效后需要重新导入 Cookie。
+
+如果显示“订阅暂不可用”，请确认 Go 套餐、API Key 类型和工作空间是否匹配；这与凭据失效分别处理。当前已完成响应样本与错误处理测试，尚未获得真实 OpenCode 凭据进行结果核验。
 
 ## 获取方式提示
 

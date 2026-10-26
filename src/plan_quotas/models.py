@@ -15,6 +15,7 @@ ProviderId = Literal[
     "codex",
     "claude",
     "cursor",
+    "opencode",
     "antigravity",
 ]
 AuthType = Literal["api_key", "cookie", "oauth", "jwt", "aksk"]

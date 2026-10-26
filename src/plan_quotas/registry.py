@@ -11,6 +11,7 @@ def build_adapters() -> dict:
         CodexAdapter,
         CursorAdapter,
     )
+    from plan_quotas.adapters.opencode import OpenCodeAdapter
 
     return {
         "minimax": MiniMaxAdapter(),
@@ -22,5 +23,6 @@ def build_adapters() -> dict:
         "codex": CodexAdapter(),
         "claude": ClaudeAdapter(),
         "cursor": CursorAdapter(),
+        "opencode": OpenCodeAdapter(),
         "antigravity": AntigravityAdapter(),
     }

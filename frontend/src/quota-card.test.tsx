@@ -12,6 +12,53 @@ const quota: Metric = {
 };
 
 describe("quota cards", () => {
+  it("shows all OpenCode windows and switches quotas without changing wallet balance", () => {
+    const metrics: Metric[] = [
+      { id: "opencode-rolling", label: "短周期", window: "5h", used: 0.5 },
+      { id: "opencode-weekly", label: "长周期", window: "week", used: 25 },
+      { id: "opencode-monthly", label: "月度额度", window: "month", used: 90 },
+    ].map((metric) => ({
+      ...metric,
+      kind: "quota" as const,
+      unit: "%",
+      limit: 100,
+      remaining: 100 - metric.used,
+      used_percent: metric.used,
+    }));
+    const balance: Metric = {
+      id: "opencode-balance",
+      label: "账户余额",
+      kind: "balance",
+      unit: "USD",
+      currency: "USD",
+      remaining: 27.5,
+    };
+    metrics.push(balance);
+    const used = renderToStaticMarkup(
+      <AccountMetrics metrics={metrics} provider="opencode" />,
+    );
+    const remaining = renderToStaticMarkup(
+      <AccountMetrics
+        metrics={metrics}
+        provider="opencode"
+        displayMode="remaining"
+      />,
+    );
+    for (const label of ["短周期", "长周期", "月度额度", "账户余额"]) {
+      expect(used).toContain(label);
+    }
+    for (const window of ["5h", "week", "month"]) {
+      expect(used).toContain(`>${window}<`);
+    }
+    expect(used).toContain('class="metric-value">0.5%');
+    expect(remaining).toContain('class="metric-value">99.5%');
+    expect(used).toContain('aria-valuetext="已用 0.5%"');
+    expect(remaining).toContain('aria-valuetext="剩余 99.5%"');
+    expect(metricReading(balance, "used")).toEqual(
+      metricReading(balance, "remaining"),
+    );
+  });
+
   /** Show observed collection health and real plans without adapter validation badges. */
   it("keeps provider validation records out of public account cards", () => {
     const accounts: Account[] = [

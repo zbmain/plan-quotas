@@ -176,7 +176,7 @@ def create_app(
 
     application = FastAPI(
         title="plan-quotas",
-        version="0.0.2",
+        version="0.0.3",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
@@ -248,6 +248,7 @@ def create_app(
             "network_error",
             "upstream_error",
             "invalid_response",
+            "subscription_unavailable",
         }
         code = exc.code if exc.code in allowed else "invalid_response"
         return JSONResponse(

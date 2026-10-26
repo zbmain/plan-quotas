@@ -110,6 +110,21 @@ PROVIDERS = [
         "https://cursor.com/dashboard",
     ),
     provider(
+        "opencode",
+        "OpenCode",
+        {
+            "api_key": [field("api_key", "OpenCode Go API Key")],
+            "cookie": [
+                field("cookie", "OpenCode Console Cookie"),
+                field("workspace_id", "工作空间 ID（如 wrk_…）", True, False),
+            ],
+        },
+        "API Key 查询 Go 订阅的 5h、week、month 额度；"
+        "Cookie 方式需提供当前 Console 会话及工作空间 ID，另可读取预付费账户余额。"
+        "请勿使用其他渠道的模型密钥或普通工作空间 Key 代替 Go API Key。",
+        "https://opencode.ai/console",
+    ),
+    provider(
         "antigravity",
         "Antigravity",
         {"oauth": oauth_fields() + [field("project_id", "Project ID（可选）", False)]},

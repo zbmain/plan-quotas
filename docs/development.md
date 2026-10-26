@@ -40,6 +40,15 @@ just build
 
 MCP 服务位于 `/mcp`，使用 Streamable HTTP 和独立 Bearer Token。远程访问应通过 HTTPS 反向代理。令牌只在管理后台创建时明文展示，服务端只保留验证所需的摘要；查询工具只能读取缓存和历史。
 
+## OpenCode 适配（2026-10-27）
+
+- 使用独立 `opencode` 适配器，注册到相同的采集、历史、`/info` 和 MCP 查询服务。API Key 仅请求固定的 `/inference/go/v1/usage`；Cookie 仅请求固定 Console JSON 接口，并通过必填的 `x-org-id` 指定工作空间。禁止自动选取第一个工作空间，禁止任意 URL 和跨域重定向。
+- Go `usage.rolling/weekly/monthly.percent` 是 0～100 的百分比，保留超额；缺测保持未知，不把低于 1 的百分比扩大 100 倍。Console `access.meters.fiveHour/week/month` 以 `usedMicroCents / limitMicroCents` 计算比例，月窗口缺少重置时间时使用 `access.endsAt`；其他窗口缺失重置时间时不推断。
+- 余额仅接受 `billingMode=prepaid`、`mode=pay-as-you-go` 的 `balanceMicroCents`，除以 `100000000` 得到 USD；`availableMicroCents` 不可替代余额。可选余额失败保留有效 Go 额度，没有订阅也没有支持的余额时返回安全错误。403 订阅权限错误使用 `subscription_unavailable`，不会与 401 凭据失效混淆。
+- 依据：[官方 Go 用量响应实现](https://github.com/anomalyco/opencode/blob/d4704347465c1ee63d0c213ed00e648e7f0231c5/packages/console/app/src/routes/zen/go/v1/usage.ts)、[官方迁移代理](https://github.com/anomalyco/opencode/blob/5916014733c9f8cf9aaba5810c45d3092f74dd38/packages/console/app/src/lib/inference-proxy.ts)、[CodexBar Console 适配测试](https://github.com/steipete/CodexBar/blob/6070b29a1a5d51193a634dc1b0a14a67c39d0ccc/Tests/CodexBarTests/OpenCodeGoConsoleMigrationTests.swift)。官方当前 [Go 使用说明](https://opencode.ai/docs/go/) 与 [账号 Key 获取讨论](https://github.com/anomalyco/opencode/issues/52227) 用于维护认证指引。
+- 未登录探测确认新 `/inference/go/v1/usage` 与兼容 `/zen/go/v1/usage` 均返回 JSON 401；此结果只证明路由存在，不代表真实账号验证通过。未自动读取本机 OpenCode 凭据或会话数据库。
+- 验证：139 项后端测试、39 项前端测试、Ruff 和生产构建通过。独立临时数据目录与模拟上游完成 API Key 的连接测试、保存及采集流程，核对 Cookie 必填工作空间字段、三周期已用／剩余切换、余额独立展示、深浅主题与 320px 手机布局。验收样例未写入用户的运行数据目录；真实凭据仍待用户在后台配置并核验。
+
 ## 渠道适配维护
 
 每个适配器声明可用认证方式、支持的指标和查询实现。统一输出仅包含渠道实际提供或可以明确推导的数值；解析失败时返回安全错误码，不记录请求头、Cookie、令牌或完整上游响应。渠道接口变更时先更新脱敏样本和适配器测试，再检查错误状态及重试策略。

@@ -6,7 +6,7 @@ plan-quotas 是一个自托管的 AI Coding Plan 用量面板。它把多个模�
 
 额度清单默认按已用量展示，可通过“显示方式”单选器切换为按剩余量展示。卡片主数值、进度条和历史趋势会同步切换；无法计算的额度显示“暂无数据”，账户余额与费用仍保留金额含义。
 
-支持 MiniMax、智谱 GLM、Kimi、DeepSeek、火山引擎、阿里云百炼、Codex、Claude、Cursor 和 Google Antigravity。各渠道支持的认证方式和可用指标不同，详见[渠道与凭据说明](docs/providers.md)。
+支持 MiniMax、智谱 GLM、Kimi、DeepSeek、火山引擎、阿里云百炼、Codex、Claude、Cursor、OpenCode 和 Google Antigravity。各渠道支持的认证方式和可用指标不同，详见[渠道与凭据说明](docs/providers.md)。
 
 ## 快速部署
 
@@ -47,6 +47,8 @@ ALLOWED_HOSTS=localhost,127.0.0.1,[::1],服务器局域网IP
 4. 等待首次采集完成；之后首页会定时更新，并逐步积累历史趋势。
 
 不同渠道可能要求 API Key、Cookie／会话凭据、OAuth 凭据或云服务 AK/SK。具体入口、权限和注意事项见[渠道与凭据说明](docs/providers.md)。凭据只在提交时输入，管理页面不提供原文回显。请只添加自己有权使用的账号，并确保 Docker 数据卷受到保护。
+
+添加 OpenCode 时，使用 OpenCode Go API Key 查询订阅的 `5h`、`week`、`month` 额度；使用 Cookie 方式时，还需填写 Console 工作空间 ID，可额外查询预付费账户余额。获取步骤见 [OpenCode 配置说明](docs/providers.md#opencode)。
 
 管理后台可以编辑账号、启停采集、手动刷新、调整采集间隔和删除账号。自动采集默认每 1 分钟一次，可选择每 30 秒、1 分钟、2 分钟或 5 分钟；已有部署会保留此前保存的周期，可在后台重新选择。首页每 30 秒检查一次已采集的数据，不会因此额外请求渠道。删除会一并清除该账号保存的凭据、缓存和历史记录。采集过于频繁可能触发渠道限流。
 

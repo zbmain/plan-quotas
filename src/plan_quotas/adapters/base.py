@@ -36,6 +36,7 @@ async def request_json(
     url: str,
     *,
     oauth_token: bool = False,
+    forbidden_code: str = "auth_required",
     **kwargs: Any,
 ) -> Any:
     """Request a fixed provider endpoint, retrying only transient failures once."""
@@ -49,8 +50,10 @@ async def request_json(
                 await asyncio.sleep(0.25)
                 continue
             raise AdapterError("network_error") from None
-        if response.status_code in (401, 403):
+        if response.status_code == 401:
             raise AdapterError("auth_required")
+        if response.status_code == 403:
+            raise AdapterError(forbidden_code)
         if response.status_code == 429:
             raw = response.headers.get("retry-after", "60")
             try:

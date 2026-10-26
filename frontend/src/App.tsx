@@ -79,6 +79,7 @@ const providerNames: Record<string, string> = {
   codex: "Codex",
   claude: "Claude",
   cursor: "Cursor",
+  opencode: "OpenCode",
   antigravity: "Google Antigravity",
 };
 const collectionIntervals = [
@@ -102,6 +103,8 @@ const connectionErrorLabel: Record<string, string> = {
   network_error: "暂时无法连接渠道服务",
   upstream_error: "渠道服务暂时不可用",
   invalid_response: "渠道返回的数据暂时无法识别",
+  subscription_unavailable:
+    "订阅暂不可用，请检查 OpenCode Go 套餐、密钥权限或工作空间",
 };
 /** Format an API timestamp for the dashboard's Asia/Shanghai display timezone. */
 const formatTime = (value?: string | null) =>
@@ -728,6 +731,7 @@ export function AccountCard({
               codex: "⌘",
               claude: "✳",
               cursor: "↗",
+              opencode: "OC",
               antigravity: "✦",
             } as Record<string, string>
           )[a.provider] || "AI"}

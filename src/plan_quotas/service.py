@@ -24,6 +24,7 @@ _SAFE_ERRORS = {
     "network_error",
     "upstream_error",
     "invalid_response",
+    "subscription_unavailable",
 }
 _STATUS_FOR_ERROR = {
     "auth_required": "auth_required",
@@ -32,6 +33,7 @@ _STATUS_FOR_ERROR = {
     "network_error": "error",
     "upstream_error": "error",
     "invalid_response": "error",
+    "subscription_unavailable": "error",
 }
 
 

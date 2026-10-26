@@ -1,6 +1,7 @@
 """End-to-end HTTP checks for the public and administrator application surfaces."""
 
 import asyncio
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
@@ -8,7 +9,7 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from plan_quotas.adapters.base import BaseAdapter
+from plan_quotas.adapters.base import AdapterError, BaseAdapter
 from plan_quotas.app import create_app
 from plan_quotas.models import Metric, UsageResult
 from plan_quotas.settings import Settings
@@ -146,6 +147,43 @@ def _admin_headers(csrf: str) -> dict[str, str]:
     return {"X-CSRF-Token": csrf, "Origin": "http://testserver"}
 
 
+def test_opencode_account_and_entitlement_errors_reach_shared_queries(http_app, monkeypatch):
+    """Expose the new provider and preserve safe subscription errors in admin and public queries."""
+    client, adapter, _ = http_app
+    client.app.state.service.adapters["opencode"] = adapter
+    csrf = _login(client)
+    headers = _admin_headers(csrf)
+    payload = {
+        "provider": "opencode",
+        "alias": "OpenCode Go",
+        "auth_type": "api_key",
+        "credentials": {"api_key": "opencode-sample-private-key"},
+    }
+
+    async def unavailable(credentials, auth_type, http_client):
+        """Simulate Go entitlement failure without contacting a real provider."""
+        raise AdapterError("subscription_unavailable")
+
+    monkeypatch.setattr(adapter, "fetch", unavailable)
+    tested = client.post(
+        "/api/admin/test",
+        json={key: value for key, value in payload.items() if key != "alias"},
+        headers=headers,
+    )
+    assert tested.status_code == 502
+    assert tested.json() == {"detail": "subscription_unavailable"}
+    created = client.post("/api/admin/accounts", json=payload, headers=headers)
+    assert created.status_code == 201
+    refreshed = client.post(f"/api/admin/accounts/{created.json()['id']}/refresh", headers=headers)
+    assert refreshed.json()["status"] == "error"
+    public = client.get("/info").json()["accounts"][0]
+    assert public["provider"] == "opencode"
+    assert public["error_code"] == "subscription_unavailable"
+    assert public["status"] == "error"
+    assert "opencode-sample-private-key" not in json.dumps(public)
+    assert client.app.state.service.summary()["by_provider"]["opencode"]["errors"] == 1
+
+
 def test_anonymous_admin_routes_are_rejected(http_app):
     """Every private administrator read and write requires an authenticated session."""
     client, _, _ = http_app
@@ -208,7 +246,9 @@ def test_public_dashboard_and_validation_never_echo_credentials(http_app):
     providers = client.get("/api/public/providers")
     assert providers.status_code == 200
     assert {item["id"] for item in providers.json()} >= {"minimax", "glm", "codex"}
-    assert "opencode" not in {item["id"] for item in providers.json()}
+    opencode = next(item for item in providers.json() if item["id"] == "opencode")
+    assert opencode["auth_types"] == ["api_key", "cookie"]
+    assert {field["key"] for field in opencode["fields"]["cookie"]} == {"cookie", "workspace_id"}
 
     dashboard = client.get("/api/public/dashboard")
     assert dashboard.status_code == 200
