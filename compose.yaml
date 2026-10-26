@@ -1,0 +1,41 @@
+services:
+  plan-quotas:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: plan-quotas:local
+    container_name: plan-quotas
+    restart: unless-stopped
+    init: true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      DATA_DIR: /app/data
+      STATIC_DIR: /app/frontend/dist
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,[::1]}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-}
+      PORT: ${PORT:-8000}
+    ports:
+      - "${BIND_HOST:-127.0.0.1}:${PORT:-8000}:8000"
+    volumes:
+      - plan_quotas_data:/app/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m,mode=1777
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+volumes:
+  plan_quotas_data:
+    name: plan_quotas_data

@@ -1,0 +1,106 @@
+# plan-quotas
+
+plan-quotas 是一个自托管的 AI Coding Plan 用量面板。它把多个模型渠道的套餐额度、余额、重置时间和最近用量变化放在同一个页面查看，适合个人和小团队部署在自己的电脑或服务器上。
+
+公开首页无需登录。管理员通过 `/admin` 登录后添加渠道账号、配置凭据、检查连接并管理采集。用量数据从添加账号后开始积累；面板展示的是渠道提供的额度或余额，以及定时采集到的变化，不是精确的 Token 账单。
+
+支持 MiniMax、智谱 GLM、Kimi、DeepSeek、火山引擎、阿里云百炼、Codex、Claude、Cursor 和 Google Antigravity。各渠道支持的认证方式和可用指标不同，详见[渠道与凭据说明](docs/providers.md)。
+
+## 快速部署
+
+需要已安装 Docker Engine 或 Docker Desktop，并启用 Docker Compose。下载或克隆本项目后，在项目目录执行：
+
+```sh
+cp .env.example .env
+```
+
+编辑 `.env`，建议将 `ADMIN_PASSWORD` 改为自己的密码，然后启动：
+
+```sh
+docker compose up -d --build
+```
+
+默认仅监听本机 `127.0.0.1:8000`。打开 `http://127.0.0.1:8000` 查看面板，访问 `http://127.0.0.1:8000/admin` 登录管理后台。健康状态可通过 `/healthz` 查看。
+
+默认管理员密码是 `admin`。建议部署后更换默认密码。
+
+## 局域网与 HTTPS 访问
+
+需要从局域网其他设备访问时，在 `.env` 中设置：
+
+```dotenv
+BIND_HOST=0.0.0.0
+ALLOWED_HOSTS=localhost,127.0.0.1,[::1],服务器局域网IP
+```
+
+然后执行 `docker compose up -d`。
+
+使用域名访问时，在前方配置 HTTPS 反向代理；在 `.env` 中将 `COOKIE_SECURE=true`、`PUBLIC_ORIGIN=https://你的域名`，并把域名加入 `ALLOWED_HOSTS`。重启容器使设置生效，远程 MCP 客户端也使用 HTTPS 地址。
+
+## 添加渠道账号
+
+1. 打开 `/admin`，使用 `ADMIN_PASSWORD` 登录。
+2. 选择渠道，填写便于识别的账号别名和该渠道要求的认证资料。
+3. 点击“测试连接”，确认渠道返回有效数据后保存。
+4. 等待首次采集完成；之后首页会定时更新，并逐步积累历史趋势。
+
+不同渠道可能要求 API Key、Cookie／会话凭据、OAuth 凭据或云服务 AK/SK。具体入口、权限和注意事项见[渠道与凭据说明](docs/providers.md)。凭据只在提交时输入，管理页面不提供原文回显。请只添加自己有权使用的账号，并确保 Docker 数据卷受到保护。
+
+管理后台可以编辑账号、启停采集、手动刷新、调整采集间隔和删除账号。删除会一并清除该账号保存的凭据、缓存和历史记录。刷新频率过高可能触发渠道限流。
+
+## 远程 MCP
+
+MCP 通过 `/mcp` 提供 Streamable HTTP 连接。管理员在后台的 MCP 设置中生成令牌；令牌只在生成时显示一次，请立即复制到可信的 MCP 客户端配置中。遗失后可轮换令牌，旧令牌随即失效；不再需要时可撤销令牌。
+
+客户端连接地址为 `https://你的域名/mcp`，认证方式为 Bearer Token。MCP 提供以下只读工具：
+
+| 工具 | 用途 |
+|---|---|
+| `list_accounts` | 按渠道或状态查看账号别名和状态 |
+| `get_usage` | 查询账号当前额度、余额、周期和数据有效性 |
+| `get_summary` | 汇总正常、异常和额度紧张账号数量 |
+| `get_history` | 查询账号最近 24 小时、7 天或 30 天的采集趋势 |
+
+MCP 查询使用最近一次采集的缓存，不会主动调用渠道接口刷新。不得将令牌写入公开仓库、截图、日志或不可信客户端。
+
+## 数据、升级与备份恢复
+
+Compose 使用名为 `plan_quotas_data` 的 Docker 命名卷保存配置、加密凭据、加密主密钥、当前用量和最多 30 天的历史快照。数据不放在 Web 静态目录中。容器以非 root 用户运行。
+
+升级时先备份数据，再在新版本项目目录执行：
+
+```sh
+docker compose up -d --build
+```
+
+**备份时必须同时保存整个数据目录和加密主密钥。** 缺少主密钥时，已加密的渠道凭据不能恢复。示例：
+
+```sh
+docker compose stop
+docker run --rm -v plan_quotas_data:/data -v "$PWD/backups:/backup" alpine \
+  tar -czf /backup/plan-quotas-data-$(date +%Y%m%d).tar.gz -C /data .
+docker compose start
+```
+
+恢复时先停止服务，再将归档完整解压到数据卷，并恢复容器运行用户的文件权限：
+
+```sh
+docker compose stop
+docker run --rm -v plan_quotas_data:/data -v "$PWD/backups:/backup" alpine \
+  sh -c 'tar -xzf /backup/plan-quotas-data-YYYYMMDD.tar.gz -C /data && chown -R 10001:10001 /data'
+docker compose start
+```
+
+将命令中的 `YYYYMMDD` 替换为备份文件日期。请妥善保管备份文件；其中包含可解密凭据所需的主密钥。数据卷固定命名为 `plan_quotas_data`。
+
+彻底移除容器但保留数据：
+
+```sh
+docker compose down
+```
+
+同时删除数据卷会永久删除渠道配置、凭据和历史：
+
+```sh
+docker compose down -v
+```

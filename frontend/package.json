@@ -1,0 +1,30 @@
+{
+  "name": "plan-quotas-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "test": "vitest run",
+    "preview": "vite preview --host 0.0.0.0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" *.json *.html"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "6.1.2",
+    "lucide-react": "1.61.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "recharts": "3.10.1",
+    "typescript": "5.8.3",
+    "vite": "8.3.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "prettier": "3.9.10",
+    "tailwindcss": "4.3.3",
+    "vitest": "3.2.7"
+  }
+}
