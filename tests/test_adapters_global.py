@@ -21,6 +21,7 @@ from plan_quotas.adapters.global_providers import (
     ClaudeAdapter,
     CodexAdapter,
     CursorAdapter,
+    _metric_window,
 )
 
 
@@ -56,7 +57,48 @@ async def test_codex_wham_maps_primary_secondary_windows_and_account_header():
     assert rotated is None
     assert result.plan == "plus"
     assert [metric.remaining for metric in result.metrics] == [75, 100]
+    assert [metric.window for metric in result.metrics] == ["主要额度", "次要额度"]
     assert all("email" not in metric.model_dump() for metric in result.metrics)
+
+
+@pytest.mark.asyncio
+async def test_codex_wham_uses_upstream_window_durations():
+    """Classify primary and secondary windows from the seconds returned by WHAM."""
+
+    def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "rate_limit": {
+                    "primary_window": {"used_percent": 30, "limit_window_seconds": 18000},
+                    "secondary_window": {"used_percent": 20, "limit_window_seconds": 604800},
+                }
+            },
+        )
+
+    async with mock_client(handler) as client:
+        result, _ = await CodexAdapter().fetch({"access_token": "token"}, "oauth", client)
+
+    assert [metric.id for metric in result.metrics] == ["primary_window", "secondary_window"]
+    assert [metric.window for metric in result.metrics] == ["5h", "week"]
+
+
+@pytest.mark.parametrize(
+    ("seconds", "fallback", "expected"),
+    [
+        (86400, "主要额度", "1d"),
+        (1800, "主要额度", "30m"),
+        (17, "主要额度", "17s"),
+        (0, "主要额度", "主要额度"),
+        (None, "次要额度", "次要额度"),
+    ],
+)
+def test_codex_window_duration_labels_preserve_exact_unknown_and_fallback_values(
+    seconds, fallback, expected
+):
+    """Render other positive durations exactly and preserve labels when duration is absent."""
+    metric = _metric_window({"used_percent": 10, "limit_window_seconds": seconds}, "test", fallback)
+    assert metric.window == expected
 
 
 @pytest.mark.asyncio

@@ -84,3 +84,5 @@ class AppConfig(BaseModel):
     interval_minutes: int = Field(default=5, ge=1, le=60)
     accounts: list[Account] = Field(default_factory=list)
     mcp_token_hash: str | None = None
+    info_require_password: bool = False
+    info_password_hash: str | None = None

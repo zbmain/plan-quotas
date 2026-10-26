@@ -46,10 +46,13 @@ async def test_minimax_parses_remaining_percent_and_skips_non_coding_models() ->
     assert len(result.metrics) == 2
     assert result.metrics[0].remaining == 75
     assert result.metrics[0].used_percent == 25
+    assert result.metrics[0].label == "短周期"
     assert result.metrics[0].window == "5h"
     assert result.metrics[0].resets_at is not None
     assert result.metrics[1].remaining == 0
     assert result.metrics[1].used_percent == 100
+    assert result.metrics[1].label == "长周期"
+    assert result.metrics[1].window == "week"
 
 
 @pytest.mark.asyncio
@@ -124,13 +127,101 @@ async def test_glm_preserves_over_limit_percentage_and_separate_windows() -> Non
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         result, _ = await GLMAdapter().fetch({"api_key": "glm-key"}, "api_key", client)
 
-    assert [metric.window for metric in result.metrics] == ["5h", "week", "monthly"]
+    assert [metric.window for metric in result.metrics] == ["5h", "week", None]
+    assert [metric.id for metric in result.metrics] == ["glm-0", "glm-1", "glm-2"]
     assert result.metrics[0].used == 123
     assert result.metrics[0].used_percent == 123
     assert result.metrics[0].resets_at is not None
     assert result.metrics[1].used is None
     assert result.metrics[2].used == 100
     assert result.metrics[2].remaining == 900
+
+
+@pytest.mark.asyncio
+async def test_glm_maps_mcp_total_and_only_provider_reported_tool_usage() -> None:
+    """GLM exposes its aggregate MCP quota and per-tool used counts without inventing limits."""
+
+    async def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "data": {
+                    "limits": [
+                        {
+                            "type": "TIME_LIMIT",
+                            "unit": 5,
+                            "number": 1,
+                            "usage": 1000,
+                            "currentValue": 100,
+                            "remaining": 900,
+                            "percentage": 10,
+                            "usageDetails": [
+                                {"modelCode": "search-prime", "usage": 50},
+                                {"modelCode": "web-reader", "usage": 0},
+                                {"modelCode": "zread", "usage": 25},
+                                {"modelCode": "not-a-known-tool", "usage": 999},
+                                {"modelCode": "search-prime"},
+                            ],
+                        },
+                        {"type": "TIME_LIMIT", "unit": 5, "number": 2, "usage": 2000},
+                    ]
+                }
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result, _ = await GLMAdapter().fetch({"api_key": "glm-key"}, "api_key", client)
+
+    total, search, reader, zread, multi_period_total = result.metrics
+    assert (total.id, total.label, total.unit, total.window) == (
+        "glm-0",
+        "MCP 调用次数",
+        "次",
+        "monthly",
+    )
+    assert (total.used, total.limit, total.remaining, total.used_percent) == (100, 1000, 900, 10)
+    assert (search.id, search.label, search.used, search.limit, search.remaining) == (
+        "glm-mcp-search-prime",
+        "联网搜索调用次数",
+        50,
+        None,
+        None,
+    )
+    assert (reader.id, reader.label, reader.used) == (
+        "glm-mcp-web-reader",
+        "网页阅读调用次数",
+        0,
+    )
+    assert (zread.id, zread.label, zread.used) == (
+        "glm-mcp-zread",
+        "仓库检索调用次数",
+        25,
+    )
+    assert (search.window, reader.window, zread.window) == ("monthly", "monthly", "monthly")
+    assert (multi_period_total.id, multi_period_total.window) == ("glm-1", None)
+
+
+@pytest.mark.asyncio
+async def test_glm_mcp_missing_usage_fields_stay_unknown_and_details_are_optional() -> None:
+    """Missing GLM MCP values stay unknown, and absent details add no synthetic tool rows."""
+
+    async def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"data": {"limits": [{"type": "TIME_LIMIT", "unit": 5, "number": 1}]}},
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result, _ = await GLMAdapter().fetch({"api_key": "glm-key"}, "api_key", client)
+
+    assert len(result.metrics) == 1
+    metric = result.metrics[0]
+    assert metric.id == "glm-0"
+    assert metric.window == "monthly"
+    assert metric.used is None
+    assert metric.limit is None
+    assert metric.remaining is None
+    assert metric.used_percent is None
 
 
 @pytest.mark.asyncio

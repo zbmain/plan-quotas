@@ -29,10 +29,30 @@ OPENAI_TOKEN_URL = "https://auth.openai.com/oauth/token"
 
 
 def _metric_window(window: dict[str, Any], metric_id: str, label: str) -> Metric:
-    """Convert a Codex rate-limit window without inventing missing usage values."""
+    """Convert a Codex window using its reported duration, retaining its positional fallback."""
     used_percent = number(window.get("used_percent"))
     resets_at = timestamp(window.get("reset_at"))
     remaining_percent = 100 - used_percent if used_percent is not None else None
+    seconds = number(window.get("limit_window_seconds"))
+    window_name = label
+    if seconds == 18000:
+        window_name = "5h"
+    elif seconds == 604800:
+        window_name = "week"
+    elif seconds is not None and seconds > 0:
+        for unit_seconds, suffix in (
+            (604800, "w"),
+            (86400, "d"),
+            (3600, "h"),
+            (60, "m"),
+            (1, "s"),
+        ):
+            amount = seconds / unit_seconds
+            if amount.is_integer():
+                window_name = f"{int(amount)}{suffix}"
+                break
+        else:
+            window_name = f"{seconds:g}s"
     return Metric(
         id=metric_id,
         label=label,
@@ -41,7 +61,7 @@ def _metric_window(window: dict[str, Any], metric_id: str, label: str) -> Metric
         limit=100 if used_percent is not None else None,
         remaining=remaining_percent,
         used_percent=used_percent,
-        window=label,
+        window=window_name,
         resets_at=resets_at,
     )
 

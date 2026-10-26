@@ -108,6 +108,43 @@ def _kimi_token(credentials: dict[str, str], auth_type: str) -> str:
     raise AdapterError("invalid_credentials")
 
 
+def _kimi_window(value: Any) -> str | None:
+    """Normalize Kimi's protobuf time-unit enums without guessing absent durations."""
+    if not isinstance(value, dict):
+        return None
+    duration = number(value.get("duration"))
+    raw_unit = value.get("timeUnit")
+    if duration is None or duration <= 0 or not isinstance(raw_unit, str):
+        return None
+    unit = raw_unit.upper().removeprefix("TIME_UNIT_")
+    seconds_per_unit = {"SECOND": 1, "MINUTE": 60, "HOUR": 3600, "DAY": 86400, "WEEK": 604800}
+    if unit not in seconds_per_unit:
+        return f"{duration:g} {raw_unit}"
+    seconds = number(duration * seconds_per_unit[unit])
+    if seconds is None:
+        return None
+    for divisor, suffix in ((86400, "d"), (3600, "h"), (60, "m"), (1, "s")):
+        if seconds % divisor == 0:
+            return f"{seconds / divisor:g}{suffix}"
+    return f"{seconds:g}s"
+
+
+def _kimi_metrics(usage: dict[str, Any], limits: Any) -> list[Metric]:
+    """Map legacy Kimi weekly usage and independent rolling limits, keeping metric IDs stable."""
+    # In the count-based Code API and FEATURE_CODING billing response, the
+    # top-level detail is the seven-day allowance, not the monthly billing cycle.
+    metrics = [_quota_metric("coding", "7 天用量", usage, window="7d")]
+    if isinstance(limits, list):
+        for index, limit in enumerate(limits):
+            if not isinstance(limit, dict) or not isinstance(limit.get("detail"), dict):
+                continue
+            window = _kimi_window(limit.get("window"))
+            label = {"5h": "5 小时用量", "7d": "7 天用量"}.get(window, "调用额度")
+            metrics.append(_quota_metric(f"limit_{index}", label, limit["detail"], window=window))
+    # Match the console order; changing positions must never change history IDs.
+    return sorted(metrics, key=lambda metric: {"5h": 0, "7d": 1}.get(metric.window, 2))
+
+
 class KimiAdapter(BaseAdapter):
     """Collect Kimi coding quotas from its API-key or browser-session endpoint."""
 
@@ -130,28 +167,7 @@ class KimiAdapter(BaseAdapter):
             usage = data.get("usage")
             if not isinstance(usage, dict):
                 raise AdapterError("invalid_response")
-            metrics: list[Metric] = []
-            metrics.append(_quota_metric("coding", "Coding Plan", usage, window="套餐周期"))
-            limits = data.get("limits")
-            if isinstance(limits, list):
-                for index, limit in enumerate(limits):
-                    if not isinstance(limit, dict) or not isinstance(limit.get("detail"), dict):
-                        continue
-                    window_data = limit.get("window")
-                    if isinstance(window_data, dict):
-                        duration = window_data.get("duration")
-                        unit = window_data.get("timeUnit")
-                    else:
-                        duration, unit = None, None
-                    window = f"{duration} {unit}" if duration and unit else "速率窗口"
-                    metrics.append(
-                        _quota_metric(
-                            f"limit_{index}",
-                            "速率限制",
-                            limit["detail"],
-                            window=window,
-                        )
-                    )
+            metrics = _kimi_metrics(usage, data.get("limits"))
             return UsageResult(metrics=metrics, source="kimi_coding_api"), None
 
         claims = _jwt_claims(token)
@@ -189,30 +205,7 @@ class KimiAdapter(BaseAdapter):
         )
         metrics: list[Metric] = []
         if isinstance(selected, dict) and isinstance(selected.get("detail"), dict):
-            metrics.append(
-                _quota_metric("coding", "Coding Plan", selected["detail"], window="套餐周期")
-            )
-            limits = selected.get("limits")
-            if isinstance(limits, list):
-                for index, limit in enumerate(limits):
-                    if not isinstance(limit, dict) or not isinstance(limit.get("detail"), dict):
-                        continue
-                    scope = limit.get("scope")
-                    duration = (
-                        (limit.get("window") or {}).get("duration")
-                        if isinstance(limit.get("window"), dict)
-                        else None
-                    )
-                    unit = (
-                        (limit.get("window") or {}).get("timeUnit")
-                        if isinstance(limit.get("window"), dict)
-                        else None
-                    )
-                    window = f"{duration} {unit}" if duration and unit else "速率窗口"
-                    label = "速率限制" if not isinstance(scope, str) else f"速率限制 {scope}"
-                    metrics.append(
-                        _quota_metric(f"limit_{index}", label, limit["detail"], window=window)
-                    )
+            metrics = _kimi_metrics(selected["detail"], selected.get("limits"))
         plan = None
         try:
             subscription = _as_dict(

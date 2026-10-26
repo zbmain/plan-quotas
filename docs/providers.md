@@ -7,8 +7,8 @@
 | 渠道 | 计划支持的凭据 | 预期指标 | 样本解析测试 | 真实账号验证 |
 |---|---|---|---|---|
 | MiniMax | Coding Plan API Key；可选控制台 Cookie | 套餐窗口额度、剩余比例、重置时间 | 通过 | API Key 查询已验证；Cookie 尚未验证 |
-| 智谱 GLM | Coding Plan API Key | 套餐额度、周期及接口提供的专项额度 | 通过 | 尚未实测 |
-| Kimi | API Key 或控制台 Cookie／JWT | 订阅额度、使用窗口、重置时间 | 通过 | 尚未实测 |
+| 智谱 GLM | Coding Plan API Key | 5 小时与每周额度；额度接口返回时显示 MCP 调用总额和联网搜索、网页阅读、仓库检索已用次数 | 通过 | 尚未实测 |
+| Kimi | API Key 或控制台 Cookie／JWT | 5 小时与 7 天用量、已用比例、各自重置时间 | 通过 | API Key 计数型响应查询已验证；Cookie／JWT 尚未验证 |
 | DeepSeek | API Key | 账户余额、赠送余额、充值余额及币种 | 通过 | 尚未实测 |
 | 火山引擎 | Access Key ID 与 Secret Access Key | Coding Plan 用量、额度及周期 | 通过 | 尚未实测 |
 | 阿里云百炼 | 控制台 Cookie／会话凭据 | Coding Plan 用量、额度及周期 | 通过 | 尚未实测 |
@@ -17,7 +17,7 @@
 | Cursor | 控制台 Cookie／会话凭据 | 套餐消费、额外消费、账单周期 | 通过 | 尚未实测 |
 | Google Antigravity | 用户导入的 OAuth 凭据 | 按模型的剩余额度及重置时间 | 通过 | 尚未实测 |
 
-样本解析测试使用测试夹具，不等同于真实供应商账号验证。当前 10 个渠道的样本解析用例均通过；只有 MiniMax API Key 的实际用量查询通过真实接口验证。
+样本解析测试使用测试夹具，不等同于真实供应商账号验证。当前 10 个渠道的样本解析用例均通过；MiniMax API Key、Kimi API Key 的实际用量查询已通过真实接口验证。
 
 ## 获取方式提示
 
@@ -33,6 +33,10 @@
 DeepSeek 当前按账户余额展示，不推断 Coding Plan 周期额度。余额注明币种；不同币种不合计。套餐额度按渠道返回的各个窗口分别展示，未知字段显示“暂无数据”。某些渠道只返回剩余量而不返回总量时，不应反推或虚构已用量。
 
 历史趋势来自轮询时的观测快照，可能受渠道刷新延迟、窗口重置和采集间隔影响，不是精确调用日志或账单凭证。
+
+GLM 的 MCP 调用次数来自官方控制台使用的未公开额度接口 `GET /api/monitor/usage/quota/limit`：`TIME_LIMIT` 行提供汇总额度字段，若包含 `usageDetails` 则显示其中明确返回的工具已用次数。智谱没有公开该接口的字段文档；解析依据脱敏响应样本（[CodexBar issue #2522](https://github.com/steipete/CodexBar/issues/2522)），字段可能变化。单工具额度上限和剩余次数未返回时保持未知，不从总额度分摊。
+
+Kimi 的计数型响应中，`usage`（网页会话接口中的 `FEATURE_CODING.detail`）对应 7 天额度，`limits[].window` 的 `duration=300`、`timeUnit=TIME_UNIT_MINUTE` 对应 5 小时窗口；两个窗口分别读取自己的 `detail.resetTime`。接口保留原始额度数值和稳定指标 ID，页面与历史趋势展示已用百分比，不将额度整数标作调用次数。字段参照 [CodexBar Kimi 接口说明](https://github.com/steipete/CodexBar/blob/main/docs/kimi.md#api-details) 并已用本地配置的 API Key 账号核对。官方新旧会员可能具有不同周期，见 [Kimi 会员用量规则](https://www.kimi.com/en/help/membership/membership-update-rules)；本次验证范围为该账号返回的 `usage/limits` 结构，不代表纯比例版响应或所有会员类型已验证。
 
 ## 参考实现与文档
 

@@ -120,7 +120,7 @@ PROVIDERS = [
 CATALOG = {item["id"]: item for item in PROVIDERS}
 
 # Authentication pairs verified end to end against a real provider account.
-VERIFIED_AUTH_METHODS = {("minimax", "api_key")}
+VERIFIED_AUTH_METHODS = {("minimax", "api_key"), ("kimi", "api_key")}
 
 
 def validate_credentials(provider_id: str, auth_type: str, credentials: dict[str, str]) -> None:

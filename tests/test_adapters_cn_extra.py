@@ -75,12 +75,9 @@ async def test_kimi_jwt_maps_coding_period_and_rate_limit_windows():
         result, rotated = await KimiAdapter().fetch({"jwt": token}, "jwt", client)
     assert rotated is None
     assert result.plan == "Kimi Code"
-    assert [metric.used_percent for metric in result.metrics] == [20, 25, 10]
-    assert [metric.window for metric in result.metrics] == [
-        "套餐周期",
-        "300 MINUTE",
-        "10080 MINUTE",
-    ]
+    assert [metric.id for metric in result.metrics] == ["limit_0", "coding", "limit_1"]
+    assert [metric.used_percent for metric in result.metrics] == [25, 20, 10]
+    assert [metric.window for metric in result.metrics] == ["5h", "7d", "7d"]
     assert "private@example.invalid" not in json.dumps(result.model_dump(mode="json"))
 
 
@@ -143,9 +140,84 @@ async def test_kimi_coding_api_key_exposes_quota_and_limits():
 
     async with mock_client(handler) as client:
         result, _ = await KimiAdapter().fetch({"api_key": "api-key-secret"}, "api_key", client)
-    assert [metric.used for metric in result.metrics] == [125, 25, 125]
-    assert [metric.used_percent for metric in result.metrics] == [12.5, 25, 25]
+    assert [metric.id for metric in result.metrics] == ["limit_0", "coding", "limit_1"]
+    assert [metric.used for metric in result.metrics] == [25, 125, 125]
+    assert [metric.used_percent for metric in result.metrics] == [25, 12.5, 25]
     assert "private@example.invalid" not in json.dumps(result.model_dump(mode="json"))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("auth_type", ["api_key", "jwt", "cookie"])
+@pytest.mark.parametrize(
+    ("duration", "time_unit"),
+    [("300", "TIME_UNIT_MINUTE"), (5, "TIME_UNIT_HOUR"), (18000, "TIME_UNIT_SECOND")],
+)
+async def test_kimi_real_counter_shape_keeps_five_hour_and_weekly_usage_separate(
+    auth_type, duration, time_unit
+):
+    """Regress the observed 12% / 2% account and keep each window's own reset boundary."""
+    weekly = {"limit": "100", "used": "2", "remaining": "98", "resetTime": "2030-11-02T03:26:41Z"}
+    limits = [
+        {
+            "window": {"duration": duration, "timeUnit": time_unit},
+            "detail": {
+                "limit": "100",
+                "used": "12",
+                "remaining": "88",
+                "resetTime": "2030-10-26T14:26:41Z",
+            },
+        }
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        """Serve equivalent API-key and browser-session envelopes without real credentials."""
+        if request.url == KIMI_API_KEY_USAGE_URL:
+            return httpx.Response(200, json={"usage": weekly, "limits": limits})
+        if request.url == KIMI_USAGE_URL:
+            return httpx.Response(
+                200,
+                json={"usages": [{"scope": "FEATURE_CODING", "detail": weekly, "limits": limits}]},
+            )
+        if request.url == KIMI_SUBSCRIPTION_URL:
+            return httpx.Response(200, json={})
+        pytest.fail(f"Unexpected endpoint: {request.url}")
+
+    async with mock_client(handler) as client:
+        result, _ = await KimiAdapter().fetch({auth_type: "test-only-secret"}, auth_type, client)
+    short, long = result.metrics
+    assert (short.id, short.label, short.window, short.used_percent) == (
+        "limit_0",
+        "5 小时用量",
+        "5h",
+        12,
+    )
+    assert (long.id, long.label, long.window, long.used_percent) == ("coding", "7 天用量", "7d", 2)
+    assert short.resets_at.isoformat() == "2030-10-26T14:26:41+00:00"
+    assert long.resets_at.isoformat() == "2030-11-02T03:26:41+00:00"
+    assert "test-only-secret" not in result.model_dump_json()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "window", [None, {}, {"duration": 0, "timeUnit": "TIME_UNIT_MINUTE"}, {"duration": 300}]
+)
+async def test_kimi_unknown_window_does_not_turn_into_five_hours(window):
+    """A missing or unusable window must not acquire a guessed duration or false percentage."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        """Return incomplete upstream quota details while preserving the observed zero."""
+        return httpx.Response(
+            200, json={"usage": {"used": 0}, "limits": [{"window": window, "detail": {"used": 0}}]}
+        )
+
+    async with mock_client(handler) as client:
+        result, _ = await KimiAdapter().fetch({"api_key": "test-only-secret"}, "api_key", client)
+    unknown = next(metric for metric in result.metrics if metric.id == "limit_0")
+    assert unknown.window is None
+    assert unknown.used == 0
+    assert unknown.used_percent is None
+    assert unknown.remaining is None
+    assert unknown.label == "调用额度"
 
 
 @pytest.mark.asyncio

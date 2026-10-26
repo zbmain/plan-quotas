@@ -58,7 +58,7 @@ def _minimax_metrics(rows: Any) -> list[Metric]:
             continue
         for suffix, remaining_key, reset_key, label, window in (
             ("interval", "current_interval_remaining_percent", "remains_time", "短周期", "5h"),
-            ("weekly", "current_weekly_remaining_percent", "weekly_remains_time", "周额度", "week"),
+            ("weekly", "current_weekly_remaining_percent", "weekly_remains_time", "长周期", "week"),
         ):
             remaining_percent = number(raw.get(remaining_key))
             if remaining_percent is None:
@@ -104,8 +104,8 @@ class MiniMaxAdapter(BaseAdapter):
         ), None
 
 
-def _glm_window(row: dict[str, Any], index: int) -> str:
-    """Derive a human-readable GLM quota window from documented metadata."""
+def _glm_window(row: dict[str, Any], index: int) -> str | None:
+    """Map observed GLM quota metadata and leave undocumented windows unknown."""
     kind = str(row.get("type", "")).upper()
     unit = number(row.get("unit"))
     count = number(row.get("number"))
@@ -114,8 +114,42 @@ def _glm_window(row: dict[str, Any], index: int) -> str:
     if kind == "TOKENS_LIMIT" and unit == 6 and count == 1:
         return "week"
     if kind == "TIME_LIMIT":
-        return "monthly"
+        return "monthly" if unit == 5 and count == 1 else None
     return f"quota-{index + 1}"
+
+
+def _glm_mcp_metrics(row: dict[str, Any], window: str | None) -> list[Metric]:
+    """Normalize GLM MCP tool-call usage details when the provider returns them."""
+    details = row.get("usageDetails")
+    if not isinstance(details, list):
+        return []
+    labels = {
+        "search-prime": "联网搜索",
+        "web-reader": "网页阅读",
+        "zread": "仓库检索",
+    }
+    metrics: list[Metric] = []
+    for detail in details:
+        if not isinstance(detail, dict):
+            continue
+        used = number(detail.get("usage"))
+        if used is None:
+            continue
+        code = detail.get("modelCode")
+        normalized_code = str(code).lower() if code is not None else ""
+        label = labels.get(normalized_code)
+        if label is None:
+            continue
+        metrics.append(
+            Metric(
+                id=f"glm-mcp-{normalized_code}",
+                label=f"{label}调用次数",
+                unit="次",
+                used=used,
+                window=window,
+            )
+        )
+    return metrics
 
 
 def _glm_metrics(data: dict[str, Any]) -> list[Metric]:
@@ -137,11 +171,13 @@ def _glm_metrics(data: dict[str, Any]) -> list[Metric]:
             remaining = usage - used
         reset_at = timestamp(raw.get("nextResetTime"))
         kind = str(raw.get("type", "")).upper()
-        unit = "requests" if kind == "TIME_LIMIT" else "tokens"
+        is_mcp_limit = kind == "TIME_LIMIT"
+        is_mcp_calls = is_mcp_limit and number(raw.get("unit")) == 5
+        unit = "次" if is_mcp_limit else "tokens"
         metrics.append(
             Metric(
                 id=f"glm-{index}",
-                label="GLM Coding Plan",
+                label="MCP 调用次数" if is_mcp_calls else "GLM Coding Plan",
                 unit=unit,
                 used=used,
                 limit=usage,
@@ -151,6 +187,8 @@ def _glm_metrics(data: dict[str, Any]) -> list[Metric]:
                 resets_at=reset_at,
             )
         )
+        if is_mcp_calls:
+            metrics.extend(_glm_mcp_metrics(raw, _glm_window(raw, index)))
     if not metrics:
         raise AdapterError("invalid_response")
     return metrics

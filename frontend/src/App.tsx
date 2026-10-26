@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { InfoAccessPanel } from "./InfoAccessPanel";
 import {
   Activity,
   AlertCircle,
@@ -21,7 +22,6 @@ import {
   LoaderCircle,
   LogOut,
   Moon,
-  MoreHorizontal,
   Plus,
   RefreshCw,
   Search,
@@ -41,6 +41,19 @@ import {
   XAxis,
 } from "recharts";
 import type { Account, Dashboard, History, Metric, Provider } from "./types";
+import {
+  metricDisplayLabel,
+  metricGroup,
+  metricUnitLabel,
+  metricWindowLabel,
+  kimiDisplayMetric,
+} from "./metric-display";
+import {
+  quotaReading,
+  quotaProgress,
+  usedQuotaPercent,
+  type QuotaDisplayMode,
+} from "./quota-mode";
 
 /** Send a same-origin API request and expose only the server's safe detail message. */
 const api = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
@@ -131,60 +144,88 @@ export function resetCountdown(resetsAt: string, now = Date.now()) {
 }
 
 /** Preserve history gaps and add a null sample before quota resets to break the line. */
-export function historyRows(history: History, metricId: string) {
+export function historyRows(
+  history: History,
+  metricId: string,
+  provider?: string,
+  displayMode: QuotaDisplayMode = "used",
+) {
   const sampledRows = history.points.map((point) => {
-    const metric = point.metrics.find((item) => item.id === metricId);
+    const storedMetric = point.metrics.find((item) => item.id === metricId);
+    const metric = storedMetric
+      ? kimiDisplayMetric(storedMetric, provider ?? "")
+      : undefined;
     return {
       timestamp: Date.parse(point.timestamp),
-      value: point.gap ? null : historyMetricValue(metric),
+      value: point.gap
+        ? null
+        : historyMetricValue(metric, undefined, displayMode),
+      unit:
+        metric?.kind === "quota"
+          ? quotaReading(metric, displayMode).unit
+          : metric?.unit,
       gap: point.gap,
       reset: point.reset,
     };
   });
-  return sampledRows.flatMap((point) =>
-    point.reset && point.value != null
-      ? [{ ...point, value: null, resetBreak: true }, point]
-      : [point],
-  );
+  // Never draw absolute counts and fallback percentages on the same history line.
+  const seriesUnit = [...sampledRows]
+    .reverse()
+    .find((point) => point.value != null)?.unit;
+  return sampledRows
+    .map((point) =>
+      point.unit === seriesUnit ? point : { ...point, value: null },
+    )
+    .flatMap((point) =>
+      point.reset && point.value != null
+        ? [{ ...point, value: null, resetBreak: true }, point]
+        : [point],
+    );
 }
 
 /** Choose the actual observed balance, cost, or quota reading for a history series. */
-export function historyMetricValue(metric?: Metric) {
+export function historyMetricValue(
+  metric?: Metric,
+  provider?: string,
+  displayMode: QuotaDisplayMode = "used",
+) {
+  if (metric && provider === "kimi")
+    metric = kimiDisplayMetric(metric, provider);
   if (!metric) return null;
-  if (metric.kind === "quota")
-    return metric.remaining ?? metric.used ?? metric.used_percent ?? null;
+  if (metric.kind === "quota") return quotaReading(metric, displayMode).value;
   if (metric.kind === "balance") return metric.remaining ?? metric.used ?? null;
   return metric.used ?? metric.remaining ?? null;
 }
 
 /** Name a history series according to whether it plots remaining, used, or cost. */
-export function historySeriesLabel(metric?: Metric) {
+export function historySeriesLabel(
+  metric?: Metric,
+  provider?: string,
+  displayMode: QuotaDisplayMode = "used",
+) {
   if (!metric) return "额度";
+  if (provider === "kimi") metric = kimiDisplayMetric(metric, provider);
+  const label = metricDisplayLabel(metric);
   if (metric.kind === "quota") {
-    if (metric.remaining != null) return `${metric.label} · 剩余`;
-    if (metric.used != null) return `${metric.label} · 已用`;
-    if (metric.used_percent != null) return `${metric.label} · 已用比例`;
-    return metric.label;
+    const direction = displayMode === "used" ? "已用" : "剩余";
+    const unit = quotaReading(metric, displayMode).unit;
+    return `${label} · ${direction}${unit === "%" ? "比例" : ""}`;
   }
-  if (metric.kind === "balance") return `${metric.label} · 余额`;
-  return `${metric.label} · 本期消费`;
+  if (metric.kind === "balance") return `${label} · 余额`;
+  return `${label} · 本期消费`;
 }
 
 /** Format a metric using its own currency or unit, without combining unlike measures. */
 export function metricValue(value: number | undefined | null, metric: Metric) {
-  if (value == null) return "暂无数据";
+  if (value == null || !Number.isFinite(value)) return "暂无数据";
   if (metric.kind === "balance" || metric.kind === "cost")
     return `${metric.currency === "CNY" ? "¥" : metric.currency === "USD" ? "$" : metric.currency ? `${metric.currency} ` : ""}${formatNumber(value)}`;
-  return `${formatNumber(value)}${metric.unit === "%" ? "%" : metric.unit ? ` ${metric.unit}` : ""}`;
+  const unit = metricUnitLabel(metric.unit);
+  return `${formatNumber(value)}${unit === "%" ? "%" : unit ? ` ${unit}` : ""}`;
 }
 /** Return the unbounded usage percentage as reported or derived from quota values. */
 export function rawProgressOf(metric: Metric) {
-  if (metric.used_percent != null) return metric.used_percent;
-  if (metric.used != null && metric.limit != null && metric.limit > 0)
-    return (metric.used / metric.limit) * 100;
-  if (metric.remaining != null && metric.limit != null && metric.limit > 0)
-    return ((metric.limit - metric.remaining) / metric.limit) * 100;
-  return null;
+  return usedQuotaPercent(metric);
 }
 
 /** Clamp a usage percentage for the visual progress bar while preserving raw readings elsewhere. */
@@ -260,6 +301,7 @@ function App() {
   const [selectedProvider, setSelectedProvider] = useState("all");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [displayMode, setDisplayMode] = useState<QuotaDisplayMode>("used");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [history, setHistory] = useState<Record<string, History>>({});
   const [range, setRange] = useState<Record<string, string>>({});
@@ -403,8 +445,7 @@ function App() {
             <div>
               <div className="eyebrow">
                 <span className="eyebrow-line" />
-                订阅状态总览{" "}
-                <span className="eyebrow-en">SUBSCRIPTION OVERVIEW</span>
+                订阅状态总览
               </div>
               <h1>
                 把每份额度，<em>看得清楚。</em>
@@ -459,12 +500,36 @@ function App() {
             <div className="section-head">
               <div>
                 <div className="section-title-line">
-                  <h2>订阅账号</h2>
+                  <h2>额度清单</h2>
                   <span className="count-pill">{visible.length}</span>
                 </div>
-                <p>额度独立展示，不混合计算不同计量方式</p>
+                <p>周期额度与专项调用，按账号独立展示</p>
               </div>
               <div className="toolbar">
+                <div className="quota-mode-control">
+                  <span id="quota-display-mode-label">显示方式</span>
+                  <div
+                    className="quota-mode-options"
+                    role="radiogroup"
+                    aria-labelledby="quota-display-mode-label"
+                  >
+                    {(["used", "remaining"] as const).map((mode) => (
+                      <label
+                        key={mode}
+                        className={displayMode === mode ? "is-selected" : ""}
+                      >
+                        <input
+                          type="radio"
+                          name="quota-display-mode"
+                          value={mode}
+                          checked={displayMode === mode}
+                          onChange={() => setDisplayMode(mode)}
+                        />
+                        <span>{mode === "used" ? "按已用量" : "按剩余量"}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
                 <label className="search-box">
                   <Search size={15} />
                   <input
@@ -558,6 +623,7 @@ function App() {
                     key={a.id}
                     account={a}
                     index={i}
+                    displayMode={displayMode}
                     expanded={expanded === a.id}
                     onExpand={() => {
                       setExpanded(expanded === a.id ? null : a.id);
@@ -618,6 +684,7 @@ function Stat({
 function AccountCard({
   account: a,
   index,
+  displayMode,
   expanded,
   onExpand,
   history,
@@ -626,6 +693,7 @@ function AccountCard({
 }: {
   account: Account;
   index: number;
+  displayMode: QuotaDisplayMode;
   expanded: boolean;
   onExpand: () => void;
   history?: History;
@@ -669,21 +737,18 @@ function AccountCard({
           <span className="provider-name">
             {providerNames[a.provider] || a.provider}
           </span>
-          <span className="account-alias">{a.alias}</span>
+          <span className="account-alias" title={a.alias}>
+            {a.alias}
+          </span>
         </div>
         <span className={`status-tag status-${a.status}`}>
           <i />
           {a.stale && a.status === "ok"
             ? "数据过期"
-            : statusLabel[a.status || "pending"] || a.status || "等待采集"}
+            : a.status === "ok"
+              ? "正常"
+              : statusLabel[a.status || "pending"] || a.status || "等待采集"}
         </span>
-        <button
-          className="more-button"
-          aria-label="查看历史趋势"
-          onClick={onExpand}
-        >
-          <MoreHorizontal size={18} />
-        </button>
       </div>
       <div className="plan-line">
         <span>{a.data?.plan || "订阅计划"}</span>
@@ -716,19 +781,18 @@ function AccountCard({
             </strong>
             <span>
               {a.error_code
-                ? `状态代码：${a.error_code}`
+                ? connectionErrorLabel[a.error_code] ||
+                  "采集暂时失败，请联系管理员检查"
                 : "首次采集完成后，用量信息会显示在这里"}
             </span>
           </div>
         </div>
       ) : (
-        <div className="metric-list">
-          {a.data.metrics?.length ? (
-            a.data.metrics.map((m) => <MetricView metric={m} key={m.id} />)
-          ) : (
-            <div className="no-metric">渠道尚未返回可展示的用量指标</div>
-          )}
-        </div>
+        <AccountMetrics
+          metrics={a.data.metrics || []}
+          provider={a.provider}
+          displayMode={displayMode}
+        />
       )}
       <div className="card-foot">
         <span>
@@ -737,8 +801,13 @@ function AccountCard({
             ? `${a.stale ? "上次成功（已过期）" : "更新于"} ${formatTime(a.data.fetched_at)}`
             : "尚未采集"}
         </span>
-        <button onClick={onExpand}>
-          {expanded ? "收起趋势" : "查看历史趋势"}
+        <button
+          onClick={onExpand}
+          aria-expanded={expanded}
+          aria-label={expanded ? "收起历史趋势" : "查看历史趋势"}
+        >
+          <Activity size={14} />
+          {expanded ? "收起趋势" : "历史趋势"}
           {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
       </div>
@@ -755,7 +824,7 @@ function AccountCard({
               >
                 {metricChoices.map((metric) => (
                   <option key={metric.id} value={metric.id}>
-                    {metric.label}
+                    {metricDisplayLabel(kimiDisplayMetric(metric, a.provider))}
                   </option>
                 ))}
               </select>
@@ -783,6 +852,8 @@ function AccountCard({
               history={history}
               range={range}
               metricId={activeMetricId}
+              provider={a.provider}
+              displayMode={displayMode}
             />
           ) : history?.points.length ? (
             <div className="history-empty">采集完成后会逐步形成趋势</div>
@@ -807,65 +878,238 @@ function accountsNeedAttention(accounts?: Account[]) {
     ),
   );
 }
-/** Render an individual metric with its remaining value and progress when known. */
-function MetricView({ metric: m }: { metric: Metric }) {
-  const percent = progressOf(m);
-  const remaining = m.remaining;
-  const value =
-    m.kind === "balance"
-      ? metricValue(remaining ?? m.used, m)
-      : m.kind === "cost"
-        ? metricValue(m.used, m)
-        : remaining != null
-          ? metricValue(remaining, m)
-          : m.limit != null
-            ? `${metricValue(m.used, m)} / ${metricValue(m.limit, m)}`
-            : metricValue(m.used, m);
-  const reportedPercent = rawProgressOf(m);
-  const percentText =
-    reportedPercent == null ? null : Math.round(reportedPercent);
+/** Separate tool calls from subscription and balance metrics without adding absent quotas. */
+export function AccountMetrics({
+  metrics,
+  provider = "",
+  displayMode = "used",
+}: {
+  metrics: Metric[];
+  provider?: string;
+  displayMode?: QuotaDisplayMode;
+}) {
+  const displayMetrics = metrics.map((metric) =>
+    kimiDisplayMetric(metric, provider),
+  );
+  if (provider === "kimi") {
+    displayMetrics.sort((left, right) => {
+      const cycleOrder = (metric: Metric) =>
+        metric.window === "5h" ? 0 : metric.window === "7d" ? 1 : 2;
+      return cycleOrder(left) - cycleOrder(right);
+    });
+  }
+  const regular = displayMetrics.filter(
+    (metric) => metricGroup(metric) !== "tool",
+  );
+  const tools = displayMetrics.filter(
+    (metric) => metricGroup(metric) === "tool",
+  );
+  const toolDetails = tools.filter(
+    (metric) =>
+      metric.used != null &&
+      metric.limit == null &&
+      metric.remaining == null &&
+      metric.used_percent == null,
+  );
+  const toolQuotas = tools.filter((metric) => !toolDetails.includes(metric));
+  if (!metrics.length)
+    return <div className="no-metric">渠道尚未返回可展示的用量指标</div>;
   return (
-    <div className="metric-block">
-      <div className="metric-label-row">
-        <span className="metric-label">
-          {m.label}
-          {m.window && <span className="window-label">{m.window}</span>}
-        </span>
-        <span className="metric-remaining">
-          {m.kind === "quota" && remaining != null ? (
-            <>
-              <small>剩余</small> {metricValue(remaining, m)}
-            </>
-          ) : (
-            value
+    <div className="metric-list">
+      {!!regular.length && (
+        <div className="metric-grid">
+          {regular.map((metric) => (
+            <MetricView
+              metric={metric}
+              key={metric.id}
+              displayMode={displayMode}
+            />
+          ))}
+        </div>
+      )}
+      {!!tools.length && (
+        <section className="tool-quotas" aria-label="工具调用额度">
+          {!!toolQuotas.length && (
+            <div className="metric-grid">
+              {toolQuotas.map((metric) => (
+                <MetricView
+                  metric={metric}
+                  key={metric.id}
+                  displayMode={displayMode}
+                />
+              ))}
+            </div>
           )}
-        </span>
+          {!!toolDetails.length && (
+            <details className="tool-breakdown">
+              <summary>
+                调用明细 <span>{toolDetails.length} 项</span>
+                <ChevronDown size={14} />
+              </summary>
+              <p>
+                {displayMode === "used"
+                  ? "以下为各工具已用次数，渠道未提供单项上限。"
+                  : "渠道未提供单项上限，无法计算各工具的剩余次数。"}
+              </p>
+              <dl>
+                {toolDetails.map((metric) => (
+                  <div key={metric.id}>
+                    <dt>{metricDisplayLabel(metric)}</dt>
+                    <dd>{metricReading(metric, displayMode).value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+          )}
+        </section>
+      )}
+    </div>
+  );
+}
+
+/** Choose a truthful primary reading; percentage-only quotas never become invented call counts. */
+export function metricReading(
+  metric: Metric,
+  displayMode: QuotaDisplayMode = "used",
+) {
+  if (metric.kind === "balance")
+    return {
+      label: "可用余额",
+      value: metricValue(metric.remaining ?? metric.used, metric),
+    };
+  if (metric.kind === "cost")
+    return { label: "本期消费", value: metricValue(metric.used, metric) };
+  const reading = quotaReading(metric, displayMode);
+  return {
+    label: reading.label,
+    value: metricValue(reading.value, { ...metric, unit: reading.unit }),
+  };
+}
+
+/** Render a compact quota row; retain actual amounts and expose precise reset times on the countdown. */
+export function MetricView({
+  metric: m,
+  displayMode = "used",
+}: {
+  metric: Metric;
+  displayMode?: QuotaDisplayMode;
+}) {
+  const displayedPercent = quotaProgress(m, displayMode);
+  const percent =
+    displayedPercent == null
+      ? null
+      : Math.max(0, Math.min(100, displayedPercent));
+  const reportedPercent = rawProgressOf(m);
+  const reading = metricReading(m, displayMode);
+  const alternateMode = displayMode === "used" ? "remaining" : "used";
+  const alternateReading = metricReading(m, alternateMode);
+  const direction = displayMode === "used" ? "已用" : "剩余";
+  const displayLabel = metricDisplayLabel(m);
+  const windowLabel = metricWindowLabel(m.window);
+  const duplicateWindow = Boolean(
+    windowLabel &&
+    displayLabel.replaceAll(" ", "").includes(windowLabel.replaceAll(" ", "")),
+  );
+  const isQuota = m.kind === "quota";
+  const critical = isQuota && reportedPercent != null && reportedPercent >= 85;
+  const hasReset = Boolean(
+    m.resets_at && Number.isFinite(Date.parse(m.resets_at)),
+  );
+  const countdown = hasReset ? resetCountdown(m.resets_at!) : "";
+  const resetLabel = hasReset
+    ? countdown.endsWith("后")
+      ? `${countdown}重置`
+      : countdown
+    : "重置时间暂无数据";
+  const readingCaption = reading.label.startsWith("剩余")
+    ? "剩余"
+    : reading.label.startsWith("已用")
+      ? "已用"
+      : reading.label;
+  const warning =
+    reportedPercent != null && reportedPercent > 100
+      ? "已超额度"
+      : reportedPercent === 100
+        ? "额度用尽"
+        : "余量偏低";
+  return (
+    <div
+      className={`metric-block ${critical ? "quota-critical" : ""} ${reading.value === "暂无数据" ? "quota-unknown" : ""}`}
+    >
+      <div className="metric-main">
+        <div className="metric-label-row">
+          <h3 className="metric-label">{displayLabel}</h3>
+          {windowLabel && !duplicateWindow && (
+            <span className="window-label">{windowLabel}</span>
+          )}
+        </div>
+        <div
+          className="metric-reading"
+          aria-label={`${reading.label} ${reading.value}`}
+        >
+          {reading.value !== "暂无数据" && (
+            <span className="reading-caption">{readingCaption}</span>
+          )}
+          <strong className="metric-value">{reading.value}</strong>
+        </div>
       </div>
-      {m.kind === "quota" && percent != null && (
-        <div className="progress-track">
+      {isQuota && percent != null && (
+        <div
+          className="progress-track"
+          role="progressbar"
+          aria-label={`${metricDisplayLabel(m)}${direction}比例`}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+          aria-valuetext={`${direction} ${formatNumber(displayedPercent)}%`}
+        >
           <span
-            className={`progress-fill ${percent >= 85 ? "high" : percent >= 65 ? "medium" : ""}`}
+            className={`progress-fill ${reportedPercent != null && reportedPercent >= 85 ? "high" : reportedPercent != null && reportedPercent >= 65 ? "medium" : ""}`}
             style={{ width: `${percent}%` }}
           />
         </div>
       )}
-      <div className="metric-meta">
-        <span>
-          {m.kind === "quota" && percentText != null
-            ? `已用 ${percentText}%`
-            : m.kind === "balance"
-              ? "账户余额"
-              : m.kind === "cost"
-                ? "本周期消费"
-                : m.limit != null
-                  ? `总额度 ${metricValue(m.limit, m)}`
-                  : "额度状态"}
-        </span>
-        <span>
-          {m.resets_at
-            ? `重置于 ${formatTime(m.resets_at)}（${resetCountdown(m.resets_at)}）`
-            : m.window || ""}
-        </span>
+      <div className="metric-secondary">
+        <div className="metric-meta">
+          <span>
+            {isQuota
+              ? `${alternateMode === "used" ? "已用" : "剩余"} ${alternateReading.value}`
+              : m.kind === "balance"
+                ? "账户余额"
+                : m.kind === "cost"
+                  ? "本周期消费"
+                  : "已用暂无数据"}
+          </span>
+          {isQuota && m.limit != null && m.unit !== "%" && (
+            <span>{`总额 ${metricValue(m.limit, m)}`}</span>
+          )}
+          {m.currency && (
+            <span>
+              {m.currency === "CNY"
+                ? "人民币"
+                : m.currency === "USD"
+                  ? "美元"
+                  : m.currency}
+            </span>
+          )}
+          {critical && <span className="quota-warning">{warning}</span>}
+        </div>
+        {isQuota && (
+          <div className="metric-reset">
+            <Clock3 size={11} aria-hidden="true" />
+            {hasReset ? (
+              <time
+                dateTime={m.resets_at!}
+                title={`重置时间：${formatTime(m.resets_at)}（北京时间）`}
+                aria-label={`重置时间：${formatTime(m.resets_at)}，${resetLabel}`}
+              >
+                {resetLabel}
+              </time>
+            ) : (
+              <span>{resetLabel}</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -875,15 +1119,26 @@ function HistoryChart({
   history: h,
   range,
   metricId,
+  provider,
+  displayMode,
 }: {
   history: History;
   range: string;
   metricId: string;
+  provider: string;
+  displayMode: QuotaDisplayMode;
 }) {
-  const selectedMetric = h.points
+  const storedSelectedMetric = h.points
     .flatMap((point) => point.metrics)
+    .reverse()
     .find((metric) => metric.id === metricId);
-  const rows = historyRows(h, metricId);
+  const selectedMetric = storedSelectedMetric
+    ? kimiDisplayMetric(storedSelectedMetric, provider)
+    : undefined;
+  const rows = historyRows(h, metricId, provider, displayMode);
+  const seriesUnit =
+    [...rows].reverse().find((point) => point.value != null)?.unit ??
+    selectedMetric?.unit;
   const resetPoints = rows.filter(
     (point) => point.reset && point.value != null,
   );
@@ -934,7 +1189,10 @@ function HistoryChart({
           <Tooltip
             formatter={(value) =>
               selectedMetric
-                ? metricValue(Number(value), selectedMetric)
+                ? metricValue(Number(value), {
+                    ...selectedMetric,
+                    unit: seriesUnit,
+                  })
                 : value
             }
             contentStyle={{
@@ -965,7 +1223,7 @@ function HistoryChart({
           <Area
             type="monotone"
             dataKey="value"
-            name={historySeriesLabel(selectedMetric)}
+            name={historySeriesLabel(selectedMetric, provider, displayMode)}
             stroke="var(--chart-color)"
             fill={`url(#fill-${h.account_id})`}
             strokeWidth={2}
@@ -1446,6 +1704,7 @@ function Admin({
           </div>
         </div>
       </section>
+      <InfoAccessPanel csrf={csrf} onNotice={setNotice} />
       <section className="admin-panel settings-panel">
         <div className="panel-title">
           <div>

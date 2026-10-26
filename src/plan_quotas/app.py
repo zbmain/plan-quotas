@@ -23,7 +23,14 @@ from plan_quotas.catalog import PROVIDERS, VERIFIED_AUTH_METHODS, validate_crede
 from plan_quotas.mcp_server import build_mcp
 from plan_quotas.models import Account, AuthType, ProviderId
 from plan_quotas.registry import build_adapters
-from plan_quotas.security import COOKIE_NAME, SESSION_TTL, AdminAuth, token_hash
+from plan_quotas.security import (
+    COOKIE_NAME,
+    SESSION_TTL,
+    AdminAuth,
+    InfoPasswordAuth,
+    InfoQueryRedactor,
+    token_hash,
+)
 from plan_quotas.service import QuotaService
 from plan_quotas.settings import Settings
 from plan_quotas.storage import Store, StoreError
@@ -76,6 +83,14 @@ class SettingsInput(BaseModel):
     interval_minutes: int = Field(ge=1, le=60)
 
 
+class InfoSettingsInput(BaseModel):
+    """Configure the separate read-only /info password without accepting its hash."""
+
+    model_config = ConfigDict(extra="forbid")
+    require_password: bool
+    password: str | None = Field(default=None, max_length=4096)
+
+
 def create_app(
     settings: Settings | None = None,
     *,
@@ -91,6 +106,7 @@ def create_app(
         raise StoreError("DATA_DIR and STATIC_DIR must be separate, non-overlapping directories")
     store = Store(settings.data_dir)
     auth = AdminAuth(settings.admin_password)
+    info_auth = InfoPasswordAuth()
     active_adapters = dict(adapters) if adapters is not None else {}
     pending_credentials: dict[str, tuple[float, dict[str, str]]] = {}
 
@@ -159,7 +175,12 @@ def create_app(
             store.close()
 
     application = FastAPI(
-        title="plan-quotas", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None
+        title="plan-quotas",
+        version="0.0.1",
+        lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
     )
 
     @application.middleware("http")
@@ -262,6 +283,20 @@ def create_app(
     @application.get("/api/public/dashboard")
     async def dashboard():
         """Read cached public usage without triggering provider calls."""
+        return service().dashboard()
+
+    @application.get("/info")
+    @application.get("/info/")
+    async def info(request: Request):
+        """Return cached, secret-free account usage as JSON after optional query-password auth."""
+        if store.config.info_require_password:
+            password = request.scope.get("state", {}).get("info_query_password")
+            invalid_query = request.scope.get("state", {}).get("info_query_invalid", False)
+            peer = request.client.host if request.client else "unknown"
+            if invalid_query or not await info_auth.verify(
+                store.config.info_password_hash, password, peer
+            ):
+                raise HTTPException(401, "无效或缺少查询密码")
         return service().dashboard()
 
     @application.get("/api/public/accounts/{account_id}/history")
@@ -460,6 +495,35 @@ def create_app(
         )
         return await get_settings(request)
 
+    @application.get("/api/admin/info-settings")
+    async def get_info_settings(request: Request):
+        """Expose only the info access mode and whether an independent password exists."""
+        auth.require(request)
+        return {
+            "require_password": store.config.info_require_password,
+            "password_configured": bool(store.config.info_password_hash),
+        }
+
+    @application.patch("/api/admin/info-settings")
+    async def update_info_settings(payload: InfoSettingsInput, request: Request):
+        """Atomically update /info access controls while keeping plaintext out of storage."""
+        auth.require(request, write=True)
+        if payload.password:
+            password_hash = await asyncio.to_thread(info_auth.hash_password, payload.password)
+        else:
+            password_hash = store.config.info_password_hash
+        if payload.require_password and not password_hash:
+            raise HTTPException(400, "启用密码访问前，请先设置独立查询密码")
+        store.save_config(
+            store.config.model_copy(
+                update={
+                    "info_require_password": payload.require_password,
+                    "info_password_hash": password_hash,
+                }
+            )
+        )
+        return await get_info_settings(request)
+
     @application.post("/api/admin/mcp-token")
     async def rotate_mcp_token(request: Request):
         """Generate a random MCP token, store only its hash and disclose it once."""
@@ -492,6 +556,7 @@ def create_app(
         application.mount(
             "/assets", StaticFiles(directory=assets, follow_symlink=False), name="assets"
         )
+    application.add_middleware(InfoQueryRedactor)
     application.mount("/", mcp_http)
     return application
 
