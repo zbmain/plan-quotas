@@ -9,11 +9,10 @@ function normalizedWindow(window?: string | null): string {
     .replace(/\s+/g, " ");
 }
 
-/** Identify a provider-named session or a confirmed five-hour quota window. */
+/** Identify only quota windows with a confirmed five-hour duration. */
 function isShortWindow(window?: string | null): boolean {
   const key = normalizedWindow(window).replace(/\s/g, "");
   return [
-    "session",
     "5h",
     "5hour",
     "5hours",
@@ -22,6 +21,10 @@ function isShortWindow(window?: string | null): boolean {
     "300mins",
     "300minute",
     "300minutes",
+    "18000s",
+    "18000sec",
+    "18000seconds",
+    "18000秒",
     "5小时",
     "300分钟",
   ].includes(key);
@@ -38,7 +41,9 @@ function isLongWindow(window?: string | null): boolean {
     "7day",
     "7days",
     "7天",
+    "1w",
     "1week",
+    "1周",
     "168hour",
     "168hours",
     "10080m",
@@ -50,6 +55,14 @@ function isLongWindow(window?: string | null): boolean {
     "周",
     "每周",
   ].includes(key);
+}
+
+/** Recognize a calendar-month allowance without treating a fixed 30 days as a month. */
+function isMonthlyWindow(window?: string | null): boolean {
+  const key = normalizedWindow(window).replace(/\s/g, "");
+  return ["month", "monthly", "每月", "月", "1mo", "1month", "1个月"].includes(
+    key,
+  );
 }
 
 /** Parse a Kimi window in either its current duration format or a legacy label. */
@@ -90,7 +103,7 @@ export function kimiDisplayMetric(metric: Metric, provider: string): Metric {
 
   return {
     ...metric,
-    label: cycle === "short" ? "5 小时用量" : "7 天用量",
+    label: cycle === "short" ? "短周期" : "长周期",
     window: cycle === "short" ? "5h" : "7d",
     unit: "%",
     used: usedPercent,
@@ -128,7 +141,6 @@ function modelSpecificLabel(label: string): string | null {
 /** Translate metric names using their provider-reported windows for consistent Chinese labels. */
 export function metricDisplayLabel(metric: Metric): string {
   const source = metric.label.trim();
-  if (source === "5 小时用量" || source === "7 天用量") return source;
   if (metricGroup(metric) === "tool") {
     const toolKey = source
       .toLocaleLowerCase("en-US")
@@ -162,10 +174,9 @@ export function metricDisplayLabel(metric: Metric): string {
   if (metric.kind === "quota" && isShortWindow(metric.window)) return "短周期";
   if (metric.kind === "quota" && isLongWindow(metric.window)) return "长周期";
 
-  const window = normalizedWindow(metric.window);
   const genericQuota =
     /^(?:glm\s+)?(?:coding\s+plan|quota|额度|套餐(?:额度)?)$/i.test(source);
-  if (genericQuota && ["monthly", "month"].includes(window)) return "月度额度";
+  if (genericQuota && isMonthlyWindow(metric.window)) return "月度额度";
 
   const key = source
     .toLocaleLowerCase("en-US")
@@ -179,7 +190,7 @@ export function metricDisplayLabel(metric: Metric): string {
     "weekly quota": "长周期",
     长周期: "长周期",
     短周期: "短周期",
-    "session quota": "短周期",
+    "session quota": "会话额度",
     "5 小时": "短周期",
     "7 天": "长周期",
     每周: "长周期",
@@ -222,20 +233,11 @@ export function metricWindowLabel(window?: string | null): string {
   const source = window.trim();
   const key = normalizedWindow(source);
   const modelWeek = source.match(/^(Sonnet|Opus)\s+7\s*天$/i);
-  if (modelWeek)
-    return `${modelWeek[1][0].toUpperCase()}${modelWeek[1].slice(1).toLowerCase()} 每周`;
-  if (key === "session") return "短周期";
-  if (
-    /^(5\s*h|5\s*hours?|300\s*(m|min|mins|minutes?)|5\s*小时|300\s*分钟)$/i.test(
-      source,
-    )
-  )
-    return "5 小时";
-  if (/^(week|weeks|weekly|每周|周)$/i.test(key)) return "每周";
-  if (isLongWindow(source) && !/^(7\s*d|7\s*days?|7\s*天)$/i.test(source))
-    return "每周";
-  if (/^(7\s*d|7\s*days?|7\s*天)$/i.test(source)) return "7 天";
-  if (/^(month|monthly|每月)$/i.test(key)) return "每月";
+  if (modelWeek) return "week";
+  if (key === "session") return "会话";
+  if (isShortWindow(source)) return "5h";
+  if (isLongWindow(source)) return "week";
+  if (isMonthlyWindow(source)) return "month";
   if (/^(daily|day)$/i.test(key)) return "每日";
   if (/^(yearly|annual|annually|year)$/i.test(key)) return "每年";
   if (/^(billing cycle|账单周期)$/i.test(key)) return "账单周期";

@@ -166,6 +166,7 @@ def test_login_cookie_csrf_origin_and_login_rate_limit(http_app):
     assert "path=/api/admin" in cookie
 
     csrf = response.json()["csrf_token"]
+    assert client.get("/api/admin/settings").json()["interval_minutes"] == 1
     assert client.patch("/api/admin/settings", json={"interval_minutes": 10}).status_code == 403
     assert (
         client.patch(
@@ -176,10 +177,20 @@ def test_login_cookie_csrf_origin_and_login_rate_limit(http_app):
         == 403
     )
     updated = client.patch(
-        "/api/admin/settings", json={"interval_minutes": 10}, headers=_admin_headers(csrf)
+        "/api/admin/settings", json={"interval_minutes": 0.5}, headers=_admin_headers(csrf)
     )
     assert updated.status_code == 200
-    assert updated.json()["interval_minutes"] == 10
+    assert updated.json()["interval_minutes"] == 0.5
+    assert client.get("/api/admin/settings").json()["interval_minutes"] == 0.5
+    for unsupported in (0, 3, 10):
+        assert (
+            client.patch(
+                "/api/admin/settings",
+                json={"interval_minutes": unsupported},
+                headers=_admin_headers(csrf),
+            ).status_code
+            == 422
+        )
 
     client.post("/api/admin/logout", headers=_admin_headers(csrf))
     assert client.get("/api/admin/session").status_code == 401

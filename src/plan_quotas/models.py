@@ -81,7 +81,7 @@ class AppConfig(BaseModel):
     """Version the persisted non-secret configuration."""
 
     version: int = 1
-    interval_minutes: int = Field(default=5, ge=1, le=60)
+    interval_minutes: float = Field(default=1, ge=0.5, le=60)
     accounts: list[Account] = Field(default_factory=list)
     mcp_token_hash: str | None = None
     info_require_password: bool = False

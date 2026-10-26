@@ -77,10 +77,10 @@ class TestInput(BaseModel):
 
 
 class SettingsInput(BaseModel):
-    """Constrain the shared polling interval."""
+    """Accept only the four collection intervals offered in the admin page."""
 
     model_config = ConfigDict(extra="forbid")
-    interval_minutes: int = Field(ge=1, le=60)
+    interval_minutes: Literal[0.5, 1, 2, 5]
 
 
 class InfoSettingsInput(BaseModel):
@@ -176,7 +176,7 @@ def create_app(
 
     application = FastAPI(
         title="plan-quotas",
-        version="0.0.1",
+        version="0.0.2",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,

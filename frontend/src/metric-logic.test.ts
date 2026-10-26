@@ -96,10 +96,10 @@ describe("metric display logic", () => {
     expect(historyMetricValue(fiveHour, "kimi")).toBe(12);
     expect(historyMetricValue(fiveHour, "kimi", "remaining")).toBe(88);
     expect(historySeriesLabel(fiveHour, "kimi", "remaining")).toBe(
-      "5 小时用量 · 剩余比例",
+      "短周期 · 剩余比例",
     );
-    expect(historySeriesLabel(weekly, "kimi")).toBe("7 天用量 · 已用比例");
-    expect(historySeriesLabel(fiveHour, "kimi")).toBe("5 小时用量 · 已用比例");
+    expect(historySeriesLabel(weekly, "kimi")).toBe("长周期 · 已用比例");
+    expect(historySeriesLabel(fiveHour, "kimi")).toBe("短周期 · 已用比例");
     expect(
       historyMetricValue(
         {

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { AccountMetrics, MetricView, metricReading } from "./App";
-import type { Metric } from "./types";
+import { AccountCard, AccountMetrics, MetricView, metricReading } from "./App";
+import type { Account, Metric } from "./types";
 
 const quota: Metric = {
   id: "weekly",
@@ -12,13 +12,85 @@ const quota: Metric = {
 };
 
 describe("quota cards", () => {
-  it("renders legacy windows in Chinese without changing their stored values", () => {
+  /** Show observed collection health and real plans without adapter validation badges. */
+  it("keeps provider validation records out of public account cards", () => {
+    const accounts: Account[] = [
+      {
+        id: "glm-account",
+        provider: "glm",
+        alias: "智谱账号",
+        enabled: true,
+        status: "ok",
+        verification: "not_tested",
+        data: {
+          plan: "GLM Coding Plan",
+          fetched_at: "2026-10-26T15:00:00Z",
+          metrics: [{ ...quota, used: 25 }],
+        },
+      },
+      {
+        id: "deepseek-account",
+        provider: "deepseek",
+        alias: "DeepSeek 余额",
+        enabled: true,
+        status: "ok",
+        verification: "not_tested",
+        data: {
+          plan: null,
+          fetched_at: "2026-10-26T15:00:00Z",
+          metrics: [
+            {
+              id: "balance",
+              label: "总余额",
+              kind: "balance",
+              remaining: 12.5,
+              currency: "CNY",
+            },
+          ],
+        },
+      },
+      {
+        id: "minimax-account",
+        provider: "minimax",
+        alias: "MiniMax 账号",
+        enabled: true,
+        status: "ok",
+        verification: "verified",
+        data: {
+          plan: null,
+          fetched_at: "2026-10-26T15:00:00Z",
+          metrics: [{ ...quota, used: 25 }],
+        },
+      },
+    ];
+    const cards = accounts.map((account, index) =>
+      renderToStaticMarkup(
+        <AccountCard
+          account={account}
+          index={index}
+          displayMode="used"
+          expanded={false}
+          onExpand={() => undefined}
+          range="24h"
+          onRange={() => undefined}
+        />,
+      ),
+    );
+    for (const card of cards) {
+      expect(card).toContain("采集正常");
+      expect(card).not.toMatch(/尚未实测|接入已实测|订阅计划/);
+    }
+    expect(cards[0]).toContain("GLM Coding Plan");
+    expect(cards[1]).toContain("总余额");
+    expect(cards[1]).not.toContain('class="plan-line"');
+  });
+
+  it("renders legacy windows with unified cycle badges without changing stored values", () => {
     const html = renderToStaticMarkup(
       <MetricView metric={{ ...quota, remaining: 75, used: 25, limit: 100 }} />,
     );
     expect(html).toContain("长周期");
-    expect(html).toContain("每周");
-    expect(html).not.toContain(">week<");
+    expect(html).toContain(">week<");
     expect(html).toContain("75%");
     expect(quota.window).toBe("week");
   });
@@ -51,7 +123,11 @@ describe("quota cards", () => {
     const html = renderToStaticMarkup(
       <AccountMetrics metrics={metrics} provider="kimi" />,
     );
-    expect(html.indexOf("5 小时用量")).toBeLessThan(html.indexOf("7 天用量"));
+    expect(html.indexOf("短周期")).toBeLessThan(html.indexOf("长周期"));
+    expect(html).toContain(">5h<");
+    expect(html).toContain(">week<");
+    expect(html).not.toContain("5 小时用量");
+    expect(html).not.toContain("7 天用量");
     expect(html).toContain("12%");
     expect(html).toContain("2%");
     expect(html).toContain('class="metric-value">12%');
@@ -134,6 +210,7 @@ describe("quota cards", () => {
     ];
     const html = renderToStaticMarkup(<AccountMetrics metrics={metrics} />);
     expect(html).toContain('aria-label="工具调用额度"');
+    expect(html).toContain(">month<");
     expect(html).toContain("80 次");
     expect(html).toContain("0 次");
     expect(html.match(/总额 100 次/g)).toHaveLength(1);

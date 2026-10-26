@@ -81,6 +81,12 @@ const providerNames: Record<string, string> = {
   cursor: "Cursor",
   antigravity: "Google Antigravity",
 };
+const collectionIntervals = [
+  { value: 0.5, label: "每 30 秒" },
+  { value: 1, label: "每 1 分钟" },
+  { value: 2, label: "每 2 分钟" },
+  { value: 5, label: "每 5 分钟" },
+] as const;
 const statusLabel: Record<string, string> = {
   ok: "运行正常",
   pending: "等待采集",
@@ -445,28 +451,20 @@ function App() {
             <div>
               <div className="eyebrow">
                 <span className="eyebrow-line" />
-                订阅状态总览
+                订阅状态
               </div>
               <h1>
-                把每份额度，<em>看得清楚。</em>
+                额度，<em>一眼看清。</em>
               </h1>
-              <p className="hero-sub">
-                所有 AI 编程订阅的用量与状态，一页掌握。
-              </p>
             </div>
             <div className="hero-aside">
-              <span className="date-stamp">数据采集周期</span>
-              <strong>
-                {dashboard?.interval_minutes ?? 5}
-                <small> 分钟</small>
-              </strong>
               <span className="last-updated">
                 <Clock3 size={13} />
-                最近更新 {formatTime(dashboard?.summary.updated_at)}
+                更新于 {formatTime(dashboard?.summary.updated_at)}
               </span>
             </div>
           </div>
-          <section className="stat-grid">
+          <section className="stat-grid" aria-label="账号概览">
             <Stat
               icon={<Command size={17} />}
               label="已接入账号"
@@ -645,7 +643,8 @@ function App() {
             </span>
             <span className="footer-right">
               公开面板 <i />
-              只读访问 <span className="footer-sep">|</span> 自动刷新 30 秒
+              只读访问 <span className="footer-sep">|</span> 页面每 30
+              秒检查更新
             </span>
           </footer>
         </main>
@@ -681,7 +680,7 @@ function Stat({
 }
 
 /** Render a provider account, its independent metrics, and its sampled usage history. */
-function AccountCard({
+export function AccountCard({
   account: a,
   index,
   displayMode,
@@ -746,26 +745,15 @@ function AccountCard({
           {a.stale && a.status === "ok"
             ? "数据过期"
             : a.status === "ok"
-              ? "正常"
+              ? "采集正常"
               : statusLabel[a.status || "pending"] || a.status || "等待采集"}
         </span>
       </div>
-      <div className="plan-line">
-        <span>{a.data?.plan || "订阅计划"}</span>
-        <span
-          className="verified-mark"
-          title="仅表示该渠道与认证方式的接入逻辑经过实测，不保证当前账号凭据状态"
-        >
-          {a.verification === "verified" ? (
-            <>
-              <CheckCircle2 size={12} />
-              接入已实测
-            </>
-          ) : (
-            <>尚未实测</>
-          )}
-        </span>
-      </div>
+      {a.data?.plan && (
+        <div className="plan-line">
+          <span>{a.data.plan}</span>
+        </div>
+      )}
       {!a.data ? (
         <div className="no-usage">
           <span className="no-usage-icon">
@@ -1255,7 +1243,7 @@ function Admin({
   const [defaultPassword, setDefaultPassword] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
-  const [interval, setIntervalValue] = useState(5);
+  const [interval, setIntervalValue] = useState(1);
   const [mcpConfigured, setMcpConfigured] = useState(false);
   const [token, setToken] = useState("");
   const [showToken, setShowToken] = useState(false);
@@ -1675,23 +1663,30 @@ function Admin({
         <div className="panel-title">
           <div>
             <h2>数据采集</h2>
-            <p>采集频率会影响上游请求次数</p>
+            <p>服务端按所选周期查询渠道；页面每 30 秒读取结果</p>
           </div>
           <Clock3 size={18} className="panel-icon" />
         </div>
         <div className="setting-row">
           <div>
             <strong>自动采集周期</strong>
-            <span>每个已启用账号按此周期更新用量</span>
+            <span>每个已启用账号独立采集，较短周期可能触发渠道限流</span>
           </div>
           <div className="setting-control">
             <select
               value={interval}
               onChange={(e) => setIntervalValue(Number(e.target.value))}
             >
-              {[1, 3, 5, 10, 15, 30, 60].map((v) => (
-                <option key={v} value={v}>
-                  每 {v} 分钟
+              {!collectionIntervals.some(
+                (option) => option.value === interval,
+              ) && (
+                <option value={interval} disabled>
+                  旧设置：每 {interval} 分钟，请选择新周期
+                </option>
+              )}
+              {collectionIntervals.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>

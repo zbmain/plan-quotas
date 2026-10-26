@@ -25,9 +25,9 @@ describe("Chinese quota labels", () => {
       window: "week",
     };
     expect(metricDisplayLabel(short)).toBe("短周期");
-    expect(metricWindowLabel(short.window)).toBe("5 小时");
+    expect(metricWindowLabel(short.window)).toBe("5h");
     expect(metricDisplayLabel(long)).toBe("长周期");
-    expect(metricWindowLabel(long.window)).toBe("每周");
+    expect(metricWindowLabel(long.window)).toBe("week");
     expect(metricDisplayLabel({ ...long, label: "长周期" })).toBe("长周期");
   });
 
@@ -36,7 +36,7 @@ describe("Chinese quota labels", () => {
       [
         { id: "glm-0", label: "GLM Coding Plan", kind: "quota", window: "5h" },
         "短周期",
-        "5 小时",
+        "5h",
       ],
       [
         {
@@ -51,12 +51,12 @@ describe("Chinese quota labels", () => {
       [
         { id: "session", label: "5 小时", kind: "quota", window: "5 小时" },
         "短周期",
-        "5 小时",
+        "5h",
       ],
       [
         { id: "monthly", label: "账单月", kind: "quota", window: "monthly" },
         "账单月",
-        "每月",
+        "month",
       ],
       [
         { id: "balance", label: "总余额", kind: "balance", currency: "CNY" },
@@ -76,7 +76,7 @@ describe("Chinese quota labels", () => {
       [
         { id: "five_hour", label: "5 小时", kind: "quota", window: "5 小时" },
         "短周期",
-        "5 小时",
+        "5h",
       ],
       [
         {
@@ -125,14 +125,14 @@ describe("Chinese quota labels", () => {
         kind: "quota",
       }),
     ).toBe("Sonnet 长周期");
-    expect(metricWindowLabel("Sonnet 7 天")).toBe("Sonnet 每周");
+    expect(metricWindowLabel("Sonnet 7 天")).toBe("week");
     expect(
       metricDisplayLabel({ id: "weekly", label: "7 天", kind: "quota" }),
     ).toBe("长周期");
     expect(metricWindowLabel("15 minutes")).toBe("15 分钟");
-    expect(metricWindowLabel("5hours")).toBe("5 小时");
-    expect(metricWindowLabel("300分钟")).toBe("5 小时");
-    expect(metricWindowLabel("300m")).toBe("5 小时");
+    expect(metricWindowLabel("5hours")).toBe("5h");
+    expect(metricWindowLabel("300分钟")).toBe("5h");
+    expect(metricWindowLabel("300m")).toBe("5h");
     expect(
       metricDisplayLabel({
         id: "glm-4",
@@ -164,14 +164,22 @@ describe("Chinese quota labels", () => {
       "短周期",
       "长周期",
       "月度额度",
-      "短周期",
+      "套餐额度",
     ]);
     expect(limits.map((metric) => metricWindowLabel(metric.window))).toEqual([
-      "5 小时",
-      "每周",
-      "每月",
-      "短周期",
+      "5h",
+      "week",
+      "month",
+      "会话",
     ]);
+    expect(
+      metricDisplayLabel({
+        id: "session",
+        label: "session quota",
+        kind: "quota",
+        window: "session",
+      }),
+    ).toBe("会话额度");
   });
 
   it("normalizes Kimi's minute-based weekly window without renaming balance metrics", () => {
@@ -183,7 +191,7 @@ describe("Chinese quota labels", () => {
       window: "10080 MINUTE",
     };
     expect(metricDisplayLabel(metric)).toBe("长周期");
-    expect(metricWindowLabel(metric.window)).toBe("每周");
+    expect(metricWindowLabel(metric.window)).toBe("week");
     expect(
       metricDisplayLabel({ ...metric, kind: "balance", label: "账户余额" }),
     ).toBe("账户余额");
@@ -218,15 +226,23 @@ describe("Chinese quota labels", () => {
     const [weekly, fiveHour] = metrics.map((metric) =>
       kimiDisplayMetric(metric, "kimi"),
     );
-    expect(fiveHour.label).toBe("5 小时用量");
+    expect(fiveHour.label).toBe("短周期");
     expect(fiveHour.window).toBe("5h");
+    expect(metricDisplayLabel(fiveHour)).toBe("短周期");
+    expect(metricWindowLabel(fiveHour.window)).toBe("5h");
     expect(fiveHour.unit).toBe("%");
     expect(fiveHour.used).toBe(12);
     expect(fiveHour.used_percent).toBe(12);
     expect(fiveHour.remaining).toBeNull();
-    expect(weekly.label).toBe("7 天用量");
+    expect(weekly.label).toBe("长周期");
     expect(weekly.window).toBe("7d");
+    expect(metricDisplayLabel(weekly)).toBe("长周期");
+    expect(metricWindowLabel(weekly.window)).toBe("week");
     expect(weekly.used).toBe(2);
+    expect(metricDisplayLabel({ ...fiveHour, label: "5 小时用量" })).toBe(
+      "短周期",
+    );
+    expect(metricDisplayLabel({ ...weekly, label: "7 天用量" })).toBe("长周期");
     expect(metrics[0].window).toBe("套餐周期");
     expect(metrics[1].window).toBe("300 TIME_UNIT_MINUTE");
     expect(kimiDisplayMetric(metrics[0], "glm")).toBe(metrics[0]);
@@ -254,6 +270,10 @@ describe("Chinese quota labels", () => {
       kimiDisplayMetric({ ...metric, used: 20, limit: 0 }, "kimi").used_percent,
     ).toBeNull();
     expect(kimiDisplayMetric(metric, "kimi").used).toBeNull();
+    const unconfirmedSession = { ...metric, window: "session" };
+    expect(kimiDisplayMetric(unconfirmedSession, "kimi")).toBe(
+      unconfirmedSession,
+    );
   });
 
   it("labels MCP and tool invocation counts in Chinese without merging tools", () => {
@@ -318,7 +338,24 @@ describe("Chinese quota labels", () => {
   });
 
   it("translates common cadence aliases without classifying generic requests as tools", () => {
-    expect(metricWindowLabel("7d")).toBe("7 天");
+    expect(metricWindowLabel("7d")).toBe("week");
+    expect(metricWindowLabel("7 天")).toBe("week");
+    expect(metricWindowLabel("1w")).toBe("week");
+    expect(metricWindowLabel("18000s")).toBe("5h");
+    expect(metricWindowLabel("monthly")).toBe("month");
+    expect(metricWindowLabel("每月")).toBe("month");
+    expect(metricWindowLabel("1mo")).toBe("month");
+    expect(metricWindowLabel("1 month")).toBe("month");
+    expect(metricWindowLabel("30d")).toBe("30 天");
+    expect(metricWindowLabel("2mo")).toBe("2 个月");
+    expect(
+      metricDisplayLabel({
+        id: "monthly",
+        label: "Coding Plan",
+        kind: "quota",
+        window: "1mo",
+      }),
+    ).toBe("月度额度");
     expect(metricWindowLabel("1d")).toBe("1 天");
     expect(metricWindowLabel("1h")).toBe("1 小时");
     expect(metricWindowLabel("30m")).toBe("30 分钟");
