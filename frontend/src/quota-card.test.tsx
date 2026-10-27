@@ -59,7 +59,7 @@ describe("quota cards", () => {
     );
   });
 
-  /** Show observed collection health and real plans without adapter validation badges. */
+  /** Show collection health while omitting GLM's redundant plan row and validation badges. */
   it("keeps provider validation records out of public account cards", () => {
     const accounts: Account[] = [
       {
@@ -127,7 +127,8 @@ describe("quota cards", () => {
       expect(card).toContain("采集正常");
       expect(card).not.toMatch(/尚未实测|接入已实测|订阅计划/);
     }
-    expect(cards[0]).toContain("GLM Coding Plan");
+    expect(cards[0]).not.toContain("GLM Coding Plan");
+    expect(cards[0]).not.toContain('class="plan-line"');
     expect(cards[1]).toContain("总余额");
     expect(cards[1]).not.toContain('class="plan-line"');
   });

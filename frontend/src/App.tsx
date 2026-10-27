@@ -40,7 +40,15 @@ import {
   Tooltip,
   XAxis,
 } from "recharts";
-import type { Account, Dashboard, History, Metric, Provider } from "./types";
+import type {
+  Account,
+  AdminSettings,
+  Dashboard,
+  History,
+  Metric,
+  Provider,
+  PublicSettings,
+} from "./types";
 import {
   metricDisplayLabel,
   metricGroup,
@@ -305,6 +313,7 @@ function App() {
         matchMedia("(prefers-color-scheme: dark)").matches),
   );
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
+  const [pageTitle, setPageTitle] = useState(document.title);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("all");
@@ -319,7 +328,12 @@ function App() {
   );
   const refresh = useCallback(async () => {
     try {
-      setDashboard(await api<Dashboard>("/api/public/dashboard"));
+      const [data, settings] = await Promise.all([
+        api<Dashboard>("/api/public/dashboard"),
+        api<PublicSettings>("/api/public/settings"),
+      ]);
+      setDashboard(data);
+      setPageTitle(settings.page_title);
       setLoadError("");
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "暂时无法连接服务");
@@ -332,6 +346,9 @@ function App() {
     const id = setInterval(() => void refresh(), 30000);
     return () => clearInterval(id);
   }, [refresh]);
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
     localStorage.setItem("pq-theme", themeMode);
@@ -447,6 +464,7 @@ function App() {
           dark={dark}
           cycleTheme={cycleTheme}
           themeMode={themeMode}
+          onPageTitleChange={setPageTitle}
         />
       ) : (
         <main className="page-wrap">
@@ -459,12 +477,6 @@ function App() {
               <h1>
                 额度，<em>一眼看清。</em>
               </h1>
-            </div>
-            <div className="hero-aside">
-              <span className="last-updated">
-                <Clock3 size={13} />
-                更新于 {formatTime(dashboard?.summary.updated_at)}
-              </span>
             </div>
           </div>
           <section className="stat-grid" aria-label="账号概览">
@@ -499,12 +511,9 @@ function App() {
           </section>
           <section className="accounts-section">
             <div className="section-head">
-              <div>
-                <div className="section-title-line">
-                  <h2>额度清单</h2>
-                  <span className="count-pill">{visible.length}</span>
-                </div>
-                <p>周期额度与专项调用，按账号独立展示</p>
+              <div className="section-title-line">
+                <h2>渠道清单</h2>
+                <span className="count-pill">{visible.length}</span>
               </div>
               <div className="toolbar">
                 <div className="quota-mode-control">
@@ -640,10 +649,6 @@ function App() {
             )}
           </section>
           <footer className="page-footer">
-            <span>
-              <span className="footer-mark">Q</span> 配额簿{" "}
-              <span className="footer-muted">· 为每份算力留一盏灯</span>
-            </span>
             <span className="footer-right">
               公开面板 <i />
               只读访问 <span className="footer-sep">|</span> 页面每 30
@@ -753,7 +758,7 @@ export function AccountCard({
               : statusLabel[a.status || "pending"] || a.status || "等待采集"}
         </span>
       </div>
-      {a.data?.plan && (
+      {a.provider !== "glm" && a.data?.plan && (
         <div className="plan-line">
           <span>{a.data.plan}</span>
         </div>
@@ -1234,11 +1239,13 @@ function Admin({
   dark,
   cycleTheme,
   themeMode,
+  onPageTitleChange,
 }: {
   onBack: () => void;
   dark: boolean;
   cycleTheme: () => void;
   themeMode: "system" | "light" | "dark";
+  onPageTitleChange: (title: string) => void;
 }) {
   const [csrf, setCsrf] = useState("");
   const [logged, setLogged] = useState(false);
@@ -1252,6 +1259,8 @@ function Admin({
   const activeRefreshes = useRef(new Set<string>());
   const [providers, setProviders] = useState<Provider[]>([]);
   const [interval, setIntervalValue] = useState(1);
+  const [titleDraft, setTitleDraft] = useState("");
+  const [savingTitle, setSavingTitle] = useState(false);
   const [mcpConfigured, setMcpConfigured] = useState(false);
   const [token, setToken] = useState("");
   const [showToken, setShowToken] = useState(false);
@@ -1286,13 +1295,12 @@ function Admin({
       const [a, p, s] = await Promise.all([
         api<Account[]>("/api/admin/accounts"),
         api<Provider[]>("/api/public/providers"),
-        api<{ interval_minutes: number; mcp_configured: boolean }>(
-          "/api/admin/settings",
-        ),
+        api<AdminSettings>("/api/admin/settings"),
       ]);
       setAccounts(a);
       setProviders(p);
       setIntervalValue(s.interval_minutes);
+      setTitleDraft(s.page_title);
       setMcpConfigured(s.mcp_configured);
     } catch {
       setLogged(false);
@@ -1474,6 +1482,26 @@ function Admin({
       setNotice("采集周期已更新");
     } catch (e) {
       setNotice(e instanceof Error ? e.message : "设置保存失败");
+    }
+  };
+  /** Persist the browser title and apply the server's normalized value immediately. */
+  const savePageTitle = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (savingTitle) return;
+    setSavingTitle(true);
+    try {
+      const saved = await adminApi<AdminSettings>(
+        "/api/admin/settings",
+        "PATCH",
+        { page_title: titleDraft },
+      );
+      setTitleDraft(saved.page_title);
+      onPageTitleChange(saved.page_title);
+      setNotice("页面标题已保存");
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : "页面标题保存失败");
+    } finally {
+      setSavingTitle(false);
     }
   };
   const issueToken = async () => {
@@ -1707,6 +1735,40 @@ function Admin({
               ))}
           </div>
         )}
+      </section>
+      <section className="admin-panel settings-panel">
+        <div className="panel-title">
+          <div>
+            <h2>页面设置</h2>
+            <p>自定义浏览器标签页中显示的标题</p>
+          </div>
+          <Settings2 size={18} className="panel-icon" />
+        </div>
+        <form className="page-title-form" onSubmit={savePageTitle}>
+          <label className="field-label">
+            页面标题
+            <input
+              type="text"
+              value={titleDraft}
+              onChange={(event) => setTitleDraft(event.target.value)}
+              maxLength={120}
+              disabled={savingTitle}
+              placeholder="留空恢复默认标题"
+              aria-describedby="page-title-hint"
+            />
+            <small id="page-title-hint">
+              留空恢复默认标题，最多 120 个字符。
+            </small>
+          </label>
+          <button
+            type="submit"
+            className="button secondary small"
+            disabled={savingTitle}
+          >
+            {savingTitle && <LoaderCircle size={13} className="spin" />}
+            {savingTitle ? "保存中…" : "保存标题"}
+          </button>
+        </form>
       </section>
       <section className="admin-panel settings-panel">
         <div className="panel-title">

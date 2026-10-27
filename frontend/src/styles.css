@@ -231,18 +231,6 @@ button:disabled {
   font-style: normal;
   color: var(--green);
 }
-.hero-aside {
-  display: flex;
-  align-items: flex-end;
-  padding: 0 2px 4px;
-}
-.last-updated {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--muted);
-  font-size: 11px;
-}
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -320,13 +308,15 @@ button:disabled {
 }
 .section-head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   margin-bottom: 15px;
 }
 .section-title-line {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 9px;
 }
 .section-title-line h2,
@@ -345,7 +335,6 @@ button:disabled {
   padding: 4px 8px;
   background: var(--surface);
 }
-.section-head p,
 .panel-title p {
   font-size: 10px;
   color: var(--muted);
@@ -353,8 +342,10 @@ button:disabled {
 }
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  margin-left: auto;
 }
 /* Keep the single-choice display control beside the existing account filters. */
 .quota-mode-control {
@@ -853,27 +844,13 @@ button:disabled {
   margin-top: 48px;
   padding: 17px 0 7px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   color: var(--ink-2);
   font-size: 10px;
 }
-.footer-mark {
-  display: inline-grid;
-  place-items: center;
-  background: var(--green);
-  color: white;
-  width: 17px;
-  height: 17px;
-  border-radius: 5px;
-  font: 600 10px "DM Mono";
-  margin-right: 4px;
-}
-.footer-muted,
 .footer-right {
   color: var(--muted);
-}
-.footer-right {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1140,6 +1117,27 @@ button:disabled {
 .setting-control select {
   height: 31px;
   font-size: 10px;
+}
+.page-title-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 13px;
+}
+.page-title-form .field-label {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.page-title-form small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.page-title-form > .button {
+  flex-shrink: 0;
 }
 .mcp-state {
   font-size: 9px;
@@ -1590,13 +1588,6 @@ button:disabled {
   .hero-row h1 {
     font-size: 29px;
   }
-  .hero-aside {
-    padding: 0;
-  }
-  .last-updated {
-    font-size: 9px;
-    white-space: nowrap;
-  }
   .stat-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -1772,29 +1763,10 @@ button:disabled {
   .eyebrow-en {
     display: none;
   }
-  .hero-aside {
-    width: 100%;
-    padding: 0;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: flex-start;
-    gap: 8px;
-    text-align: left;
-  }
-  .last-updated {
-    font-size: 10px;
-    white-space: nowrap;
-  }
-  .last-updated {
-    margin: 0 0 0 auto;
-  }
 }
 @media (max-width: 390px) {
   .hero-row h1 {
     font-size: 26px;
-  }
-  .hero-aside {
-    padding-top: 0;
   }
   .brand-word {
     font-size: 17px;
@@ -1837,9 +1809,7 @@ button:disabled {
 .brand-caption,
 .live-indicator,
 .eyebrow,
-.last-updated,
 .stat-label,
-.section-head p,
 .panel-title p,
 .count-pill,
 .search-box input,
@@ -1960,10 +1930,6 @@ button:disabled {
 }
 .section-title-line h2 {
   font-size: 20px;
-}
-.section-head p {
-  font-size: 12px;
-  margin-top: 6px;
 }
 .account-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2260,10 +2226,6 @@ summary:focus-visible {
   outline-offset: 3px;
 }
 @media (min-width: 761px) and (max-width: 1179px) {
-  .section-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
   .account-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

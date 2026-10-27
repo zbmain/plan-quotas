@@ -3,6 +3,7 @@
 import asyncio
 import json
 from datetime import UTC, datetime
+from html import escape
 from pathlib import Path
 from uuid import UUID
 
@@ -11,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from plan_quotas.adapters.base import AdapterError, BaseAdapter
 from plan_quotas.app import create_app
-from plan_quotas.models import Metric, UsageResult
+from plan_quotas.models import DEFAULT_PAGE_TITLE, Metric, UsageResult
 from plan_quotas.settings import Settings
 from plan_quotas.storage import StoreError
 
@@ -238,6 +239,70 @@ def test_login_cookie_csrf_origin_and_login_rate_limit(http_app):
         assert failed.status_code == 401
     throttled = client.post("/api/admin/login", json={"password": "wrong-password"})
     assert throttled.status_code == 429
+
+
+def test_page_title_updates_preserve_other_settings_and_are_persisted(http_app):
+    """Save a normalized title independently while retaining the collection interval."""
+    client, _, settings = http_app
+    assert client.get("/api/public/settings").json() == {"page_title": DEFAULT_PAGE_TITLE}
+    assert client.patch("/api/admin/settings", json={"page_title": "未授权标题"}).status_code == 401
+    csrf = _login(client)
+    assert client.get("/api/admin/settings").json()["page_title"] == DEFAULT_PAGE_TITLE
+    assert client.patch("/api/admin/settings", json={"page_title": "缺少 CSRF"}).status_code == 403
+
+    updated = client.patch(
+        "/api/admin/settings",
+        json={"page_title": "  我的 AI 用量  "},
+        headers=_admin_headers(csrf),
+    )
+    assert updated.status_code == 200
+    assert updated.json()["page_title"] == "我的 AI 用量"
+    assert updated.json()["interval_minutes"] == 1
+    assert client.get("/api/public/settings").json() == {"page_title": "我的 AI 用量"}
+
+    interval_update = client.patch(
+        "/api/admin/settings", json={"interval_minutes": 2}, headers=_admin_headers(csrf)
+    )
+    assert interval_update.json()["page_title"] == "我的 AI 用量"
+    persisted = json.loads((settings.data_dir / "config.json").read_text(encoding="utf-8"))
+    assert persisted["page_title"] == "我的 AI 用量"
+    assert persisted["interval_minutes"] == 2
+
+
+@pytest.mark.parametrize(
+    "title",
+    ["", " \t\n ", "工作室 AI 用量", "A" * 120, '</title><script>alert("x")</script> & \\1'],
+)
+def test_page_title_is_resettable_and_html_safe_on_all_browser_routes(http_app, title):
+    """Render saved titles as escaped text and restore the default for blank input."""
+    client, _, _ = http_app
+    csrf = _login(client)
+    expected = title.strip() or DEFAULT_PAGE_TITLE
+    response = client.patch(
+        "/api/admin/settings", json={"page_title": title}, headers=_admin_headers(csrf)
+    )
+    assert response.status_code == 200
+    assert response.json()["page_title"] == expected
+    assert client.get("/api/public/settings").json() == {"page_title": expected}
+    for path in ("/", "/admin", "/admin/"):
+        html = client.get(path)
+        assert html.status_code == 200
+        assert f"<title>{escape(expected)}</title>" in html.text
+        assert html.text.count("</title>") == 1
+        assert "<script>" not in html.text
+        assert html.headers["cache-control"] == "no-store"
+
+
+@pytest.mark.parametrize("title", ["A" * 121, 123, ["标题"], {"title": "标题"}])
+def test_page_title_validation_keeps_the_saved_value(http_app, title):
+    """Reject oversized or non-text titles without modifying persisted settings."""
+    client, _, _ = http_app
+    csrf = _login(client)
+    response = client.patch(
+        "/api/admin/settings", json={"page_title": title}, headers=_admin_headers(csrf)
+    )
+    assert response.status_code == 422
+    assert client.get("/api/admin/settings").json()["page_title"] == DEFAULT_PAGE_TITLE
 
 
 def test_public_dashboard_and_validation_never_echo_credentials(http_app):

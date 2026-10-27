@@ -5,6 +5,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+DEFAULT_PAGE_TITLE = "plan-quotas · 配额簿 AI 用量面板"
+
 ProviderId = Literal[
     "minimax",
     "glm",
@@ -82,6 +84,7 @@ class AppConfig(BaseModel):
     """Version the persisted non-secret configuration."""
 
     version: int = 1
+    page_title: str = Field(default=DEFAULT_PAGE_TITLE, min_length=1, max_length=120)
     interval_minutes: float = Field(default=1, ge=0.5, le=60)
     accounts: list[Account] = Field(default_factory=list)
     mcp_token_hash: str | None = None

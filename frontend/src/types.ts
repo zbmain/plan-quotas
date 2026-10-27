@@ -45,6 +45,13 @@ export type Dashboard = {
   };
   interval_minutes: number;
 };
+export type PublicSettings = {
+  page_title: string;
+};
+export type AdminSettings = PublicSettings & {
+  interval_minutes: number;
+  mcp_configured: boolean;
+};
 export type Provider = {
   id: string;
   name: string;

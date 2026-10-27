@@ -4,16 +4,18 @@ import asyncio
 import contextlib
 import hmac
 import json
+import re
 import secrets
 import time
 from contextlib import asynccontextmanager
+from html import escape
 from typing import Literal
 from uuid import UUID, uuid4
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -21,7 +23,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from plan_quotas.adapters.base import AdapterError
 from plan_quotas.catalog import PROVIDERS, VERIFIED_AUTH_METHODS, validate_credentials
 from plan_quotas.mcp_server import build_mcp
-from plan_quotas.models import Account, AuthType, ProviderId
+from plan_quotas.models import DEFAULT_PAGE_TITLE, Account, AuthType, ProviderId
 from plan_quotas.registry import build_adapters
 from plan_quotas.security import (
     COOKIE_NAME,
@@ -77,10 +79,11 @@ class TestInput(BaseModel):
 
 
 class SettingsInput(BaseModel):
-    """Accept only the four collection intervals offered in the admin page."""
+    """Accept independent updates to the page title and supported collection interval."""
 
     model_config = ConfigDict(extra="forbid")
-    interval_minutes: Literal[0.5, 1, 2, 5]
+    interval_minutes: Literal[0.5, 1, 2, 5] | None = None
+    page_title: str | None = Field(default=None, max_length=120)
 
 
 class InfoSettingsInput(BaseModel):
@@ -176,7 +179,7 @@ def create_app(
 
     application = FastAPI(
         title="plan-quotas",
-        version="0.0.4",
+        version="0.0.5",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
@@ -280,6 +283,11 @@ def create_app(
     async def providers():
         """Expose static provider descriptions and supported authentication fields."""
         return PROVIDERS
+
+    @application.get("/api/public/settings")
+    async def public_settings():
+        """Expose only the browser display title, keeping administrator settings private."""
+        return {"page_title": store.config.page_title}
 
     @application.get("/api/public/dashboard")
     async def dashboard():
@@ -483,17 +491,19 @@ def create_app(
         """Expose editable non-secret settings and MCP token presence."""
         auth.require(request)
         return {
+            "page_title": store.config.page_title,
             "interval_minutes": store.config.interval_minutes,
             "mcp_configured": bool(store.config.mcp_token_hash),
         }
 
     @application.patch("/api/admin/settings")
     async def update_settings(payload: SettingsInput, request: Request):
-        """Persist the validated global collection interval."""
+        """Persist supplied settings, using the default title when the input is blank."""
         auth.require(request, write=True)
-        store.save_config(
-            store.config.model_copy(update={"interval_minutes": payload.interval_minutes})
-        )
+        updates = payload.model_dump(exclude_none=True)
+        if "page_title" in updates:
+            updates["page_title"] = updates["page_title"].strip() or DEFAULT_PAGE_TITLE
+        store.save_config(store.config.model_copy(update=updates))
         return await get_settings(request)
 
     @application.get("/api/admin/info-settings")
@@ -544,13 +554,20 @@ def create_app(
     @application.get("/admin")
     @application.get("/admin/")
     async def frontend():
-        """Serve only the built entry point for explicit browser routes."""
+        """Serve the built entry point with an escaped, persisted browser title."""
         entry = settings.static_dir / "index.html"
         if not entry.is_file():
             return JSONResponse(
                 {"detail": "前端尚未构建，请先执行 just build-frontend"}, status_code=503
             )
-        return FileResponse(entry)
+        html = re.sub(
+            r"<title>.*?</title>",
+            lambda _: f"<title>{escape(store.config.page_title)}</title>",
+            entry.read_text(encoding="utf-8"),
+            count=1,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        return HTMLResponse(html, headers={"Cache-Control": "no-store"})
 
     assets = settings.static_dir / "assets"
     if assets.is_dir():

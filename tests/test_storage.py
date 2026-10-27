@@ -257,7 +257,13 @@ def test_complete_data_directory_backup_restores_all_persisted_state(tmp_path: P
     account = Account(id=str(uuid4()), provider="minimax", alias="备份账号", auth_type="api_key")
     fetched_at = datetime.now(UTC)
     expected_usage = _usage(fetched_at, used=36, remaining=64)
-    original.save_config(AppConfig(accounts=[account], mcp_token_hash="fake-mcp-token-hash"))
+    original.save_config(
+        AppConfig(
+            accounts=[account],
+            page_title="备份恢复后的用量面板",
+            mcp_token_hash="fake-mcp-token-hash",
+        )
+    )
     original.set_credentials(account.id, {"api_key": "fake-backup-credential"})
     original.save_snapshot(
         Snapshot(
@@ -279,6 +285,7 @@ def test_complete_data_directory_backup_restores_all_persisted_state(tmp_path: P
     try:
         assert (backup_dir / "master.key").read_bytes() == original_key
         assert restored.config.mcp_token_hash == "fake-mcp-token-hash"
+        assert restored.config.page_title == "备份恢复后的用量面板"
         assert restored.config.accounts == [account]
         assert restored.get_credentials(account.id) == {"api_key": "fake-backup-credential"}
         snapshot = restored.get_snapshot(account.id)
