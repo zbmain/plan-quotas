@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Copy, FileJson, LoaderCircle } from "lucide-react";
+import { FileJson, LoaderCircle } from "lucide-react";
+import { CopyButton } from "./CopyButton";
 
 type InfoSettings = { require_password: boolean; password_configured: boolean };
 
@@ -157,18 +158,13 @@ export function InfoAccessPanel({
           <div className="mcp-endpoint info-endpoint">
             <span>请求示例</span>
             <code>{example}</code>
-            <button
-              type="button"
-              aria-label="复制 /info 请求示例"
-              onClick={() =>
-                void navigator.clipboard
-                  .writeText(example)
-                  .then(() => onNotice("请求示例已复制"))
-                  .catch(() => onNotice("复制失败，请手动复制示例地址"))
-              }
-            >
-              <Copy size={13} />
-            </button>
+            <CopyButton
+              text={example}
+              label="复制 /info 请求示例"
+              successMessage="请求示例已复制"
+              failureMessage="复制失败，请手动选择并复制示例地址"
+              onNotice={onNotice}
+            />
           </div>
           <p className="info-access-hint">
             {saved.require_password

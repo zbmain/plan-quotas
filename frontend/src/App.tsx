@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { InfoAccessPanel } from "./InfoAccessPanel";
+import { CopyButton } from "./CopyButton";
 import {
   Activity,
   AlertCircle,
@@ -14,7 +15,6 @@ import {
   CircleHelp,
   Clock3,
   Command,
-  Copy,
   Eye,
   EyeOff,
   Gauge,
@@ -1246,6 +1246,10 @@ function Admin({
   const [loginError, setLoginError] = useState("");
   const [defaultPassword, setDefaultPassword] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [refreshingAccounts, setRefreshingAccounts] = useState<
+    Record<string, boolean>
+  >({});
+  const activeRefreshes = useRef(new Set<string>());
   const [providers, setProviders] = useState<Provider[]>([]);
   const [interval, setIntervalValue] = useState(1);
   const [mcpConfigured, setMcpConfigured] = useState(false);
@@ -1385,6 +1389,44 @@ function Admin({
       );
     }
   };
+  /** Spin only the clicked account while collecting; reject repeat clicks and report actual status. */
+  const refreshAccount = async (account: Account) => {
+    if (activeRefreshes.current.has(account.id)) return;
+    activeRefreshes.current.add(account.id);
+    setRefreshingAccounts((previous) => ({ ...previous, [account.id]: true }));
+    const started = performance.now();
+    try {
+      const result = await adminApi<{ status: string }>(
+        `/api/admin/accounts/${account.id}/refresh`,
+        "POST",
+        {},
+      );
+      const messages: Record<string, string> = {
+        ok: "刷新请求已完成",
+        auth_required: "刷新失败：认证已失效，请更新账号凭据",
+        rate_limited: "刷新受限，请稍后重试",
+        error: "渠道采集失败，请检查账号配置或稍后重试",
+        disabled: "账号已暂停，启用后可刷新",
+      };
+      setNotice(messages[result.status] || "刷新请求已完成");
+    } catch (error) {
+      setNotice(
+        error instanceof Error ? error.message : "刷新失败，请稍后重试",
+      );
+    } finally {
+      // Keep one visible turn even when a local request completes almost immediately.
+      const remaining = 700 - (performance.now() - started);
+      if (remaining > 0)
+        await new Promise<void>((resolve) => setTimeout(resolve, remaining));
+      activeRefreshes.current.delete(account.id);
+      setRefreshingAccounts((previous) => {
+        const next = { ...previous };
+        delete next[account.id];
+        return next;
+      });
+    }
+  };
+
   const toggle = async (a: Account) => {
     try {
       await adminApi(`/api/admin/accounts/${a.id}`, "PATCH", {
@@ -1623,19 +1665,22 @@ function Admin({
                       <ArrowDown size={14} />
                     </button>
                     <button
-                      title="刷新用量"
-                      aria-label="刷新账号用量"
-                      onClick={() =>
-                        void adminApi(
-                          `/api/admin/accounts/${a.id}/refresh`,
-                          "POST",
-                          {},
-                        )
-                          .then(() => setNotice("已提交刷新请求"))
-                          .catch((e) => setNotice(e.message))
+                      title={
+                        refreshingAccounts[a.id] ? "正在刷新…" : "刷新用量"
                       }
+                      aria-label="刷新账号用量"
+                      aria-busy={!!refreshingAccounts[a.id]}
+                      disabled={!!refreshingAccounts[a.id]}
+                      onClick={() => void refreshAccount(a)}
                     >
-                      <RefreshCw size={14} />
+                      <RefreshCw
+                        size={14}
+                        className={
+                          refreshingAccounts[a.id]
+                            ? "spin account-refresh-spin"
+                            : undefined
+                        }
+                      />
                     </button>
                     <button title="编辑" onClick={() => openEdit(a)}>
                       <Settings2 size={14} />
@@ -1750,31 +1795,24 @@ function Admin({
             >
               {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
-            <button
-              aria-label="复制 MCP 令牌"
-              onClick={() =>
-                void navigator.clipboard
-                  .writeText(token)
-                  .then(() => setNotice("令牌已复制"))
-              }
-            >
-              <Copy size={15} />
-            </button>
+            <CopyButton
+              text={token}
+              label="复制 MCP 令牌"
+              successMessage="令牌已复制"
+              size={15}
+              onNotice={setNotice}
+            />
           </div>
         )}
         <div className="mcp-endpoint">
           <span>服务地址</span>
           <code>{location.origin}/mcp</code>
-          <button
-            aria-label="复制 MCP 服务地址"
-            onClick={() =>
-              void navigator.clipboard
-                .writeText(`${location.origin}/mcp`)
-                .then(() => setNotice("地址已复制"))
-            }
-          >
-            <Copy size={13} />
-          </button>
+          <CopyButton
+            text={`${location.origin}/mcp`}
+            label="复制 MCP 服务地址"
+            successMessage="MCP 服务地址已复制"
+            onNotice={setNotice}
+          />
         </div>
       </section>
       <footer className="admin-footer">
@@ -1993,8 +2031,8 @@ function Admin({
         </div>
       )}
       {notice && (
-        <div className="toast">
-          <CheckCircle2 size={15} />
+        <div className="toast" role="status" aria-live="polite">
+          <CheckCircle2 size={15} aria-hidden="true" />
           {notice}
           <button aria-label="关闭提示" onClick={() => setNotice("")}>
             <X size={14} />

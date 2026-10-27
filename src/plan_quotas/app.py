@@ -176,7 +176,7 @@ def create_app(
 
     application = FastAPI(
         title="plan-quotas",
-        version="0.0.3",
+        version="0.0.4",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,

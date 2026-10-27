@@ -1087,6 +1087,15 @@ button:disabled {
   color: var(--green);
   background: var(--surface-2);
 }
+.row-actions button[aria-busy="true"] {
+  color: var(--green);
+  background: var(--green-bg);
+  cursor: wait;
+  opacity: 1;
+}
+.account-refresh-spin {
+  animation-duration: 0.7s;
+}
 .row-actions button.danger-action:hover {
   color: var(--red);
   background: var(--red-bg);
@@ -1176,6 +1185,9 @@ button:disabled {
   background: none;
   color: var(--muted);
   padding: 4px;
+}
+.copy-button.is-copied {
+  color: var(--green);
 }
 .mcp-endpoint {
   display: flex;
