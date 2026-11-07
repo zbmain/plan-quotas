@@ -1266,7 +1266,7 @@ function HistoryChart({
             tickFormatter={(timestamp: number) =>
               formatHistoryTime(new Date(timestamp).toISOString(), range)
             }
-            tick={{ fill: "var(--muted)", fontSize: 13 }}
+            tick={{ fill: "var(--muted)", fontSize: 12 }}
             tickLine={false}
             axisLine={false}
             minTickGap={28}
@@ -1284,7 +1284,7 @@ function HistoryChart({
               background: "var(--surface)",
               border: "1px solid var(--line)",
               borderRadius: 10,
-              fontSize: 13,
+              fontSize: 12,
             }}
             labelStyle={{ color: "var(--ink)" }}
             labelFormatter={(timestamp) =>

@@ -4,10 +4,24 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { afterEach, expect, it } from "vitest";
 import { Store } from "../src/storage.js";
+import { startupMessage } from "../src/startup.js";
 import { tempRoot } from "./helpers.js";
 const execute = promisify(execFile),
   roots: string[] = [],
   stores: Store[] = [];
+it("explains filesystem permissions without exposing paths or arbitrary error text", () => {
+  for (const code of ["EACCES", "EPERM"]) {
+    const error = Object.assign(new Error("secret /private/path"), { code });
+    expect(startupMessage(error)).toContain("权限");
+    expect(startupMessage(error)).not.toContain("secret");
+    expect(startupMessage(error)).not.toContain("/private/path");
+  }
+});
+it("explains a busy port without exposing the address", () => {
+  expect(
+    startupMessage(Object.assign(new Error("secret"), { code: "EADDRINUSE" })),
+  ).toContain("端口");
+});
 afterEach(async () => {
   for (const store of stores.splice(0)) await store.close();
   for (const root of roots.splice(0))

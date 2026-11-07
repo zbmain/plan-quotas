@@ -2,6 +2,14 @@ import { StoreError } from "./storage.js";
 
 /** Explain recoverable startup failures without exposing arbitrary exception text or private paths. */
 export function startupMessage(error: unknown): string {
+  const code =
+    error !== null && typeof error === "object" && "code" in error
+      ? error.code
+      : undefined;
+  if (code === "EACCES" || code === "EPERM")
+    return "启动失败：没有权限访问数据目录或配置文件；请检查挂载目录及其文件对容器用户的权限。";
+  if (code === "EADDRINUSE")
+    return "启动失败：监听端口已被占用；请检查端口配置及其他运行中的服务。";
   if (error instanceof StoreError) {
     if (
       error.message ===

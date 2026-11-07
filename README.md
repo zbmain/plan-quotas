@@ -50,6 +50,16 @@ docker run --rm -v plan_quotas_data:/source:ro -v "$PWD/data:/target" alpine \
 
 之后设置 `DATA_DIR=./data` 并执行 `docker compose up -d --build`。确认账号和历史完整后再处理旧卷。容器以 UID/GID `10001:10001` 运行，宿主机目录需允许容器读写。
 
+在 Linux 上使用宿主机目录时，请先创建该目录并确保 UID/GID `10001:10001` 可读写。例如，确认 `DATA_DIR=./data` 且目录专供本项目后：
+
+```sh
+mkdir -p data
+sudo chown -R 10001:10001 data
+docker compose up -d --build
+```
+
+如使用其他 `DATA_DIR`，请先确认实际路径再调整权限；已有数据请先备份。若启用 SELinux 或 rootless Docker，还需检查相应的挂载标签或用户映射。
+
 局域网访问需设置 `BIND_HOST=0.0.0.0`，并将服务器地址加入 `ALLOWED_HOSTS`。使用域名时，请配置 HTTPS 反向代理，设置 `COOKIE_SECURE=true`、`PUBLIC_ORIGIN=https://你的域名`，并将域名加入 `ALLOWED_HOSTS`。
 
 ## HTTP 与 MCP
