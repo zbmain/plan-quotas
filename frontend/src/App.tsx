@@ -476,7 +476,18 @@ function App() {
             onClick={() => navigate("home")}
           >
             <span className="brand-icon">
-              <Gauge size={19} />
+              <picture>
+                <source
+                  srcSet="/assets/favicon.svg"
+                  media="(prefers-reduced-motion: reduce)"
+                />
+                <img
+                  src="/assets/brand-gauge.gif"
+                  alt=""
+                  width="32"
+                  height="32"
+                />
+              </picture>
             </span>
             <span className="brand-word">
               plan-quotas<span className="brand-dot">.</span>

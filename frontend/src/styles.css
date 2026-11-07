@@ -891,6 +891,11 @@ button:disabled {
   background: var(--green);
   color: var(--action-ink);
 }
+.brand-icon img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
 .brand-dot {
   color: var(--green);
 }
