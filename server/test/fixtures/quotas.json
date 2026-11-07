@@ -1,0 +1,1799 @@
+[
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z",
+                "private_key": "not-public"
+              }
+            ],
+            "raw_response": {
+              "authorization": "not-public"
+            }
+          },
+          "private_key": "not-public"
+        }
+      ],
+      0.5
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 30,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": false,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 0,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "disabled",
+          "isValid": false,
+          "invalidMessage": "账号已暂停，以下为上次采集结果。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": true,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 0,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "stale",
+          "isValid": false,
+          "invalidMessage": "数据已过期，以下为上次成功结果。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "auth_required",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          },
+          "error_code": "auth_required"
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 0,
+      "low": 0,
+      "errors": 1,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "auth_required",
+          "isValid": false,
+          "invalidMessage": "认证已失效，请在管理后台更新凭据。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "rate_limited",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 0,
+      "low": 0,
+      "errors": 1,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "rate_limited",
+          "isValid": false,
+          "invalidMessage": "渠道请求受限，请等待自动重试。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "error",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          },
+          "error_code": "private-upstream-body"
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 0,
+      "low": 0,
+      "errors": 1,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "error",
+          "isValid": false,
+          "invalidMessage": "采集失败，以下保留上次成功结果。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "pending",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 0,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "pending",
+          "isValid": false,
+          "invalidMessage": "等待首次采集或重新采集。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "unknown",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": null,
+                "limit": null,
+                "remaining": null,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "empty",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 0,
+                "limit": 0,
+                "remaining": 0,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "exhausted",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 100,
+                "limit": 100,
+                "remaining": 0,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "overage",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 120,
+                "limit": 100,
+                "remaining": 0,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 1,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "unknown",
+              "name": "短周期",
+              "period": "5h",
+              "total": null,
+              "used": null,
+              "remaining": null,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "id": "empty",
+              "name": "短周期",
+              "period": "5h",
+              "total": 0,
+              "used": 0,
+              "remaining": 0,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "id": "exhausted",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 100,
+              "remaining": 0,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "id": "overage",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 120,
+              "remaining": 0,
+              "unit": "%",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "glm",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "GLM Coding Plan",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": null,
+                "limit": null,
+                "remaining": null,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z",
+                "used_percent": 16
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "glm",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 16,
+              "remaining": 84,
+              "unit": "%",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "deepseek",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "usd",
+                "label": "短周期",
+                "kind": "balance",
+                "unit": "currency",
+                "used": null,
+                "limit": null,
+                "remaining": 0,
+                "window": null,
+                "resets_at": "2030-01-01T05:00:00Z",
+                "currency": "USD",
+                "used_percent": 20
+              },
+              {
+                "id": "cny",
+                "label": "短周期",
+                "kind": "balance",
+                "unit": "currency",
+                "used": null,
+                "limit": null,
+                "remaining": -2,
+                "window": null,
+                "resets_at": "2030-01-01T05:00:00Z",
+                "currency": "CNY"
+              },
+              {
+                "id": "cost",
+                "label": "短周期",
+                "kind": "cost",
+                "unit": "tokens",
+                "used": 3,
+                "limit": null,
+                "remaining": null,
+                "window": "month",
+                "resets_at": "2030-01-01T05:00:00Z",
+                "currency": "USD"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "deepseek",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [],
+          "tools": [],
+          "balances": [
+            {
+              "id": "usd",
+              "name": "短周期",
+              "period": null,
+              "total": null,
+              "used": null,
+              "remaining": 0,
+              "unit": "USD",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "usedPercent": 20,
+              "kind": "balance"
+            },
+            {
+              "id": "cny",
+              "name": "短周期",
+              "period": null,
+              "total": null,
+              "used": null,
+              "remaining": -2,
+              "unit": "CNY",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "kind": "balance"
+            },
+            {
+              "id": "cost",
+              "name": "短周期",
+              "period": "month",
+              "total": null,
+              "used": 3,
+              "remaining": null,
+              "unit": "USD",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "kind": "cost"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "deepseek",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "balance",
+                "unit": "USD",
+                "used": 25,
+                "limit": 100,
+                "remaining": 0,
+                "window": null,
+                "resets_at": "2030-01-01T05:00:00Z",
+                "currency": "USD"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {
+      "category": "token"
+    },
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "deepseek",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [],
+          "tools": [],
+          "balances": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": null,
+              "total": 100,
+              "used": 25,
+              "remaining": 0,
+              "unit": "USD",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "kind": "balance"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "glm",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "glm-0",
+                "label": "MCP 调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 216,
+                "limit": 4000,
+                "remaining": 3784,
+                "window": "monthly",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "glm-mcp-search-prime",
+                "label": "联网搜索",
+                "kind": "quota",
+                "unit": "次",
+                "used": 144,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {
+      "category": "tools",
+      "tool": "web_search"
+    },
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "glm",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [],
+          "tools": [
+            {
+              "id": "glm-0",
+              "name": "MCP 调用次数",
+              "period": "month",
+              "total": 4000,
+              "used": 216,
+              "remaining": 3784,
+              "unit": "次",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "tool": "mcp",
+              "shared": true,
+              "extra": "所有 MCP 工具共享此额度；不提供单工具独立次数。"
+            }
+          ],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "minimax",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "long",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "week",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {
+      "category": "tools",
+      "tool": "web_search"
+    },
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "minimax",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "%",
+              "resetAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "id": "long",
+              "name": "长周期",
+              "period": "week",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "%",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [
+            {
+              "id": "minimax-web-search-5h",
+              "name": "联网搜索",
+              "period": "5h",
+              "total": null,
+              "used": null,
+              "remaining": null,
+              "unit": "次",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "tool": "web_search",
+              "shared": true,
+              "sharedWith": ["short"],
+              "extra": "共享套餐额度，独立用量暂无数据"
+            },
+            {
+              "id": "minimax-web-search-week",
+              "name": "联网搜索",
+              "period": "week",
+              "total": null,
+              "used": null,
+              "remaining": null,
+              "unit": "次",
+              "resetAt": "2030-01-01T05:00:00Z",
+              "tool": "web_search",
+              "shared": true,
+              "sharedWith": ["long"],
+              "extra": "共享套餐额度，独立用量暂无数据"
+            }
+          ],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "one",
+          "provider": "codex",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "id": "two",
+          "provider": "codex",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "id": "different-unit",
+          "provider": "codex",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "次",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "id": "different-reset",
+          "provider": "codex",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T06:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "id": "stale",
+          "provider": "codex",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": true,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "id": "percentage",
+          "provider": "codex",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 6,
+      "healthy": 5,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "one",
+          "name": "工作账号",
+          "channel": "codex",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "id": "two",
+          "name": "工作账号",
+          "channel": "codex",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "id": "different-unit",
+          "name": "工作账号",
+          "channel": "codex",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "次",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "id": "different-reset",
+          "name": "工作账号",
+          "channel": "codex",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T06:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "id": "stale",
+          "name": "工作账号",
+          "channel": "codex",
+          "planName": "Pro",
+          "status": "stale",
+          "isValid": false,
+          "invalidMessage": "数据已过期，以下为上次成功结果。",
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "id": "percentage",
+          "name": "工作账号",
+          "channel": "codex",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "%",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "long",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "week",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "custom",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "30d",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "wallet",
+                "label": "短周期",
+                "kind": "balance",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": null,
+                "resets_at": "2030-01-01T05:00:00Z",
+                "currency": "USD"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {
+      "period": "5h"
+    },
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "account-1",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "long",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "week",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "custom",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "30d",
+                "resets_at": "2030-01-01T05:00:00Z"
+              },
+              {
+                "id": "wallet",
+                "label": "短周期",
+                "kind": "balance",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": null,
+                "resets_at": "2030-01-01T05:00:00Z",
+                "currency": "USD"
+              }
+            ]
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {
+      "period": "30d"
+    },
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 1,
+      "healthy": 1,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "account-1",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "custom",
+              "name": "短周期",
+              "period": "30d",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "build_response",
+    "args": [
+      [
+        {
+          "id": "first",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "tokens",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T13:00:00+08:00"
+              }
+            ]
+          }
+        },
+        {
+          "id": "later",
+          "provider": "opendesign",
+          "alias": "工作账号",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "2030-01-01T00:00:00.100000Z",
+          "data": {
+            "plan": "Pro",
+            "metrics": []
+          }
+        }
+      ],
+      1
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "updatedAt": "2030-01-01T00:00:00.100000Z",
+      "refreshIntervalSeconds": 60,
+      "accountCount": 2,
+      "healthy": 2,
+      "low": 0,
+      "errors": 0,
+      "accounts": [
+        {
+          "id": "first",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00Z",
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "tokens",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "id": "later",
+          "name": "工作账号",
+          "channel": "opendesign",
+          "planName": "Pro",
+          "status": "ok",
+          "isValid": true,
+          "invalidMessage": null,
+          "updatedAt": "2030-01-01T00:00:00.100000Z",
+          "token": [],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  },
+  {
+    "fn": "history_response",
+    "args": [
+      {
+        "id": "account-1",
+        "provider": "minimax",
+        "alias": "工作账号",
+        "enabled": true,
+        "status": "ok",
+        "stale": false,
+        "last_success_at": "2030-01-01T00:00:00Z",
+        "data": {
+          "plan": "Pro",
+          "metrics": []
+        }
+      },
+      {
+        "range": "24h",
+        "points": [
+          {
+            "timestamp": "2030-01-01T00:00:00Z",
+            "gap": true,
+            "reset": false,
+            "metrics": []
+          },
+          {
+            "timestamp": "2030-01-01T05:00:00Z",
+            "gap": false,
+            "reset": true,
+            "metrics": [
+              {
+                "id": "short",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "window": "5h",
+                "resets_at": "2030-01-01T05:00:00Z"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "kwargs": {},
+    "expected": {
+      "version": 2,
+      "account": {
+        "id": "account-1",
+        "name": "工作账号",
+        "channel": "minimax"
+      },
+      "range": "24h",
+      "points": [
+        {
+          "time": "2030-01-01T00:00:00Z",
+          "isMissing": true,
+          "isReset": false,
+          "token": [],
+          "tools": [],
+          "balances": []
+        },
+        {
+          "time": "2030-01-01T05:00:00Z",
+          "isMissing": false,
+          "isReset": true,
+          "token": [
+            {
+              "id": "short",
+              "name": "短周期",
+              "period": "5h",
+              "total": 100,
+              "used": 25,
+              "remaining": 75,
+              "unit": "%",
+              "resetAt": "2030-01-01T05:00:00Z"
+            }
+          ],
+          "tools": [],
+          "balances": []
+        }
+      ]
+    }
+  }
+]

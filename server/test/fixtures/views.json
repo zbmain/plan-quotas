@@ -1,0 +1,648 @@
+[
+  {
+    "fn": "build_quota_list",
+    "args": [
+      [
+        {
+          "id": "a",
+          "provider": "glm",
+          "alias": "GLM",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "now",
+          "data": {
+            "metrics": [
+              {
+                "id": "glm-0",
+                "label": "MCP 调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 3,
+                "limit": 10,
+                "remaining": 7,
+                "window": "monthly"
+              },
+              {
+                "id": "glm-mcp-search-prime",
+                "label": "联网搜索调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 2,
+                "limit": null,
+                "remaining": null,
+                "window": "monthly"
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "id": "a",
+        "provider": "glm",
+        "alias": "GLM",
+        "enabled": true,
+        "status": "ok",
+        "stale": false,
+        "updated_at": "now",
+        "token": [],
+        "tools": [
+          {
+            "id": "glm-0",
+            "label": "MCP 调用次数",
+            "kind": "quota",
+            "unit": "次",
+            "used": 3,
+            "limit": 10,
+            "remaining": 7,
+            "used_percent": null,
+            "window": "month",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 70.0,
+            "quota_scope": "shared_pool",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          }
+        ],
+        "balances": []
+      }
+    ]
+  },
+  {
+    "fn": "build_quota_list",
+    "args": [
+      [
+        {
+          "id": "m",
+          "provider": "minimax",
+          "alias": "MM",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "last_success_at": "now",
+          "data": {
+            "metrics": [
+              {
+                "id": "interval-0",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 25,
+                "limit": 100,
+                "remaining": 75,
+                "used_percent": 25,
+                "window": "5h"
+              },
+              {
+                "id": "weekly-0",
+                "label": "长周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 10,
+                "limit": 100,
+                "remaining": 90,
+                "used_percent": 10,
+                "window": "week"
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "id": "m",
+        "provider": "minimax",
+        "alias": "MM",
+        "enabled": true,
+        "status": "ok",
+        "stale": false,
+        "updated_at": "now",
+        "token": [
+          {
+            "id": "interval-0",
+            "label": "短周期",
+            "kind": "quota",
+            "unit": "%",
+            "used": 25,
+            "limit": 100,
+            "remaining": 75,
+            "used_percent": 25,
+            "window": "5h",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 75,
+            "quota_scope": "independent",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          },
+          {
+            "id": "weekly-0",
+            "label": "长周期",
+            "kind": "quota",
+            "unit": "%",
+            "used": 10,
+            "limit": 100,
+            "remaining": 90,
+            "used_percent": 10,
+            "window": "week",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 90,
+            "quota_scope": "independent",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          }
+        ],
+        "tools": [
+          {
+            "id": "minimax-web-search-5h",
+            "label": "联网搜索",
+            "kind": "quota",
+            "unit": "次",
+            "used": null,
+            "limit": null,
+            "remaining": null,
+            "used_percent": null,
+            "window": "5h",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": null,
+            "quota_scope": "shared",
+            "tool": "web_search",
+            "shared_quota_ids": ["interval-0"],
+            "availability": "unavailable",
+            "note": "共享套餐额度，独立用量暂无数据"
+          },
+          {
+            "id": "minimax-web-search-week",
+            "label": "联网搜索",
+            "kind": "quota",
+            "unit": "次",
+            "used": null,
+            "limit": null,
+            "remaining": null,
+            "used_percent": null,
+            "window": "week",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": null,
+            "quota_scope": "shared",
+            "tool": "web_search",
+            "shared_quota_ids": ["weekly-0"],
+            "availability": "unavailable",
+            "note": "共享套餐额度，独立用量暂无数据"
+          }
+        ],
+        "balances": []
+      }
+    ]
+  },
+  {
+    "fn": "build_quota_list",
+    "args": [
+      [
+        {
+          "id": "g",
+          "provider": "glm",
+          "alias": "g",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "data": {
+            "metrics": [
+              {
+                "id": "glm-0",
+                "label": "MCP 调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 2,
+                "limit": 10,
+                "remaining": 8,
+                "window": "month"
+              },
+              {
+                "id": "glm-1",
+                "label": "MCP 调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 1,
+                "limit": 5,
+                "remaining": 4,
+                "window": "week"
+              },
+              {
+                "id": "glm-mcp-search-prime",
+                "label": "联网搜索调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 3,
+                "window": "week"
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "id": "g",
+        "provider": "glm",
+        "alias": "g",
+        "enabled": true,
+        "status": "ok",
+        "stale": false,
+        "updated_at": null,
+        "token": [],
+        "tools": [
+          {
+            "id": "glm-0",
+            "label": "MCP 调用次数",
+            "kind": "quota",
+            "unit": "次",
+            "used": 2,
+            "limit": 10,
+            "remaining": 8,
+            "used_percent": null,
+            "window": "month",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 80.0,
+            "quota_scope": "shared_pool",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          },
+          {
+            "id": "glm-1",
+            "label": "MCP 调用次数",
+            "kind": "quota",
+            "unit": "次",
+            "used": 1,
+            "limit": 5,
+            "remaining": 4,
+            "used_percent": null,
+            "window": "week",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 80.0,
+            "quota_scope": "shared_pool",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          }
+        ],
+        "balances": []
+      }
+    ]
+  },
+  {
+    "fn": "build_quota_list",
+    "args": [
+      [
+        {
+          "id": "m",
+          "provider": "minimax",
+          "alias": "m",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "data": {
+            "metrics": [
+              {
+                "id": "interval-0",
+                "label": "短周期",
+                "kind": "quota",
+                "unit": "%",
+                "used": 40,
+                "limit": 100,
+                "remaining": 60,
+                "used_percent": 40,
+                "window": "5h"
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "id": "m",
+        "provider": "minimax",
+        "alias": "m",
+        "enabled": true,
+        "status": "ok",
+        "stale": false,
+        "updated_at": null,
+        "token": [
+          {
+            "id": "interval-0",
+            "label": "短周期",
+            "kind": "quota",
+            "unit": "%",
+            "used": 40,
+            "limit": 100,
+            "remaining": 60,
+            "used_percent": 40,
+            "window": "5h",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 60,
+            "quota_scope": "independent",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          }
+        ],
+        "tools": [
+          {
+            "id": "minimax-web-search-5h",
+            "label": "联网搜索",
+            "kind": "quota",
+            "unit": "次",
+            "used": null,
+            "limit": null,
+            "remaining": null,
+            "used_percent": null,
+            "window": "5h",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": null,
+            "quota_scope": "shared",
+            "tool": "web_search",
+            "shared_quota_ids": ["interval-0"],
+            "availability": "unavailable",
+            "note": "共享套餐额度，独立用量暂无数据"
+          }
+        ],
+        "balances": []
+      }
+    ]
+  },
+  {
+    "fn": "quota_summary",
+    "args": [
+      [
+        {
+          "id": "m",
+          "provider": "minimax",
+          "alias": "m",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "updated_at": null,
+          "token": [
+            {
+              "id": "interval-0",
+              "label": "短周期",
+              "kind": "quota",
+              "unit": "%",
+              "used": 40,
+              "limit": 100,
+              "remaining": 60,
+              "used_percent": 40,
+              "window": "5h",
+              "resets_at": null,
+              "currency": null,
+              "remaining_percent": 60,
+              "quota_scope": "independent",
+              "tool": null,
+              "shared_quota_ids": [],
+              "availability": "available",
+              "note": null
+            }
+          ],
+          "tools": [
+            {
+              "id": "minimax-web-search-5h",
+              "label": "联网搜索",
+              "kind": "quota",
+              "unit": "次",
+              "used": null,
+              "limit": null,
+              "remaining": null,
+              "used_percent": null,
+              "window": "5h",
+              "resets_at": null,
+              "currency": null,
+              "remaining_percent": null,
+              "quota_scope": "shared",
+              "tool": "web_search",
+              "shared_quota_ids": ["interval-0"],
+              "availability": "unavailable",
+              "note": "共享套餐额度，独立用量暂无数据"
+            }
+          ],
+          "balances": []
+        }
+      ],
+      "token"
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "provider": "minimax",
+        "category": "token",
+        "quota_scope": "independent",
+        "tool": null,
+        "unit": "%",
+        "window": "5h",
+        "label": "短周期",
+        "total": null,
+        "used": null,
+        "remaining": null,
+        "valid_count": 0,
+        "missing_count": 1,
+        "stale_count": 0
+      }
+    ]
+  },
+  {
+    "fn": "build_quota_list",
+    "args": [
+      [
+        {
+          "id": "g",
+          "provider": "glm",
+          "alias": "g",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "data": {
+            "metrics": [
+              {
+                "id": "glm-0",
+                "label": "MCP 调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 4,
+                "limit": 10,
+                "remaining": 6,
+                "window": "week"
+              },
+              {
+                "id": "glm-mcp-search-prime",
+                "label": "联网搜索调用次数",
+                "kind": "quota",
+                "unit": "次",
+                "used": 3,
+                "window": "week"
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "id": "g",
+        "provider": "glm",
+        "alias": "g",
+        "enabled": true,
+        "status": "ok",
+        "stale": false,
+        "updated_at": null,
+        "token": [],
+        "tools": [
+          {
+            "id": "glm-0",
+            "label": "MCP 调用次数",
+            "kind": "quota",
+            "unit": "次",
+            "used": 4,
+            "limit": 10,
+            "remaining": 6,
+            "used_percent": null,
+            "window": "week",
+            "resets_at": null,
+            "currency": null,
+            "remaining_percent": 60.0,
+            "quota_scope": "shared_pool",
+            "tool": null,
+            "shared_quota_ids": [],
+            "availability": "available",
+            "note": null
+          }
+        ],
+        "balances": []
+      }
+    ]
+  },
+  {
+    "fn": "quota_summary",
+    "args": [
+      [
+        {
+          "id": "g",
+          "provider": "glm",
+          "alias": "g",
+          "enabled": true,
+          "status": "ok",
+          "stale": false,
+          "updated_at": null,
+          "token": [],
+          "tools": [
+            {
+              "id": "glm-0",
+              "label": "MCP 调用次数",
+              "kind": "quota",
+              "unit": "次",
+              "used": 4,
+              "limit": 10,
+              "remaining": 6,
+              "used_percent": null,
+              "window": "week",
+              "resets_at": null,
+              "currency": null,
+              "remaining_percent": 60.0,
+              "quota_scope": "shared_pool",
+              "tool": null,
+              "shared_quota_ids": [],
+              "availability": "available",
+              "note": null
+            }
+          ],
+          "balances": []
+        }
+      ],
+      "tools"
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "provider": "glm",
+        "category": "tools",
+        "quota_scope": "shared_pool",
+        "tool": null,
+        "unit": "次",
+        "window": "week",
+        "label": "MCP 调用次数",
+        "total": 10,
+        "used": 4,
+        "remaining": 6,
+        "valid_count": 1,
+        "missing_count": 0,
+        "stale_count": 0
+      }
+    ]
+  },
+  {
+    "fn": "build_quota_list",
+    "args": [
+      [
+        {
+          "id": "g",
+          "provider": "glm",
+          "data": {
+            "metrics": [
+              {
+                "id": "glm-mcp-search-prime",
+                "label": "联网搜索调用次数",
+                "kind": "quota",
+                "used": 12
+              },
+              {
+                "id": "glm-mcp-new-tool",
+                "label": "其他工具",
+                "kind": "quota",
+                "used": 2
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "kwargs": {},
+    "expected": [
+      {
+        "id": "g",
+        "provider": "glm",
+        "alias": null,
+        "enabled": false,
+        "status": null,
+        "stale": false,
+        "updated_at": null,
+        "token": [],
+        "tools": [],
+        "balances": []
+      }
+    ]
+  }
+]

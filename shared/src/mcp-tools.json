@@ -1,0 +1,246 @@
+[
+  {
+    "name": "list_accounts",
+    "title": "查看账号列表",
+    "description": "查看所选渠道全部账号的名称、ID、采集状态和搜索开关。只接受 channel，默认 all；传 {} 查询全部渠道。按后台配置顺序返回，不接受状态或账号等其他筛选参数，不返回凭据，不发起上游请求。",
+    "inputSchema": {
+      "additionalProperties": false,
+      "description": "只接受 channel。省略或填 all 查询全部渠道；其他参数不允许。",
+      "properties": {
+        "channel": {
+          "default": "all",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "enum": [
+            "all",
+            "minimax",
+            "glm",
+            "kimi",
+            "deepseek",
+            "volcengine",
+            "aliyun",
+            "codex",
+            "claude",
+            "cursor",
+            "opencode",
+            "opendesign",
+            "antigravity"
+          ],
+          "examples": ["all", "glm"],
+          "title": "渠道",
+          "type": "string"
+        }
+      },
+      "title": "查看账号列表 · 参数",
+      "type": "object",
+      "examples": [
+        {},
+        {
+          "channel": "glm"
+        }
+      ]
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Result",
+          "type": "array"
+        }
+      },
+      "required": ["result"],
+      "title": "list_accountsOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_token_quota",
+    "title": "查看套餐额度",
+    "description": "查看所选渠道全部账号的模型套餐额度、全部周期和余额。只需 channel，默认 all；传 {} 查询全部渠道。\n\n示例：{\"channel\":\"glm\"}。只读缓存，不触发上游采集。返回各账号独立额度，不合并不同单位或周期，不接受账号、周期等其他筛选参数。",
+    "inputSchema": {
+      "additionalProperties": false,
+      "description": "只接受 channel。省略或填 all 查询全部渠道；返回所选渠道全部账号与全部额度周期。其他参数不允许。",
+      "properties": {
+        "channel": {
+          "default": "all",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "enum": [
+            "all",
+            "minimax",
+            "glm",
+            "kimi",
+            "deepseek",
+            "volcengine",
+            "aliyun",
+            "codex",
+            "claude",
+            "cursor",
+            "opencode",
+            "opendesign",
+            "antigravity"
+          ],
+          "examples": ["all", "glm"],
+          "title": "渠道",
+          "type": "string"
+        }
+      },
+      "title": "查看套餐额度 · 参数",
+      "type": "object",
+      "examples": [
+        {},
+        {
+          "channel": "glm"
+        }
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_tool_quota",
+    "title": "查看工具额度",
+    "description": "查看所选渠道全部账号的工具额度。只需 channel，默认 all；传 {} 查询全部渠道。\n\n示例：{\"channel\":\"glm\"}。只读缓存，返回全部工具和周期。GLM 仅提供 MCP 共享总池；MiniMax 独立搜索次数未知。不接受账号、工具或周期等其他筛选参数。",
+    "inputSchema": {
+      "additionalProperties": false,
+      "description": "只接受 channel。省略或填 all 查询全部渠道；返回所选渠道全部账号与全部额度周期。其他参数不允许。",
+      "properties": {
+        "channel": {
+          "default": "all",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "enum": [
+            "all",
+            "minimax",
+            "glm",
+            "kimi",
+            "deepseek",
+            "volcengine",
+            "aliyun",
+            "codex",
+            "claude",
+            "cursor",
+            "opencode",
+            "opendesign",
+            "antigravity"
+          ],
+          "examples": ["all", "glm"],
+          "title": "渠道",
+          "type": "string"
+        }
+      },
+      "title": "查看工具额度 · 参数",
+      "type": "object",
+      "examples": [
+        {},
+        {
+          "channel": "glm"
+        }
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_history",
+    "title": "查看用量历史",
+    "description": "查看所选渠道全部账号最近 24 小时的用量观测历史。只接受 channel，默认 all；传 {} 查询全部渠道。按后台配置顺序返回，固定 5 分钟时间桶，保留缺测和重置标记。不接受账号或时间范围等其他参数，不代表精确消费账单。",
+    "inputSchema": {
+      "additionalProperties": false,
+      "description": "只接受 channel。省略或填 all 查询全部渠道；其他参数不允许。",
+      "properties": {
+        "channel": {
+          "default": "all",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "enum": [
+            "all",
+            "minimax",
+            "glm",
+            "kimi",
+            "deepseek",
+            "volcengine",
+            "aliyun",
+            "codex",
+            "claude",
+            "cursor",
+            "opencode",
+            "opendesign",
+            "antigravity"
+          ],
+          "examples": ["all", "glm"],
+          "title": "渠道",
+          "type": "string"
+        }
+      },
+      "title": "查看用量历史 · 参数",
+      "type": "object",
+      "examples": [
+        {},
+        {
+          "channel": "glm"
+        }
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "web_search",
+    "title": "联网搜索",
+    "description": "输入 query 搜索内容，可选 channel，默认 auto。会消耗管理员已开启账号的套餐搜索额度。\n\n指定渠道时，只尝试该渠道的账号；auto 按全部账号的后台顺序依次尝试。异常、限流、额度耗尽或不可用时切换下一优先级账号，正常空结果也停止。最多返回 10 条实际网页结果。不接受 account、max_results 等其他参数。",
+    "inputSchema": {
+      "additionalProperties": false,
+      "description": "只接受 query 和 channel。query 必填；channel 默认 auto。不能指定账号或结果条数。",
+      "properties": {
+        "query": {
+          "description": "必填。输入关键词或完整问题，1～4000 字符。搜索会消耗管理员已开启账号的套餐额度。",
+          "examples": ["Python asyncio 官方文档"],
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "搜索内容",
+          "type": "string"
+        },
+        "channel": {
+          "default": "auto",
+          "description": "auto：按全部账号的后台顺序依次尝试；glm：仅在 GLM 账号中按后台顺序尝试；minimax：仅在 MiniMax 账号中按后台顺序尝试。异常或不可用时使用下一优先级账号；成功即停止，正常空结果也视为成功。",
+          "enum": ["auto", "glm", "minimax"],
+          "examples": ["auto", "glm"],
+          "title": "搜索渠道",
+          "type": "string"
+        }
+      },
+      "required": ["query"],
+      "title": "联网搜索 · 参数",
+      "type": "object",
+      "examples": [
+        {
+          "query": "Python asyncio 官方文档"
+        },
+        {
+          "query": "Python asyncio 官方文档",
+          "channel": "minimax"
+        }
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    }
+  }
+]

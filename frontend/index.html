@@ -1,13 +1,46 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-type="software" data-radius="sharp" data-motion="live">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5f4ef" />
-    <title>plan-quotas · 配额簿 AI 用量面板</title>
+    <meta name="theme-color" content="#F6F8F7" />
+    <meta name="page-type" content="software" />
+    <meta name="site-kind" content="software" />
+    <link
+      rel="preload"
+      href="/fonts/instrument-sans-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/dm-mono-500.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/taste/motion.css" />
+    <script>
+      // 首帧读取与应用一致的主题偏好，避免深色模式先闪白。
+      try {
+        const mode = localStorage.getItem("pq-theme");
+        document.documentElement.dataset.theme =
+          mode === "dark" ||
+          (mode !== "light" &&
+            matchMedia("(prefers-color-scheme: dark)").matches)
+            ? "dark"
+            : "light";
+      } catch {
+        /* 存储不可用时保留默认浅色主题。 */
+      }
+    </script>
+    <title>plan-quotas · 仪表盘 AI 用量面板</title>
   </head>
   <body>
+    <!-- software · emerald brand palette · Instrument Sans + DM Mono · sharp · application layout; marketing hero, scene and shader not used -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/taste/motion.js"></script>
   </body>
 </html>

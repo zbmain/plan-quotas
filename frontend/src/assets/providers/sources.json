@@ -1,0 +1,77 @@
+{
+  "package": "@lobehub/icons-static-svg@1.102.0",
+  "icons": [
+    {
+      "channel": "minimax",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/minimax-color.svg",
+      "bytes": 1570,
+      "sha256": "7f7187fa6d9b341ac5f22f6c5a970523afb439dc45566d64eb4f4b9b604d6b01"
+    },
+    {
+      "channel": "glm",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/zhipu-color.svg",
+      "bytes": 3597,
+      "sha256": "8174e65ff71647d5c705c920c953a82bd723d9e3e42887bdd4ffc9dfe51207a0"
+    },
+    {
+      "channel": "kimi",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/kimi.svg",
+      "bytes": 786,
+      "sha256": "ed08131b46acf70e6e2144eceb775e74098b58ea65fa21eaee04be7b05cfe63b"
+    },
+    {
+      "channel": "deepseek",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/deepseek-color.svg",
+      "bytes": 2164,
+      "sha256": "deba5f98a5c1796e20fcac3149bcd7eb8a32f0bdd04d048819400b1f28bd1439"
+    },
+    {
+      "channel": "volcengine",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/volcengine-color.svg",
+      "bytes": 858,
+      "sha256": "84f9e2cd1da7e73dc6c9a0f2521745d39cae96c008752cdb1baf57a8c94393a1"
+    },
+    {
+      "channel": "aliyun",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/bailian-color.svg",
+      "bytes": 1353,
+      "sha256": "5cc26dc961b2ecd0912f4e023c8ce745bcc52ac45b1c4baeadd7201f6b60de25"
+    },
+    {
+      "channel": "codex",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/codex.svg",
+      "bytes": 1368,
+      "sha256": "d08b4e824cd6727e89617f59e4737273ff53e44c1da849d016dd64dfd08b33e1"
+    },
+    {
+      "channel": "claude",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/claude-color.svg",
+      "bytes": 1696,
+      "sha256": "a3101f3047a119aa11825ad9369510f0c472428c8c52d420e31bc62db44a8364"
+    },
+    {
+      "channel": "cursor",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/cursor.svg",
+      "bytes": 547,
+      "sha256": "0cb51bddf264ae108926fd554c063ef40fc1aac3c5c921ddb39ad184e4e5d0ef"
+    },
+    {
+      "channel": "opencode",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/opencode.svg",
+      "bytes": 235,
+      "sha256": "7cfa6e9d6726f7c9fa26c7d9aef0dfec52d20a137380454340f30f12ccbfd302"
+    },
+    {
+      "channel": "antigravity",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/antigravity-color.svg",
+      "bytes": 7634,
+      "sha256": "652128cf55a28bb958563ee372d0bd00208d9e6fd446f523f77aafd811eef8ca"
+    },
+    {
+      "channel": "opendesign",
+      "source": "https://r.open-design.ai/files/f6843349fba478ad7249f9c71cc5ae0a9ff9986b081b5b3a40eb8e0e86eadd5c",
+      "bytes": 5539,
+      "sha256": "f6843349fba478ad7249f9c71cc5ae0a9ff9986b081b5b3a40eb8e0e86eadd5c"
+    }
+  ]
+}

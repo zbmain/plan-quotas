@@ -1,5 +1,14 @@
 import type { Metric } from "./types";
 
+/** Hide legacy GLM tool breakdown counters while keeping its aggregate MCP pool. */
+export function filterProviderMetrics(
+  metrics: Metric[],
+  provider: string,
+): Metric[] {
+  if (provider !== "glm") return metrics;
+  return metrics.filter((metric) => !metric.id.startsWith("glm-mcp-"));
+}
+
 /** Normalize provider window spelling for comparison without altering stored data. */
 function normalizedWindow(window?: string | null): string {
   return (window ?? "")
@@ -111,6 +120,18 @@ export function kimiDisplayMetric(metric: Metric, provider: string): Metric {
     remaining: null,
     used_percent: usedPercent,
   };
+}
+
+/** Prefer a confirmed short model window in history, falling back to an actual available metric. */
+export function defaultHistoryMetricId(
+  metrics: Metric[],
+  provider: string,
+): string {
+  const short = metrics.find((metric) => {
+    const display = kimiDisplayMetric(metric, provider);
+    return metricGroup(display) === "periodic" && isShortWindow(display.window);
+  });
+  return (short ?? metrics[0])?.id ?? "";
 }
 
 /** Keep known model-specific quota names distinct while translating their cadence. */

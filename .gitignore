@@ -23,5 +23,3 @@ coverage/
 playwright-report/
 test-results/
 .DS_Store
-!uv.lock
-!.python-version

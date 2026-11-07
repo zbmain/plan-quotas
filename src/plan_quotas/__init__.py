@@ -1,1 +1,0 @@
-"""plan-quotas application package."""

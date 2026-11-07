@@ -1,29 +1,37 @@
 set dotenv-load := true
 
+install:
+    npm ci
+
 dev:
-    uv run uvicorn plan_quotas.app:app --reload --host 127.0.0.1 --port 8000
+    npm run dev
 
 frontend:
-    cd frontend && npm ci && npm run dev
+    npm run dev:frontend
 
-install:
-    uv sync --all-groups
-    cd frontend && npm ci
+start:
+    npm start -- --host 0.0.0.0 --port 8000
 
 lint:
-    uv run ruff check src tests
+    npm run lint
 
 format:
-    uv run ruff format src tests
+    npm run format
+
+typecheck:
+    npm run typecheck
 
 test:
-    uv run pytest
-
-build-frontend:
-    cd frontend && npm run build
+    npm test
 
 test-frontend:
-    cd frontend && npm test
+    npm run test:frontend
+
+build-frontend:
+    npm run build --workspace plan-quotas-web
+
+build-code:
+    npm run build
 
 build:
     docker compose build
@@ -37,4 +45,5 @@ down:
 logs:
     docker compose logs -f --tail=200
 
-check: lint test test-frontend build-frontend
+check:
+    npm run check

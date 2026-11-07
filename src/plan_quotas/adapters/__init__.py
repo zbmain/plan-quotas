@@ -1,1 +1,0 @@
-"""Provider-specific quota collectors."""

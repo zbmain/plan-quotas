@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { version as appVersion } from "../../package.json";
 import { InfoAccessPanel } from "./InfoAccessPanel";
-import { CopyButton } from "./CopyButton";
+import { ProviderIcon } from "./ProviderIcon";
+import { AccountSummary } from "./AccountSummary";
+import { accountIsAvailable } from "./account-availability";
 import {
   Activity,
   AlertCircle,
@@ -15,13 +18,12 @@ import {
   CircleHelp,
   Clock3,
   Command,
-  Eye,
-  EyeOff,
   Gauge,
   KeyRound,
   LoaderCircle,
   LogOut,
   Moon,
+  Monitor,
   Plus,
   RefreshCw,
   Search,
@@ -54,7 +56,9 @@ import {
   metricGroup,
   metricUnitLabel,
   metricWindowLabel,
+  filterProviderMetrics,
   kimiDisplayMetric,
+  defaultHistoryMetricId,
 } from "./metric-display";
 import {
   quotaReading,
@@ -79,7 +83,7 @@ const api = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
 };
 const providerNames: Record<string, string> = {
   minimax: "MiniMax",
-  glm: "智谱 GLM",
+  glm: "GLM",
   kimi: "Kimi",
   deepseek: "DeepSeek",
   volcengine: "火山引擎",
@@ -88,6 +92,7 @@ const providerNames: Record<string, string> = {
   claude: "Claude",
   cursor: "Cursor",
   opencode: "OpenCode",
+  opendesign: "OpenDesign",
   antigravity: "Google Antigravity",
 };
 const collectionIntervals = [
@@ -112,7 +117,7 @@ const connectionErrorLabel: Record<string, string> = {
   upstream_error: "渠道服务暂时不可用",
   invalid_response: "渠道返回的数据暂时无法识别",
   subscription_unavailable:
-    "订阅暂不可用，请检查 OpenCode Go 套餐、密钥权限或工作空间",
+    "订阅暂不可用，请检查个人套餐、凭据权限和工作区配置",
 };
 /** Format an API timestamp for the dashboard's Asia/Shanghai display timezone. */
 const formatTime = (value?: string | null) =>
@@ -168,7 +173,10 @@ export function historyRows(
   displayMode: QuotaDisplayMode = "used",
 ) {
   const sampledRows = history.points.map((point) => {
-    const storedMetric = point.metrics.find((item) => item.id === metricId);
+    const storedMetric = filterProviderMetrics(
+      point.metrics,
+      provider ?? "",
+    ).find((item) => item.id === metricId);
     const metric = storedMetric
       ? kimiDisplayMetric(storedMetric, provider ?? "")
       : undefined;
@@ -293,6 +301,7 @@ function authName(auth: string) {
         oauth: "OAuth",
         jwt: "JWT",
         aksk: "Access Key / Secret Key",
+        control_key: "账户凭据（Control Key）",
       } as Record<string, string>
     )[auth] || auth
   );
@@ -302,8 +311,12 @@ function authName(auth: string) {
 function App() {
   const [themeMode, setThemeMode] = useState<"system" | "light" | "dark">(
     () => {
-      const saved = localStorage.getItem("pq-theme");
-      return saved === "light" || saved === "dark" ? saved : "system";
+      try {
+        const saved = localStorage.getItem("pq-theme");
+        return saved === "light" || saved === "dark" ? saved : "system";
+      } catch {
+        return "system";
+      }
     },
   );
   const [dark, setDark] = useState(
@@ -320,9 +333,11 @@ function App() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [displayMode, setDisplayMode] = useState<QuotaDisplayMode>("used");
+  const [refreshSeconds, setRefreshSeconds] = useState(30);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [history, setHistory] = useState<Record<string, History>>({});
   const [range, setRange] = useState<Record<string, string>>({});
+  const historyRequests = useRef<Record<string, number>>({});
   const [page, setPage] = useState(
     location.pathname.startsWith("/admin") ? "admin" : "home",
   );
@@ -343,15 +358,34 @@ function App() {
   }, []);
   useEffect(() => {
     void refresh();
-    const id = setInterval(() => void refresh(), 30000);
-    return () => clearInterval(id);
   }, [refresh]);
+  useEffect(() => {
+    const id = setInterval(() => void refresh(), refreshSeconds * 1000);
+    return () => clearInterval(id);
+  }, [refresh, refreshSeconds]);
   useEffect(() => {
     document.title = pageTitle;
   }, [pageTitle]);
   useEffect(() => {
+    const media = matchMedia("(max-width: 850px)");
+    /** 避免屏幕收窄后被隐藏的搜索条件继续筛选账号。 */
+    const clearHiddenSearch = () => {
+      if (media.matches) setQuery("");
+    };
+    clearHiddenSearch();
+    media.addEventListener("change", clearHiddenSearch);
+    return () => media.removeEventListener("change", clearHiddenSearch);
+  }, []);
+  useEffect(() => {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
-    localStorage.setItem("pq-theme", themeMode);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", dark ? "#101815" : "#f6f8f7");
+    try {
+      localStorage.setItem("pq-theme", themeMode);
+    } catch {
+      /* 禁止本地存储时，本次会话仍可切换主题。 */
+    }
   }, [dark, themeMode]);
   useEffect(() => {
     if (themeMode === "system") {
@@ -386,6 +420,19 @@ function App() {
     );
   };
   const accounts = dashboard?.accounts || [];
+  const availability = new Map(
+    accounts.map((account) => {
+      const row = dashboard?.list?.find((item) => item.id === account.id);
+      return [
+        account.id,
+        accountIsAvailable(
+          account,
+          row ? [...row.token, ...row.tools, ...row.balances] : undefined,
+        ),
+      ];
+    }),
+  );
+  const availableCount = [...availability.values()].filter(Boolean).length;
   const providers = useMemo(
     () => Array.from(new Set(accounts.map((a) => a.provider))),
     [accounts],
@@ -398,124 +445,116 @@ function App() {
           .toLowerCase()
           .includes(query.toLowerCase())) &&
       (statusFilter === "all" ||
-        (statusFilter === "healthy"
-          ? a.enabled && a.status === "ok" && !a.stale
-          : statusFilter === "attention"
-            ? a.enabled && (a.status !== "ok" || a.stale)
-            : !a.enabled)),
+        availability.get(a.id) === (statusFilter === "available")),
   );
+  /** Keep each account's latest requested range when history responses arrive out of order. */
   const loadHistory = async (id: string, period: string) => {
-    setRange({ ...range, [id]: period });
+    const requestId = (historyRequests.current[id] ?? 0) + 1;
+    historyRequests.current[id] = requestId;
+    setRange((previous) => ({ ...previous, [id]: period }));
     try {
-      setHistory({
-        ...history,
-        [id]: await api<History>(
-          `/api/public/accounts/${id}/history?range=${period}`,
-        ),
-      });
+      const result = await api<History>(
+        `/api/public/accounts/${id}/history?range=${period}`,
+      );
+      if (historyRequests.current[id] === requestId)
+        setHistory((previous) => ({ ...previous, [id]: result }));
     } catch {
-      setHistory({
-        ...history,
-        [id]: { account_id: id, range: period, points: [] },
-      });
+      if (historyRequests.current[id] === requestId)
+        setHistory((previous) => ({
+          ...previous,
+          [id]: { account_id: id, range: period, points: [] },
+        }));
     }
   };
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand" onClick={() => navigate("home")}>
-          <span className="brand-icon">
-            <Gauge size={19} />
-          </span>
-          <span className="brand-word">
-            plan-quotas<span className="brand-dot">.</span>
-          </span>
-          <span className="brand-divider" />
-          <span className="brand-caption">配额簿 · AI 用量面板</span>
-        </button>
-        <div className="header-right">
-          <span className="live-indicator">
-            <i />
-            {loadError
-              ? "面板连接异常"
-              : accountsNeedAttention(dashboard?.accounts)
-                ? "部分账号需关注"
-                : "用量定时采集"}
-          </span>
+        <div className="topbar-inner">
           <button
-            className="icon-button theme-toggle"
-            aria-label={`切换主题，当前${themeMode === "system" ? "跟随系统" : themeMode === "dark" ? "深色" : "浅色"}`}
-            onClick={cycleTheme}
+            className="brand"
+            aria-label="返回用量面板"
+            onClick={() => navigate("home")}
           >
-            {dark ? <Sun size={17} /> : <Moon size={17} />}
+            <span className="brand-icon">
+              <Gauge size={19} />
+            </span>
+            <span className="brand-word">
+              plan-quotas<span className="brand-dot">.</span>
+            </span>
+            <span className="brand-divider" />
+            <span className="brand-caption">仪表盘 · AI 用量面板</span>
           </button>
-          <button
-            className="header-link"
-            aria-label="管理面板"
-            onClick={() => navigate("admin")}
-          >
-            <Shield size={15} /> 管理面板 <ArrowRight size={14} />
-          </button>
+          <div className="header-right">
+            <span className={`live-indicator${loadError ? " is-error" : ""}`}>
+              <i />
+              {loadError
+                ? "面板连接异常"
+                : accountsNeedAttention(dashboard?.accounts)
+                  ? "部分账号需关注"
+                  : "用量定时采集"}
+            </span>
+            <button
+              className="icon-button theme-toggle"
+              aria-label={`切换主题，当前${themeMode === "system" ? "跟随系统" : themeMode === "dark" ? "深色" : "浅色"}`}
+              onClick={cycleTheme}
+            >
+              {themeMode === "system" ? (
+                <Monitor size={17} />
+              ) : dark ? (
+                <Moon size={17} />
+              ) : (
+                <Sun size={17} />
+              )}
+            </button>
+            <button
+              className="header-link"
+              aria-label="管理面板"
+              onClick={() => navigate("admin")}
+            >
+              <Shield size={15} /> 管理面板 <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
       </header>
       {page === "admin" ? (
         <Admin
           onBack={() => navigate("home")}
-          dark={dark}
-          cycleTheme={cycleTheme}
-          themeMode={themeMode}
           onPageTitleChange={setPageTitle}
         />
       ) : (
         <main className="page-wrap">
           <div className="hero-row">
-            <div>
-              <div className="eyebrow">
-                <span className="eyebrow-line" />
-                订阅状态
-              </div>
-              <h1>
-                额度，<em>一眼看清。</em>
-              </h1>
-            </div>
+            <h1>订阅状态</h1>
           </div>
-          <section className="stat-grid" aria-label="账号概览">
-            <Stat
-              icon={<Command size={17} />}
-              label="已接入账号"
-              value={dashboard?.summary.total ?? 0}
-              suffix="个"
-              tone="green"
-            />
-            <Stat
-              icon={<Activity size={17} />}
-              label="运行正常"
-              value={dashboard?.summary.healthy ?? 0}
-              suffix="个"
-              tone="blue"
-            />
-            <Stat
-              icon={<AlertCircle size={17} />}
-              label="额度紧张"
-              value={dashboard?.summary.low ?? 0}
-              suffix="个"
-              tone="amber"
-            />
-            <Stat
-              icon={<CircleHelp size={17} />}
-              label="需要关注"
-              value={dashboard?.summary.errors ?? 0}
-              suffix="个"
-              tone="red"
-            />
-          </section>
+          <AccountSummary
+            total={dashboard ? accounts.length : undefined}
+            available={dashboard ? availableCount : undefined}
+            loading={loading && !dashboard}
+          />
           <section className="accounts-section">
             <div className="section-head">
               <div className="section-title-line">
-                <h2>渠道清单</h2>
+                <h2>账号清单</h2>
                 <span className="count-pill">{visible.length}</span>
               </div>
               <div className="toolbar">
+                <label className="search-box">
+                  <Search size={15} />
+                  <input
+                    aria-label="搜索账号"
+                    placeholder="搜索账号"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                  {query && (
+                    <button
+                      aria-label="清除搜索内容"
+                      onClick={() => setQuery("")}
+                    >
+                      <X size={13} />
+                    </button>
+                  )}
+                </label>
                 <div className="quota-mode-control">
                   <span id="quota-display-mode-label">显示方式</span>
                   <div
@@ -535,27 +574,11 @@ function App() {
                           checked={displayMode === mode}
                           onChange={() => setDisplayMode(mode)}
                         />
-                        <span>{mode === "used" ? "按已用量" : "按剩余量"}</span>
+                        <span>{mode === "used" ? "已用量" : "剩余量"}</span>
                       </label>
                     ))}
                   </div>
                 </div>
-                <label className="search-box">
-                  <Search size={15} />
-                  <input
-                    placeholder="搜索账号"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                  {query && (
-                    <button
-                      aria-label="清除搜索内容"
-                      onClick={() => setQuery("")}
-                    >
-                      <X size={13} />
-                    </button>
-                  )}
-                </label>
                 <select
                   aria-label="按渠道筛选"
                   value={selectedProvider}
@@ -570,13 +593,13 @@ function App() {
                 </select>
                 <select
                   aria-label="按状态筛选"
+                  className={`availability-filter availability-${statusFilter}`}
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
                   <option value="all">所有状态</option>
-                  <option value="healthy">运行正常</option>
-                  <option value="attention">需要关注</option>
-                  <option value="paused">已暂停</option>
+                  <option value="available">可用</option>
+                  <option value="unavailable">不可用</option>
                 </select>
               </div>
             </div>
@@ -592,7 +615,7 @@ function App() {
                 <strong>暂时无法连接用量服务</strong>
                 <span>{loadError}</span>
                 <button
-                  className="button secondary"
+                  className="button secondary btn btn--secondary"
                   onClick={() => {
                     setLoading(true);
                     void refresh();
@@ -619,7 +642,7 @@ function App() {
                 </span>
                 {!accounts.length && (
                   <button
-                    className="button primary"
+                    className="button primary btn btn--primary"
                     onClick={() => navigate("admin")}
                   >
                     <Plus size={15} /> 添加第一个账号 <ArrowRight size={15} />
@@ -632,15 +655,30 @@ function App() {
                   <AccountCard
                     key={a.id}
                     account={a}
+                    metrics={
+                      dashboard?.list?.find((row) => row.id === a.id)
+                        ? [
+                            ...(dashboard.list.find((row) => row.id === a.id)
+                              ?.token || []),
+                            ...(dashboard.list.find((row) => row.id === a.id)
+                              ?.tools || []),
+                            ...(dashboard.list.find((row) => row.id === a.id)
+                              ?.balances || []),
+                          ]
+                        : undefined
+                    }
                     index={i}
                     displayMode={displayMode}
                     expanded={expanded === a.id}
                     onExpand={() => {
                       setExpanded(expanded === a.id ? null : a.id);
-                      if (expanded !== a.id && !history[a.id])
-                        void loadHistory(a.id, "24h");
+                      if (expanded !== a.id) void loadHistory(a.id, "24h");
                     }}
-                    history={history[a.id]}
+                    history={
+                      history[a.id]?.range === (range[a.id] || "24h")
+                        ? history[a.id]
+                        : undefined
+                    }
                     range={range[a.id] || "24h"}
                     onRange={(p) => void loadHistory(a.id, p)}
                   />
@@ -649,10 +687,30 @@ function App() {
             )}
           </section>
           <footer className="page-footer">
+            <span
+              className="footer-version"
+              aria-label={`项目版本 v${appVersion}`}
+            >
+              v{appVersion}
+            </span>
             <span className="footer-right">
-              公开面板 <i />
-              只读访问 <span className="footer-sep">|</span> 页面每 30
-              秒检查更新
+              <span>
+                公开只读面板｜页面每{" "}
+                <button
+                  className="refresh-interval-button"
+                  type="button"
+                  aria-label={`页面刷新间隔 ${refreshSeconds} 秒，点击切换`}
+                  title="点击切换页面刷新间隔"
+                  onClick={() =>
+                    setRefreshSeconds((seconds) =>
+                      seconds >= 180 ? 30 : seconds + 30,
+                    )
+                  }
+                >
+                  {refreshSeconds}
+                </button>{" "}
+                秒刷新
+              </span>
             </span>
           </footer>
         </main>
@@ -660,37 +718,11 @@ function App() {
     </div>
   );
 }
-/** Render one summary statistic with its semantic color and icon. */
-function Stat({
-  icon,
-  label,
-  value,
-  suffix,
-  tone,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  suffix: string;
-  tone: string;
-}) {
-  return (
-    <div className={`stat-card tone-${tone}`}>
-      <span className="stat-icon">{icon}</span>
-      <span className="stat-label">{label}</span>
-      <strong>
-        {value}
-        <small>{suffix}</small>
-      </strong>
-      <span className="stat-accent" />
-    </div>
-  );
-}
-
 /** Render a provider account, its independent metrics, and its sampled usage history. */
 export function AccountCard({
   account: a,
-  index,
+  metrics,
+  index: _index,
   displayMode,
   expanded,
   onExpand,
@@ -699,6 +731,7 @@ export function AccountCard({
   onRange,
 }: {
   account: Account;
+  metrics?: Metric[];
   index: number;
   displayMode: QuotaDisplayMode;
   expanded: boolean;
@@ -708,62 +741,78 @@ export function AccountCard({
   onRange: (v: string) => void;
 }) {
   const [metricId, setMetricId] = useState("");
+  const displayMetrics = filterProviderMetrics(
+    metrics || a.data?.metrics || [],
+    a.provider,
+  );
+  const displayHistory = history
+    ? {
+        ...history,
+        points: history.points.map((point) => ({
+          ...point,
+          metrics: filterProviderMetrics(point.metrics, a.provider),
+        })),
+      }
+    : undefined;
   const metricChoices = Array.from(
     new Map(
-      (history?.points || [])
+      (displayHistory?.points || [])
         .flatMap((point) => point.metrics)
         .map((metric) => [metric.id, metric]),
     ).values(),
   );
   const activeMetricId = metricChoices.some((metric) => metric.id === metricId)
     ? metricId
-    : (metricChoices[0]?.id ?? "");
+    : defaultHistoryMetricId(metricChoices, a.provider);
+  const planName = a.data?.plan?.trim() || "";
+  const collectionStatus =
+    a.stale && a.status === "ok" ? "stale" : a.status || "pending";
+  const CollectionStatusIcon =
+    collectionStatus === "ok"
+      ? CheckCircle2
+      : ["pending", "disabled", "stale"].includes(collectionStatus)
+        ? Clock3
+        : collectionStatus === "auth_required"
+          ? KeyRound
+          : AlertCircle;
   return (
-    <article
-      className={`account-card card-enter ${a.stale ? "is-stale" : ""}`}
-      style={{ animationDelay: `${index * 55}ms` }}
-    >
+    <article className={`account-card ${a.stale ? "is-stale" : ""}`}>
       <div className="card-top">
-        <div className={`provider-mark provider-${a.provider}`}>
-          {(
-            {
-              minimax: "M",
-              glm: "GLM",
-              kimi: "K",
-              deepseek: "D",
-              volcengine: "V",
-              aliyun: "阿",
-              codex: "⌘",
-              claude: "✳",
-              cursor: "↗",
-              opencode: "OC",
-              antigravity: "✦",
-            } as Record<string, string>
-          )[a.provider] || "AI"}
-        </div>
+        <ProviderIcon provider={a.provider} />
         <div className="account-title">
-          <span className="provider-name">
-            {providerNames[a.provider] || a.provider}
-          </span>
           <span className="account-alias" title={a.alias}>
             {a.alias}
           </span>
+          <div className="account-meta">
+            <span
+              className="provider-name"
+              title={providerNames[a.provider] || a.provider}
+            >
+              {providerNames[a.provider] || a.provider}
+            </span>
+            {planName && (
+              <span className="account-plan" title={planName}>
+                {planName}
+              </span>
+            )}
+          </div>
         </div>
-        <span className={`status-tag status-${a.status}`}>
-          <i />
-          {a.stale && a.status === "ok"
-            ? "数据过期"
-            : a.status === "ok"
-              ? "采集正常"
-              : statusLabel[a.status || "pending"] || a.status || "等待采集"}
+        <span className={`status-tag status-${collectionStatus}`}>
+          <CollectionStatusIcon
+            className="collection-status-icon"
+            size={14}
+            aria-hidden="true"
+          />
+          <span>
+            {collectionStatus === "stale"
+              ? "数据过期"
+              : collectionStatus === "ok"
+                ? "采集正常"
+                : statusLabel[collectionStatus] || collectionStatus}
+          </span>
         </span>
       </div>
-      {a.provider !== "glm" && a.data?.plan && (
-        <div className="plan-line">
-          <span>{a.data.plan}</span>
-        </div>
-      )}
-      {!a.data ? (
+      {!a.data && !displayMetrics.length ? (
         <div className="no-usage">
           <span className="no-usage-icon">
             <Activity size={16} />
@@ -786,7 +835,7 @@ export function AccountCard({
         </div>
       ) : (
         <AccountMetrics
-          metrics={a.data.metrics || []}
+          metrics={displayMetrics}
           provider={a.provider}
           displayMode={displayMode}
         />
@@ -799,7 +848,10 @@ export function AccountCard({
             : "尚未采集"}
         </span>
         <button
-          onClick={onExpand}
+          onClick={() => {
+            if (!expanded) setMetricId("");
+            onExpand();
+          }}
           aria-expanded={expanded}
           aria-label={expanded ? "收起历史趋势" : "查看历史趋势"}
         >
@@ -842,21 +894,21 @@ export function AccountCard({
               ))}
             </div>
           </div>
-          {history?.points.some(
+          {displayHistory?.points.some(
             (point) => !point.gap && point.metrics.length,
           ) ? (
             <HistoryChart
-              history={history}
+              history={displayHistory}
               range={range}
               metricId={activeMetricId}
               provider={a.provider}
               displayMode={displayMode}
             />
-          ) : history?.points.length ? (
+          ) : displayHistory?.points.length ? (
             <div className="history-empty">采集完成后会逐步形成趋势</div>
           ) : (
             <div className="history-empty">
-              {history ? "当前范围暂无历史记录" : "正在读取历史记录…"}
+              {displayHistory ? "当前范围暂无历史记录" : "正在读取历史记录…"}
             </div>
           )}
           <small>历史记录反映定时采集时的额度变化，不代表精确消费账单。</small>
@@ -885,8 +937,8 @@ export function AccountMetrics({
   provider?: string;
   displayMode?: QuotaDisplayMode;
 }) {
-  const displayMetrics = metrics.map((metric) =>
-    kimiDisplayMetric(metric, provider),
+  const displayMetrics = filterProviderMetrics(metrics, provider).map(
+    (metric) => kimiDisplayMetric(metric, provider),
   );
   if (provider === "kimi") {
     displayMetrics.sort((left, right) => {
@@ -898,18 +950,38 @@ export function AccountMetrics({
   const regular = displayMetrics.filter(
     (metric) => metricGroup(metric) !== "tool",
   );
-  const tools = displayMetrics.filter(
-    (metric) => metricGroup(metric) === "tool",
-  );
+  let tools = displayMetrics.filter((metric) => metricGroup(metric) === "tool");
+  if (provider === "minimax") {
+    const sharedSearch = tools.filter((metric) => metric.tool === "web_search");
+    let emittedSearch = false;
+    tools = tools
+      .filter((metric) => {
+        if (metric.tool !== "web_search") return true;
+        if (emittedSearch) return false;
+        emittedSearch = true;
+        return true;
+      })
+      .map((metric) => {
+        if (metric.tool !== "web_search") return metric;
+        return {
+          ...metric,
+          window: Array.from(
+            new Set(sharedSearch.map((item) => item.window).filter(Boolean)),
+          ).join(" / "),
+          resets_at: null,
+        };
+      });
+  }
   const toolDetails = tools.filter(
     (metric) =>
+      metric.tool !== "web_search" &&
       metric.used != null &&
       metric.limit == null &&
       metric.remaining == null &&
       metric.used_percent == null,
   );
   const toolQuotas = tools.filter((metric) => !toolDetails.includes(metric));
-  if (!metrics.length)
+  if (!displayMetrics.length)
     return <div className="no-metric">渠道尚未返回可展示的用量指标</div>;
   return (
     <div className="metric-list">
@@ -997,17 +1069,25 @@ export function MetricView({
       ? null
       : Math.max(0, Math.min(100, displayedPercent));
   const reportedPercent = rawProgressOf(m);
-  const reading = metricReading(m, displayMode);
+  const sharedSearch = m.tool === "web_search" && m.quota_scope === "shared";
+  const reading = metricReading(m, sharedSearch ? "used" : displayMode);
   const alternateMode = displayMode === "used" ? "remaining" : "used";
   const alternateReading = metricReading(m, alternateMode);
   const direction = displayMode === "used" ? "已用" : "剩余";
   const displayLabel = metricDisplayLabel(m);
-  const windowLabel = metricWindowLabel(m.window);
+  const windowLabel =
+    sharedSearch && m.window?.includes(" / ")
+      ? m.window.split(" / ").map(metricWindowLabel).join(" / ")
+      : metricWindowLabel(m.window);
   const duplicateWindow = Boolean(
     windowLabel &&
     displayLabel.replaceAll(" ", "").includes(windowLabel.replaceAll(" ", "")),
   );
   const isQuota = m.kind === "quota";
+  const sharedUnavailable =
+    m.quota_scope === "shared" && m.availability === "unavailable";
+  const glmSharedSearch =
+    m.tool === "web_search" && m.quota_scope === "shared" && m.used != null;
   const critical = isQuota && reportedPercent != null && reportedPercent >= 85;
   const hasReset = Boolean(
     m.resets_at && Number.isFinite(Date.parse(m.resets_at)),
@@ -1050,7 +1130,7 @@ export function MetricView({
           <strong className="metric-value">{reading.value}</strong>
         </div>
       </div>
-      {isQuota && percent != null && (
+      {isQuota && !glmSharedSearch && percent != null && (
         <div
           className="progress-track"
           role="progressbar"
@@ -1068,18 +1148,26 @@ export function MetricView({
       )}
       <div className="metric-secondary">
         <div className="metric-meta">
-          <span>
-            {isQuota
-              ? `${alternateMode === "used" ? "已用" : "剩余"} ${alternateReading.value}`
-              : m.kind === "balance"
-                ? "账户余额"
-                : m.kind === "cost"
-                  ? "本周期消费"
-                  : "已用暂无数据"}
-          </span>
-          {isQuota && m.limit != null && m.unit !== "%" && (
-            <span>{`总额 ${metricValue(m.limit, m)}`}</span>
+          {glmSharedSearch ? (
+            <span>共享 MCP 额度 · 未提供独立上限</span>
+          ) : sharedUnavailable ? (
+            <span>{m.note || "共享套餐额度，独立用量暂无数据"}</span>
+          ) : (
+            <span>
+              {isQuota
+                ? `${alternateMode === "used" ? "已用" : "剩余"} ${alternateReading.value}`
+                : m.kind === "balance"
+                  ? "账户余额"
+                  : m.kind === "cost"
+                    ? "本周期消费"
+                    : "已用暂无数据"}
+            </span>
           )}
+          {!glmSharedSearch &&
+            !sharedUnavailable &&
+            isQuota &&
+            m.limit != null &&
+            m.unit !== "%" && <span>{`总额 ${metricValue(m.limit, m)}`}</span>}
           {m.currency && (
             <span>
               {m.currency === "CNY"
@@ -1091,7 +1179,7 @@ export function MetricView({
           )}
           {critical && <span className="quota-warning">{warning}</span>}
         </div>
-        {isQuota && (
+        {isQuota && (!sharedSearch || hasReset) && (
           <div className="metric-reset">
             <Clock3 size={11} aria-hidden="true" />
             {hasReset ? (
@@ -1178,7 +1266,7 @@ function HistoryChart({
             tickFormatter={(timestamp: number) =>
               formatHistoryTime(new Date(timestamp).toISOString(), range)
             }
-            tick={{ fill: "var(--muted)", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 13 }}
             tickLine={false}
             axisLine={false}
             minTickGap={28}
@@ -1196,7 +1284,7 @@ function HistoryChart({
               background: "var(--surface)",
               border: "1px solid var(--line)",
               borderRadius: 10,
-              fontSize: 12,
+              fontSize: 13,
             }}
             labelStyle={{ color: "var(--ink)" }}
             labelFormatter={(timestamp) =>
@@ -1218,6 +1306,7 @@ function HistoryChart({
             />
           ))}
           <Area
+            isAnimationActive={false}
             type="monotone"
             dataKey="value"
             name={historySeriesLabel(selectedMetric, provider, displayMode)}
@@ -1236,15 +1325,9 @@ function HistoryChart({
 /** Handle administrator authentication, provider credentials, collection settings, and MCP access. */
 function Admin({
   onBack,
-  dark,
-  cycleTheme,
-  themeMode,
   onPageTitleChange,
 }: {
   onBack: () => void;
-  dark: boolean;
-  cycleTheme: () => void;
-  themeMode: "system" | "light" | "dark";
   onPageTitleChange: (title: string) => void;
 }) {
   const [csrf, setCsrf] = useState("");
@@ -1259,12 +1342,27 @@ function Admin({
   const activeRefreshes = useRef(new Set<string>());
   const [providers, setProviders] = useState<Provider[]>([]);
   const [interval, setIntervalValue] = useState(1);
+  const [pendingSearch, setPendingSearch] = useState<Record<string, boolean>>(
+    {},
+  );
   const [titleDraft, setTitleDraft] = useState("");
   const [savingTitle, setSavingTitle] = useState(false);
-  const [mcpConfigured, setMcpConfigured] = useState(false);
-  const [token, setToken] = useState("");
-  const [showToken, setShowToken] = useState(false);
   const [modal, setModal] = useState(false);
+  const modalRef = useRef<HTMLDialogElement>(null);
+  // 原生模态对话框负责焦点圈定和背景隔离，关闭后回到触发按钮。
+  useEffect(() => {
+    if (!modal || !modalRef.current) return;
+    const dialog = modalRef.current;
+    const opener = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      opener?.focus({ preventScroll: true });
+    };
+  }, [modal]);
   const [editing, setEditing] = useState<Account | null>(null);
   const [step, setStep] = useState(1);
   const [providerId, setProviderId] = useState("");
@@ -1301,7 +1399,6 @@ function Admin({
       setProviders(p);
       setIntervalValue(s.interval_minutes);
       setTitleDraft(s.page_title);
-      setMcpConfigured(s.mcp_configured);
     } catch {
       setLogged(false);
     }
@@ -1504,30 +1601,28 @@ function Admin({
       setSavingTitle(false);
     }
   };
-  const issueToken = async () => {
-    try {
-      const r = await adminApi<{ token: string }>(
-        "/api/admin/mcp-token",
-        "POST",
-        {},
-      );
-      setToken(r.token);
-      setShowToken(true);
-      setMcpConfigured(true);
-    } catch (e) {
-      setNotice(e instanceof Error ? e.message : "令牌生成失败");
-    }
-  };
-  const revoke = async () => {
-    if (!confirm("撤销后，使用当前 MCP 令牌的客户端将无法继续访问。确定撤销？"))
-      return;
-    try {
-      await adminApi("/api/admin/mcp-token", "DELETE");
-      setToken("");
-      setMcpConfigured(false);
-      setNotice("MCP 令牌已撤销");
-    } catch (e) {
-      setNotice(e instanceof Error ? e.message : "撤销失败");
+  /** 在弹窗首尾显式循环 Tab，避免浏览器把焦点移到页面之外的工具栏。 */
+  const trapDialogFocus = (event: React.KeyboardEvent<HTMLDialogElement>) => {
+    if (event.key !== "Tab") return;
+    const dialog = event.currentTarget;
+    const controls = [
+      ...dialog.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ].filter((element) => element.getClientRects().length > 0);
+    const first = controls[0];
+    const last = controls.at(-1);
+    if (!first || !last) return;
+    if (
+      event.shiftKey &&
+      (document.activeElement === first ||
+        !dialog.contains(document.activeElement))
+    ) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   };
   if (!logged)
@@ -1560,7 +1655,7 @@ function Admin({
               {loginError}
             </div>
           )}
-          <button className="button primary login-submit">
+          <button className="button primary btn btn--primary login-submit">
             登录管理面板 <ArrowRight size={15} />
           </button>
           <span className="login-foot">
@@ -1582,13 +1677,6 @@ function Admin({
             <span />
             管理员会话有效
           </span>
-          <button
-            className="icon-button"
-            aria-label={`切换主题，当前${themeMode === "system" ? "跟随系统" : themeMode === "dark" ? "深色" : "浅色"}`}
-            onClick={cycleTheme}
-          >
-            {dark ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
           <button className="logout-button" onClick={logout}>
             <LogOut size={14} />
             退出
@@ -1597,14 +1685,10 @@ function Admin({
       </div>
       <div className="admin-heading">
         <div>
-          <span className="eyebrow">
-            <span className="eyebrow-line" />
-            控制中心
-          </span>
           <h1>管理面板</h1>
           <p>管理订阅接入、采集节奏与远程 MCP。</p>
         </div>
-        <button className="button primary" onClick={openNew}>
+        <button className="button primary btn btn--primary" onClick={openNew}>
           <Plus size={16} />
           添加渠道账号
         </button>
@@ -1633,7 +1717,10 @@ function Admin({
             </div>
             <strong>还没有接入渠道</strong>
             <span>添加第一个账号，开始汇总你的订阅用量。</span>
-            <button className="button secondary" onClick={openNew}>
+            <button
+              className="button secondary btn btn--secondary"
+              onClick={openNew}
+            >
               <Plus size={14} />
               添加账号
             </button>
@@ -1647,9 +1734,7 @@ function Admin({
                   className={`admin-account-row ${!a.enabled ? "disabled-row" : ""}`}
                   key={a.id}
                 >
-                  <div className={`provider-mark provider-${a.provider}`}>
-                    {providerNames[a.provider]?.slice(0, 2) || "AI"}
-                  </div>
+                  <ProviderIcon provider={a.provider} />
                   <div className="admin-account-info">
                     <strong>{a.alias}</strong>
                     <span>
@@ -1710,11 +1795,16 @@ function Admin({
                         }
                       />
                     </button>
-                    <button title="编辑" onClick={() => openEdit(a)}>
+                    <button
+                      title="编辑"
+                      aria-label={`编辑${a.alias}`}
+                      onClick={() => openEdit(a)}
+                    >
                       <Settings2 size={14} />
                     </button>
                     <button
                       title={a.enabled ? "暂停" : "启用"}
+                      aria-label={`${a.enabled ? "暂停" : "启用"}${a.alias}`}
                       onClick={() => void toggle(a)}
                     >
                       {a.enabled ? (
@@ -1725,6 +1815,7 @@ function Admin({
                     </button>
                     <button
                       title="删除"
+                      aria-label={`删除${a.alias}`}
                       className="danger-action"
                       onClick={() => void remove(a)}
                     >
@@ -1762,7 +1853,7 @@ function Admin({
           </label>
           <button
             type="submit"
-            className="button secondary small"
+            className="button secondary btn btn--secondary small"
             disabled={savingTitle}
           >
             {savingTitle && <LoaderCircle size={13} className="spin" />}
@@ -1802,7 +1893,7 @@ function Admin({
               ))}
             </select>
             <button
-              className="button secondary small"
+              className="button secondary btn btn--secondary small"
               onClick={() => void saveSettings()}
             >
               保存
@@ -1811,88 +1902,109 @@ function Admin({
         </div>
       </section>
       <InfoAccessPanel csrf={csrf} onNotice={setNotice} />
-      <section className="admin-panel settings-panel">
+      <section
+        className="admin-panel settings-panel"
+        aria-labelledby="search-heading"
+      >
         <div className="panel-title">
           <div>
-            <h2>远程 MCP 接入</h2>
-            <p>让支持 MCP 的智能体安全读取用量数据</p>
+            <h2 id="search-heading">联网搜索</h2>
+            <p>选择参与搜索的账号，勾选后立即生效</p>
           </div>
-          <span className={`mcp-state ${mcpConfigured ? "configured" : ""}`}>
-            <i />
-            {mcpConfigured ? "已启用" : "未配置"}
-          </span>
+          <Search size={18} className="panel-icon" />
         </div>
-        <div className="setting-row mcp-row">
-          <div>
-            <strong>只读访问令牌</strong>
-            <span>仅在生成时显示，请复制并妥善保管</span>
-          </div>
-          <div className="setting-control">
-            {mcpConfigured ? (
-              <button
-                className="button secondary small"
-                onClick={() => void revoke()}
-              >
-                撤销令牌
-              </button>
-            ) : (
-              <button
-                className="button secondary small"
-                onClick={() => void issueToken()}
-              >
-                <KeyRound size={14} />
-                生成令牌
-              </button>
-            )}
-          </div>
-        </div>
-        {token && (
-          <div className="token-box">
-            <code>
-              {showToken ? token : "•".repeat(Math.min(token.length, 36))}
-            </code>
-            <button
-              aria-label={showToken ? "隐藏 MCP 令牌" : "显示 MCP 令牌"}
-              onClick={() => setShowToken(!showToken)}
-            >
-              {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
-            </button>
-            <CopyButton
-              text={token}
-              label="复制 MCP 令牌"
-              successMessage="令牌已复制"
-              size={15}
-              onNotice={setNotice}
-            />
-          </div>
-        )}
-        <div className="mcp-endpoint">
-          <span>服务地址</span>
-          <code>{location.origin}/mcp</code>
-          <CopyButton
-            text={`${location.origin}/mcp`}
-            label="复制 MCP 服务地址"
-            successMessage="MCP 服务地址已复制"
-            onNotice={setNotice}
-          />
+        <div className="mcp-search-list">
+          <p className="info-access-hint">
+            以下按实际尝试顺序排列；在账号列表调整排序，成功即停止。
+          </p>
+          {accounts
+            .filter(
+              (account) =>
+                account.search_supported && account.credential_configured,
+            )
+            .map((account, index) => (
+              <label className="search-account-row" key={account.id}>
+                <span>
+                  <strong>
+                    {index + 1}. {account.alias}
+                  </strong>
+                  <small>
+                    {providerNames[account.provider] || account.provider}{" "}
+                    {!account.enabled
+                      ? "（已暂停，不参与搜索）"
+                      : account.search_enabled
+                        ? "（参与搜索）"
+                        : "（搜索未开启）"}
+                  </small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(account.search_enabled)}
+                  disabled={Boolean(pendingSearch[account.id])}
+                  aria-label={`${account.alias} 联网搜索`}
+                  onChange={async (event) => {
+                    const enabled = event.target.checked;
+                    setPendingSearch((old) => ({ ...old, [account.id]: true }));
+                    try {
+                      await adminApi(
+                        `/api/admin/accounts/${account.id}`,
+                        "PATCH",
+                        { search_enabled: enabled },
+                      );
+                      setAccounts((old) =>
+                        old.map((row) =>
+                          row.id === account.id
+                            ? { ...row, search_enabled: enabled }
+                            : row,
+                        ),
+                      );
+                      setNotice(
+                        `${account.alias} 联网搜索已${enabled ? "启用" : "关闭"}`,
+                      );
+                    } catch (error) {
+                      setNotice(
+                        error instanceof Error
+                          ? error.message
+                          : "搜索开关更新失败",
+                      );
+                    } finally {
+                      setPendingSearch((old) => ({
+                        ...old,
+                        [account.id]: false,
+                      }));
+                    }
+                  }}
+                />
+              </label>
+            ))}
+          {!accounts.some(
+            (account) =>
+              account.search_supported && account.credential_configured,
+          ) && (
+            <p className="info-access-hint">
+              暂无可选账号，请先配置支持联网搜索的 GLM 或 MiniMax API Key 账号。
+            </p>
+          )}
         </div>
       </section>
       <footer className="admin-footer">
-        配额簿 <span>·</span> 本地管理空间
+        仪表盘 <span>·</span> 本地管理空间
       </footer>
       {modal && (
-        <div
+        <dialog
+          ref={modalRef}
           className="modal-backdrop"
+          aria-labelledby="config-dialog-title"
+          onKeyDown={trapDialogFocus}
+          onCancel={(event) => {
+            event.preventDefault();
+            setModal(false);
+          }}
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) setModal(false);
           }}
         >
-          <div
-            className="config-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="config-dialog-title"
-          >
+          <div className="config-modal">
             <div className="modal-top">
               <div>
                 <span className="eyebrow">
@@ -1921,15 +2033,18 @@ function Admin({
                     providers.map((p) => (
                       <button
                         key={p.id}
+                        autoFocus={providerId === p.id}
                         className={`provider-choice ${providerId === p.id ? "selected" : ""}`}
                         onClick={() => {
                           setProviderId(p.id);
+                          setAlias(
+                            (current) =>
+                              current || (p.id === "glm" ? "GLM" : ""),
+                          );
                           setAuthType("");
                         }}
                       >
-                        <span className={`provider-mark provider-${p.id}`}>
-                          {(providerNames[p.id] || p.name).slice(0, 2)}
-                        </span>
+                        <ProviderIcon provider={p.id} />
                         <span>{providerNames[p.id] || p.name}</span>
                         {providerId === p.id && <CheckCircle2 size={15} />}
                       </button>
@@ -1940,13 +2055,13 @@ function Admin({
                 </div>
                 <div className="modal-actions">
                   <button
-                    className="button secondary"
+                    className="button secondary btn btn--secondary"
                     onClick={() => setModal(false)}
                   >
                     取消
                   </button>
                   <button
-                    className="button primary"
+                    className="button primary btn btn--primary"
                     disabled={!providerId}
                     onClick={() => setStep(2)}
                   >
@@ -1960,6 +2075,7 @@ function Admin({
                   <label className="field-label">
                     账号别名
                     <input
+                      autoFocus
                       value={alias}
                       onChange={(e) => setAlias(e.target.value)}
                       placeholder="例如：个人主账号"
@@ -2058,7 +2174,7 @@ function Admin({
                 </div>
                 <div className="modal-actions modal-actions-split">
                   <button
-                    className="button secondary"
+                    className="button secondary btn btn--secondary"
                     onClick={() => setStep(1)}
                   >
                     <ArrowLeft size={14} />
@@ -2066,7 +2182,7 @@ function Admin({
                   </button>
                   <div>
                     <button
-                      className="button secondary test-button"
+                      className="button secondary btn btn--secondary test-button"
                       disabled={!authType || testResult === "testing"}
                       onClick={() => void test()}
                     >
@@ -2074,7 +2190,7 @@ function Admin({
                       测试连接
                     </button>
                     <button
-                      className="button primary"
+                      className="button primary btn btn--primary"
                       disabled={!alias.trim() || !authType || busy}
                       onClick={() => void save()}
                     >
@@ -2090,7 +2206,7 @@ function Admin({
               </>
             )}
           </div>
-        </div>
+        </dialog>
       )}
       {notice && (
         <div className="toast" role="status" aria-live="polite">

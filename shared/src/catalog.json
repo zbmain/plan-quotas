@@ -1,0 +1,374 @@
+[
+  {
+    "id": "minimax",
+    "name": "MiniMax",
+    "auth_types": ["api_key", "cookie"],
+    "fields": {
+      "api_key": [
+        {
+          "key": "api_key",
+          "label": "Coding Plan API Key",
+          "required": true,
+          "secret": true
+        }
+      ],
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "控制台 Cookie",
+          "required": true,
+          "secret": true
+        }
+      ]
+    },
+    "help": "优先使用中国区 Coding Plan API Key 查询额度；支持录入控制台 Cookie，但尚未完成真实接口验证。",
+    "docs_url": "https://platform.minimaxi.com/user-center/payment/coding-plan"
+  },
+  {
+    "id": "glm",
+    "name": "GLM",
+    "auth_types": ["api_key"],
+    "fields": {
+      "api_key": [
+        {
+          "key": "api_key",
+          "label": "Coding Plan API Key",
+          "required": true,
+          "secret": true
+        }
+      ]
+    },
+    "help": "使用中国区个人 Coding Plan API Key。",
+    "docs_url": "https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys"
+  },
+  {
+    "id": "kimi",
+    "name": "Kimi",
+    "auth_types": ["api_key", "cookie", "jwt"],
+    "fields": {
+      "api_key": [
+        {
+          "key": "api_key",
+          "label": "Coding API Key",
+          "required": true,
+          "secret": true
+        }
+      ],
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "Kimi Cookie",
+          "required": true,
+          "secret": true
+        }
+      ],
+      "jwt": [
+        {
+          "key": "jwt",
+          "label": "Kimi 登录 JWT",
+          "required": true,
+          "secret": true
+        }
+      ]
+    },
+    "help": "Coding API Key 与网站 JWT 使用不同接口；请按持有的凭据选择。",
+    "docs_url": "https://www.kimi.com/code/console"
+  },
+  {
+    "id": "deepseek",
+    "name": "DeepSeek",
+    "auth_types": ["api_key"],
+    "fields": {
+      "api_key": [
+        {
+          "key": "api_key",
+          "label": "API Key",
+          "required": true,
+          "secret": true
+        }
+      ]
+    },
+    "help": "查询 API 账户余额，不代表订阅套餐额度。",
+    "docs_url": "https://platform.deepseek.com/api_keys"
+  },
+  {
+    "id": "volcengine",
+    "name": "火山引擎",
+    "auth_types": ["aksk"],
+    "fields": {
+      "aksk": [
+        {
+          "key": "access_key",
+          "label": "Access Key ID",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "secret_key",
+          "label": "Secret Access Key",
+          "required": true,
+          "secret": true
+        }
+      ]
+    },
+    "help": "使用具有 Coding Plan 用量查询权限的访问密钥。",
+    "docs_url": "https://console.volcengine.com/iam/keymanage/"
+  },
+  {
+    "id": "aliyun",
+    "name": "阿里云百炼",
+    "auth_types": ["cookie"],
+    "fields": {
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "百炼控制台 Cookie",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "sec_token",
+          "label": "sec_token",
+          "required": false,
+          "secret": true
+        }
+      ]
+    },
+    "help": "使用百炼中国区控制台会话；会话失效后需重新导入。",
+    "docs_url": "https://bailian.console.aliyun.com/"
+  },
+  {
+    "id": "codex",
+    "name": "Codex",
+    "auth_types": ["oauth"],
+    "fields": {
+      "oauth": [
+        {
+          "key": "access_token",
+          "label": "Access Token",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "refresh_token",
+          "label": "Refresh Token",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "expires_at",
+          "label": "过期时间（ISO 或秒时间戳）",
+          "required": false,
+          "secret": false
+        },
+        {
+          "key": "client_id",
+          "label": "OAuth Client ID（续期时可能需要）",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "client_secret",
+          "label": "OAuth Client Secret（续期时可能需要）",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "account_id",
+          "label": "ChatGPT Account ID（可选）",
+          "required": false,
+          "secret": true
+        }
+      ]
+    },
+    "help": "导入 Codex OAuth access_token，可附带 refresh_token；不会读取本机客户端文件。",
+    "docs_url": "https://chatgpt.com/codex/settings/usage"
+  },
+  {
+    "id": "claude",
+    "name": "Claude",
+    "auth_types": ["oauth", "cookie"],
+    "fields": {
+      "oauth": [
+        {
+          "key": "access_token",
+          "label": "Access Token",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "refresh_token",
+          "label": "Refresh Token",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "expires_at",
+          "label": "过期时间（ISO 或秒时间戳）",
+          "required": false,
+          "secret": false
+        },
+        {
+          "key": "client_id",
+          "label": "OAuth Client ID（续期时可能需要）",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "client_secret",
+          "label": "OAuth Client Secret（续期时可能需要）",
+          "required": false,
+          "secret": true
+        }
+      ],
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "Claude Cookie / sessionKey",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization ID（可选）",
+          "required": false,
+          "secret": true
+        }
+      ]
+    },
+    "help": "导入 Claude OAuth 或登录会话，按实际权限返回个人套餐窗口。",
+    "docs_url": "https://claude.ai/settings/usage"
+  },
+  {
+    "id": "cursor",
+    "name": "Cursor",
+    "auth_types": ["cookie"],
+    "fields": {
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "Cursor Cookie / WorkosCursorSessionToken",
+          "required": true,
+          "secret": true
+        }
+      ]
+    },
+    "help": "使用 Cursor 网站登录会话查询套餐及额外消费。",
+    "docs_url": "https://cursor.com/dashboard"
+  },
+  {
+    "id": "opencode",
+    "name": "OpenCode",
+    "auth_types": ["api_key", "cookie"],
+    "fields": {
+      "api_key": [
+        {
+          "key": "api_key",
+          "label": "OpenCode Go API Key",
+          "required": true,
+          "secret": true
+        }
+      ],
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "OpenCode Console Cookie",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "workspace_id",
+          "label": "工作空间 ID（如 wrk_…）",
+          "required": true,
+          "secret": false
+        }
+      ]
+    },
+    "help": "API Key 查询 Go 订阅的 5h、week、month 额度；Cookie 方式需提供当前 Console 会话及工作空间 ID，另可读取预付费账户余额。请勿使用其他渠道的模型密钥或普通工作空间 Key 代替 Go API Key。",
+    "docs_url": "https://opencode.ai/console"
+  },
+  {
+    "id": "opendesign",
+    "name": "OpenDesign",
+    "auth_types": ["control_key", "cookie"],
+    "fields": {
+      "control_key": [
+        {
+          "key": "control_key",
+          "label": "账户凭据（Control Key）",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "workspace_id",
+          "label": "个人工作区 ID",
+          "required": true,
+          "secret": false
+        }
+      ],
+      "cookie": [
+        {
+          "key": "cookie",
+          "label": "官方网页登录 Cookie",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "workspace_id",
+          "label": "个人工作区 ID",
+          "required": true,
+          "secret": false
+        }
+      ]
+    },
+    "help": "支持个人 Go / Plus / Pro / Max 套餐。请从已登录的官方 Vela 配置中手动取得 Control Key，或从本人已登录 Cloud 控制台的账单请求中复制 Cookie，并确认填写个人工作区 ID。模型 API Key 不能查询套餐额度；网页登录令牌不能替代 Control Key。不会自动读取本机认证文件，凭据失效后请重新登录官方账户并更新。",
+    "docs_url": "https://open-design.ai/zh/help/billing/"
+  },
+  {
+    "id": "antigravity",
+    "name": "Antigravity",
+    "auth_types": ["oauth"],
+    "fields": {
+      "oauth": [
+        {
+          "key": "access_token",
+          "label": "Access Token",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "refresh_token",
+          "label": "Refresh Token",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "expires_at",
+          "label": "过期时间（ISO 或秒时间戳）",
+          "required": false,
+          "secret": false
+        },
+        {
+          "key": "client_id",
+          "label": "OAuth Client ID（续期时可能需要）",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "client_secret",
+          "label": "OAuth Client Secret（续期时可能需要）",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "project_id",
+          "label": "Project ID（可选）",
+          "required": false,
+          "secret": true
+        }
+      ]
+    },
+    "help": "导入 Google OAuth；续期需要对应 client_id/client_secret。请先在官方客户端完成账号开通。",
+    "docs_url": "https://antigravity.google/"
+  }
+]

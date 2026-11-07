@@ -1,0 +1,4019 @@
+[
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        },
+        "private": "must-not-be-published"
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_fixed_scoped_request_and_percentage_only_output (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.633761Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_cookie_reads_the_same_fixed_workspace_without_bearer (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.634754Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "625",
+              "remainingCredits": "99375",
+              "limitCredits": "100000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "6250",
+              "remainingCredits": "93750",
+              "limitCredits": "100000",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        },
+        "billingMode": "shared",
+        "fundingCheck": "available",
+        "taskCheck": null
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_personal_shared_billing_preserves_small_percentage_units (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 0.625,
+          "limit": 100.0,
+          "remaining": 99.375,
+          "used_percent": 0.625,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 6.25,
+          "limit": 100.0,
+          "remaining": 93.75,
+          "used_percent": 6.25,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.635561Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "-1.25",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_actual_week_only_windows_and_signed_wallet[go] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": -1.25,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.636354Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "-1.25",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "plus",
+          "windows": [
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_actual_week_only_windows_and_signed_wallet[plus] (call)",
+    "result": {
+      "plan": "OpenDesign Plus",
+      "metrics": [
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": -1.25,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.637194Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "-1.25",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "pro",
+          "windows": [
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_actual_week_only_windows_and_signed_wallet[pro] (call)",
+    "result": {
+      "plan": "OpenDesign Pro",
+      "metrics": [
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": -1.25,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.637920Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "-1.25",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "max",
+          "windows": [
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_actual_week_only_windows_and_signed_wallet[max] (call)",
+    "result": {
+      "plan": "OpenDesign Max",
+      "metrics": [
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": -1.25,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.638945Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": null,
+              "remainingCredits": null,
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters0-expected0] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": null,
+          "limit": 100.0,
+          "remaining": null,
+          "used_percent": null,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.639845Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": null,
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters1-expected1] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_percent": null,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.640725Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "0",
+              "remainingCredits": "0",
+              "limitCredits": "0",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters2-expected2] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_percent": null,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.641640Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "0",
+              "remainingCredits": "100",
+              "limitCredits": "100",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters3-expected3] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 0.0,
+          "limit": 100.0,
+          "remaining": 100.0,
+          "used_percent": 0.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.642464Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "125",
+              "remainingCredits": "0",
+              "limitCredits": "100",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters4-expected4] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 125.0,
+          "limit": 100.0,
+          "remaining": 0.0,
+          "used_percent": 125.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.643398Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": null,
+              "remainingCredits": "60",
+              "limitCredits": "100",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters5-expected5] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 40.0,
+          "limit": 100.0,
+          "remaining": 60.0,
+          "used_percent": 40.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.644223Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "50",
+              "remainingCredits": null,
+              "limitCredits": "100",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters6-expected6] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 50.0,
+          "limit": 100.0,
+          "remaining": 50.0,
+          "used_percent": 50.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.645043Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "remainingCredits": "3000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "limitCredits": "4000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters7-expected7] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.646110Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "0.1",
+              "remainingCredits": "0.9",
+              "limitCredits": "1",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_unknown_zero_overage_and_decimal_credits[counters8-expected8] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 10.0,
+          "limit": 100.0,
+          "remaining": 90.0,
+          "used_percent": 10.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.646909Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 86400,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_other_durations_are_not_invented_months[86400-1d] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-86400-6d582f2b90c91205",
+          "label": "周期额度",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "1d",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.647669Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 2592000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_other_durations_are_not_invented_months[2592000-30d] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-2592000-6d582f2b90c91205",
+          "label": "周期额度",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "30d",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.648434Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 5400,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_other_durations_are_not_invented_months[5400-90m] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-5400-6d582f2b90c91205",
+          "label": "周期额度",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "90m",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.649263Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 91,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_other_durations_are_not_invented_months[91-91s] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-91-6d582f2b90c91205",
+          "label": "周期额度",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "91s",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.650035Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_window_identity_survives_order_change_and_reset (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.650738Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            },
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "0",
+              "remainingCredits": "10000000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T10:00:00Z"
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_window_identity_survives_order_change_and_reset (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 0.0,
+          "limit": 100.0,
+          "remaining": 100.0,
+          "used_percent": 0.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T10:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.650892Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 2,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path0-2-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": true,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path1-True-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "different-workspace",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path2-different-workspace-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": "model-specific-result",
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path3-model-specific-result-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": null,
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path4-None-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": null
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path5-None-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "different-workspace",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path6-different-workspace-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": null,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path7-None-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": [],
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path8-value8-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "team",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path9-team-subscription_unavailable] (call)",
+    "error": "subscription_unavailable"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        },
+        "workspaceType": "team"
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path10-team-subscription_unavailable] (call)",
+    "error": "subscription_unavailable"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": false,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path11-False-subscription_unavailable] (call)",
+    "error": "subscription_unavailable"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": {}
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path12-value12-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": []
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path13-value13-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path14--invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": true,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path15-True-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 0,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path16-0-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": 100,
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path17-100-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "NaN",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path18-NaN-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "-1",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path19--1-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "1e30",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path20-1e30-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "999999999999999999999999999999",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path21-999999999999999999999999999999-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": [],
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path22-value22-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "tomorrow"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path23-tomorrow-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path24-2030-01-01-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": true,
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path25-True-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "Infinity",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_invalid_shapes_and_scope_fail_safely[path26-Infinity-invalid_response] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_missing_balance_is_unknown_and_duplicate_windows_are_rejected (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:37.673743Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            },
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_missing_balance_is_unknown_and_duplicate_windows_are_rejected (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_admin_encryption_info_mcp_history_and_restart[control_key] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.509382Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_admin_encryption_info_mcp_history_and_restart[control_key] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.512933Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_admin_encryption_info_mcp_history_and_restart[cookie] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.568063Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_admin_encryption_info_mcp_history_and_restart[cookie] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.571634Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[401-auth_required] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.611462Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[403-error] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.615057Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[429-rate_limited] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.618672Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[workspace-error] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.622300Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "unrelated",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[workspace-error] (call)",
+    "error": "invalid_response"
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go",
+          "windows": [
+            {
+              "policyId": "sample-5h",
+              "durationSeconds": 18000,
+              "resetMode": "activity_triggered",
+              "usedCredits": "2500000000000000000000000",
+              "remainingCredits": "7500000000000000000000000",
+              "limitCredits": "10000000000000000000000000",
+              "windowStart": "2030-01-01T00:00:00Z",
+              "resetsAt": "2030-01-01T05:00:00Z"
+            },
+            {
+              "policyId": "sample-week",
+              "durationSeconds": 604800,
+              "resetMode": "anchored_recurring",
+              "usedCredits": "2",
+              "remainingCredits": "98",
+              "limitCredits": "100",
+              "windowStart": null,
+              "resetsAt": null
+            }
+          ]
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[shape-error] (call)",
+    "result": {
+      "plan": "OpenDesign Go",
+      "metrics": [
+        {
+          "id": "opendesign-18000-6d582f2b90c91205",
+          "label": "短周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 25.0,
+          "limit": 100.0,
+          "remaining": 75.0,
+          "used_percent": 25.0,
+          "window": "5h",
+          "resets_at": "2030-01-01T05:00:00Z",
+          "currency": null
+        },
+        {
+          "id": "opendesign-604800-a777283597fb5bad",
+          "label": "长周期",
+          "kind": "quota",
+          "unit": "%",
+          "used": 2.0,
+          "limit": 100.0,
+          "remaining": 98.0,
+          "used_percent": 2.0,
+          "window": "week",
+          "resets_at": null,
+          "currency": null
+        },
+        {
+          "id": "opendesign-wallet",
+          "label": "钱包余额",
+          "kind": "balance",
+          "unit": "USD",
+          "used": null,
+          "limit": null,
+          "remaining": 0.0,
+          "used_percent": null,
+          "window": null,
+          "resets_at": null,
+          "currency": "USD"
+        }
+      ],
+      "source": "opendesign_billing",
+      "fetched_at": "2026-11-07T02:59:38.626117Z"
+    }
+  },
+  {
+    "args": [
+      {
+        "schemaVersion": 1,
+        "workspaceId": "ws_personal_TEST",
+        "workspaceMemberId": "private-member-not-for-display",
+        "modelId": null,
+        "generatedAt": "2030-01-01T00:00:00Z",
+        "balanceUsd": "0",
+        "funding": "coding_plan",
+        "modelCovered": null,
+        "codingPlan": {
+          "workspaceId": "ws_personal_TEST",
+          "generatedAt": "2030-01-01T00:00:00Z",
+          "eligible": true,
+          "tier": "go"
+        }
+      },
+      "ws_personal_TEST"
+    ],
+    "kwargs": {},
+    "case": "tests/test_opendesign.py::test_collection_failure_preserves_last_success[shape-error] (call)",
+    "error": "invalid_response"
+  }
+]

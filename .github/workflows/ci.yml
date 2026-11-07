@@ -12,22 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          python-version: "3.11"
-          enable-cache: true
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
-      - name: Install Python dependencies
-        run: uv sync --locked --all-groups
-      - name: Check Python formatting and lint
-        run: uv run ruff check src tests && uv run ruff format --check src tests
-      - name: Run Python tests
-        run: uv run pytest
-      - name: Build frontend
-        working-directory: frontend
-        run: npm ci --no-audit --no-fund && npm run build && npm test
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install workspace dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Check types, formatting, tests and production build
+        run: npm run check
 
   container:
     runs-on: ubuntu-latest

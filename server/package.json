@@ -1,0 +1,30 @@
+{
+  "name": "@plan-quotas/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "scripts": {
+    "dev": "tsx watch src/cli.ts serve",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/cli.js serve"
+  },
+  "dependencies": {
+    "@plan-quotas/shared": "*",
+    "@modelcontextprotocol/server": "2.4.0",
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/node": "2.1.2",
+    "@modelcontextprotocol/fastify": "2.0.1",
+    "@fastify/cookie": "11.1.5",
+    "@fastify/static": "8.3.0",
+    "@js-temporal/polyfill": "0.5.1",
+    "async-mutex": "0.5.0",
+    "decimal.js": "10.6.0",
+    "dotenv": "17.4.2",
+    "fastify": "5.12.8",
+    "proper-lockfile": "4.1.2",
+    "zod": "4.6.7"
+  }
+}

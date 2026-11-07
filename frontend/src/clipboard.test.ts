@@ -46,7 +46,7 @@ describe("clipboard compatibility", () => {
   it("copies the exact URL when Clipboard API is absent on an HTTP origin", async () => {
     vi.stubGlobal("navigator", {});
     const fallback = selectionCopy();
-    const url = "http://example.test:8000/info?password=YOUR_PASSWORD";
+    const url = "http://example.test:8000/info?apikey=YOUR_API_KEY";
     await copyText(url);
     expect(fallback.copied).toEqual([url]);
     expect(fallback.document.execCommand).toHaveBeenCalledWith("copy");

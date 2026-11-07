@@ -1,0 +1,16 @@
+{
+  "key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "envelope": {
+    "v": 1,
+    "nonce": "000102030405060708090a0b",
+    "ciphertext": "3c20e72af4d4f32abc70baba80d84940b7e7b605dd436e4d094ad4b42c58318330219fcd9ef030a20f861e9de1d8435d977b5aaf29afcdae57f25e707bce93878848b308b6fc4d046576864c8ce0618351efeb5854053a108988eca9559fd7e1b2c5bd5b04a46da7bc6143f2fc37eb745b308f86f0c35c2241a284"
+  },
+  "plaintext": {
+    "11111111-1111-4111-8111-111111111111": {
+      "api_key": "synthetic-fixture-key",
+      "cookie": "fixture-only=你好"
+    }
+  },
+  "password": "兼容测试-password",
+  "password_hash": "pbkdf2_sha256$600000$000102030405060708090a0b0c0d0e0f$622b4add4cbb5a10c08123ea1e22d6f2aa250acd3354f5db6a3c8bb3ccda67fe"
+}
