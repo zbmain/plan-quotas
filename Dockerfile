@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG NODE_IMAGE=registry-1.docker.io/library/node:26.13.0-alpine
 ARG NPM_REGISTRY=https://registry.npmjs.org
 
@@ -8,7 +9,7 @@ COPY package.json package-lock.json ./
 COPY shared/package.json ./shared/package.json
 COPY server/package.json ./server/package.json
 COPY frontend/package.json ./frontend/package.json
-RUN npm ci --no-audit --no-fund --registry=${NPM_REGISTRY}
+RUN --mount=type=cache,target=/root/.npm,sharing=locked npm ci --no-audit --no-fund --registry=${NPM_REGISTRY}
 COPY shared/ ./shared/
 COPY server/ ./server/
 COPY frontend/ ./frontend/
@@ -22,7 +23,7 @@ COPY package.json package-lock.json ./
 COPY shared/package.json ./shared/package.json
 COPY server/package.json ./server/package.json
 COPY frontend/package.json ./frontend/package.json
-RUN npm ci --omit=dev --workspace=@plan-quotas/server --workspace=@plan-quotas/shared --no-audit --no-fund --registry=${NPM_REGISTRY} && npm cache clean --force
+RUN --mount=type=cache,target=/root/.npm,sharing=locked npm ci --omit=dev --workspace=@plan-quotas/server --workspace=@plan-quotas/shared --no-audit --no-fund --registry=${NPM_REGISTRY}
 
 FROM ${NODE_IMAGE} AS runtime
 ENV NODE_ENV=production DATA_DIR=/app/data STATIC_DIR=/app/frontend/dist

@@ -17,11 +17,10 @@ services:
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,[::1]}
       PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-}
-      PORT: ${PORT:-8000}
     ports:
       - "${BIND_HOST:-127.0.0.1}:${PORT:-8000}:8000"
     volumes:
-      - plan_quotas_data:/app/data
+      - ${DATA_DIR:-plan_quotas_data}:/app/data
     security_opt:
       - no-new-privileges:true
     cap_drop:

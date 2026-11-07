@@ -32,7 +32,7 @@ npm run check
 - `server`：Fastify 5 服务、固定地址渠道适配器、凭据加密、管理员认证、采集、历史与搜索路由。加密和文件路径逻辑不进入前端。
 - `frontend`：保持现有页面和交互。`ProviderIcon` 统一渲染卡片、账号列表和渠道选择器图标；资源来源与许可保留在本地静态资源目录。
 
-生产构建由同一个 Node 进程提供 HTTP、静态资源、MCP 和后台采集，无数据库、子进程采集器或运行时桥接。Docker 以 UID/GID 10001 运行，内部端口 8000，数据卷仍为 `plan_quotas_data`。基础镜像为 Node 26 Alpine，健康检查使用原生 `fetch`。
+生产构建由同一个 Node 进程提供 HTTP、静态资源、MCP 和后台采集，无数据库、子进程采集器或运行时桥接。Docker 以 UID/GID 10001 运行，内部端口 8000；Compose 使用 `DATA_DIR` 指定宿主机数据目录，未设置时使用 `plan_quotas_data` 命名卷。基础镜像为 Node 26 Alpine，健康检查使用原生 `fetch`。
 
 ## 持久化与迁移约束
 
