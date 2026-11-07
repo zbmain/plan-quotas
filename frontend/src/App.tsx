@@ -489,11 +489,9 @@ function App() {
                 />
               </picture>
             </span>
-            <span className="brand-word">
-              plan-quotas<span className="brand-dot">.</span>
-            </span>
+            <span className="brand-word">plan-quotas</span>
             <span className="brand-divider" />
-            <span className="brand-caption">仪表盘 · AI 用量面板</span>
+            <span className="brand-caption">Token Plan · 仪表盘</span>
           </button>
           <div className="header-right">
             <span className={`live-indicator${loadError ? " is-error" : ""}`}>

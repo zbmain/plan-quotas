@@ -896,9 +896,6 @@ button:disabled {
   width: 32px;
   height: 32px;
 }
-.brand-dot {
-  color: var(--green);
-}
 .brand-caption {
   color: var(--muted);
   font: 400 12px/1.4 var(--font-text);
