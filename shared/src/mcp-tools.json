@@ -2,7 +2,7 @@
   {
     "name": "list_accounts",
     "title": "查看账号列表",
-    "description": "查看所选渠道全部账号的名称、ID、采集状态和搜索开关。只接受 channel，默认 all；传 {} 查询全部渠道。按后台配置顺序返回，不接受状态或账号等其他筛选参数，不返回凭据，不发起上游请求。",
+    "description": "查看所选渠道已启用账号的名称、ID、采集状态和搜索开关。只接受 channel，默认 all；传 {} 查询全部渠道。按后台配置顺序返回，不接受状态或账号等其他筛选参数，不返回凭据，不发起上游请求。",
     "inputSchema": {
       "additionalProperties": false,
       "description": "只接受 channel。省略或填 all 查询全部渠道；其他参数不允许。",
@@ -64,10 +64,10 @@
   {
     "name": "get_token_quota",
     "title": "查看套餐额度",
-    "description": "查看所选渠道全部账号的模型套餐额度、全部周期和余额。只需 channel，默认 all；传 {} 查询全部渠道。\n\n示例：{\"channel\":\"glm\"}。只读缓存，不触发上游采集。返回各账号独立额度，不合并不同单位或周期，不接受账号、周期等其他筛选参数。",
+    "description": "查看所选渠道已启用账号的模型套餐额度、全部周期和余额。只需 channel，默认 all；传 {} 查询全部渠道。\n\n示例：{\"channel\":\"glm\"}。只读缓存，不触发上游采集。返回各账号独立额度，不合并不同单位或周期，不接受账号、周期等其他筛选参数。",
     "inputSchema": {
       "additionalProperties": false,
-      "description": "只接受 channel。省略或填 all 查询全部渠道；返回所选渠道全部账号与全部额度周期。其他参数不允许。",
+      "description": "只接受 channel。省略或填 all 查询全部渠道；返回所选渠道已启用账号与全部额度周期。其他参数不允许。",
       "properties": {
         "channel": {
           "default": "all",
@@ -111,10 +111,10 @@
   {
     "name": "get_tool_quota",
     "title": "查看工具额度",
-    "description": "查看所选渠道全部账号的工具额度。只需 channel，默认 all；传 {} 查询全部渠道。\n\n示例：{\"channel\":\"glm\"}。只读缓存，返回全部工具和周期。GLM 仅提供 MCP 共享总池；MiniMax 独立搜索次数未知。不接受账号、工具或周期等其他筛选参数。",
+    "description": "查看所选渠道已启用账号的工具额度。只需 channel，默认 all；传 {} 查询全部渠道。\n\n示例：{\"channel\":\"glm\"}。只读缓存，返回全部工具和周期。GLM 仅提供 MCP 共享总池；MiniMax 独立搜索次数未知。不接受账号、工具或周期等其他筛选参数。",
     "inputSchema": {
       "additionalProperties": false,
-      "description": "只接受 channel。省略或填 all 查询全部渠道；返回所选渠道全部账号与全部额度周期。其他参数不允许。",
+      "description": "只接受 channel。省略或填 all 查询全部渠道；返回所选渠道已启用账号与全部额度周期。其他参数不允许。",
       "properties": {
         "channel": {
           "default": "all",
@@ -158,7 +158,7 @@
   {
     "name": "get_history",
     "title": "查看用量历史",
-    "description": "查看所选渠道全部账号最近 24 小时的用量观测历史。只接受 channel，默认 all；传 {} 查询全部渠道。按后台配置顺序返回，固定 5 分钟时间桶，保留缺测和重置标记。不接受账号或时间范围等其他参数，不代表精确消费账单。",
+    "description": "查看所选渠道已启用账号最近 24 小时的用量观测历史。只接受 channel，默认 all；传 {} 查询全部渠道。按后台配置顺序返回，固定 5 分钟时间桶，保留缺测和重置标记。不接受账号或时间范围等其他参数，不代表精确消费账单。",
     "inputSchema": {
       "additionalProperties": false,
       "description": "只接受 channel。省略或填 all 查询全部渠道；其他参数不允许。",

@@ -114,7 +114,7 @@ const statusLabel: Record<string, string> = {
   auth_required: "认证失效",
   rate_limited: "请求受限",
   error: "采集异常",
-  disabled: "已暂停",
+  disabled: "已禁用",
 };
 const connectionErrorLabel: Record<string, string> = {
   invalid_credentials: "认证信息无效，请检查认证方式和必填字段",
@@ -1565,7 +1565,7 @@ function Admin({
         auth_required: "刷新失败：认证已失效，请更新账号凭据",
         rate_limited: "刷新受限，请稍后重试",
         error: "渠道采集失败，请检查账号配置或稍后重试",
-        disabled: "账号已暂停，启用后可刷新",
+        disabled: "账号已禁用，启用后可刷新",
       };
       setNotice(messages[result.status] || "刷新请求已完成");
     } catch (error) {
@@ -1812,7 +1812,7 @@ function Admin({
                     className={`status-tag ${a.enabled ? "status-ok" : "status-disabled"}`}
                   >
                     <i />
-                    {a.enabled ? "已启用" : "已暂停"}
+                    {a.enabled ? "已启用" : "已禁用"}
                   </span>
                   <div className="row-actions">
                     <button
@@ -1857,8 +1857,8 @@ function Admin({
                       <Settings2 size={14} />
                     </button>
                     <button
-                      title={a.enabled ? "暂停" : "启用"}
-                      aria-label={`${a.enabled ? "暂停" : "启用"}${a.alias}`}
+                      title={a.enabled ? "禁用" : "启用"}
+                      aria-label={`${a.enabled ? "禁用" : "启用"}${a.alias}`}
                       onClick={() => void toggle(a)}
                     >
                       {a.enabled ? (
@@ -1985,7 +1985,7 @@ function Admin({
                   <small>
                     {providerNames[account.provider] || account.provider}{" "}
                     {!account.enabled
-                      ? "（已暂停，不参与搜索）"
+                      ? "（已禁用，不参与搜索）"
                       : account.search_enabled
                         ? "（参与搜索）"
                         : "（搜索未开启）"}

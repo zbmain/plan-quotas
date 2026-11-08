@@ -831,7 +831,7 @@ it("preserves GLM HTTP Retry-After through SDK transport errors and prevents imm
   });
   expect(client).toHaveBeenCalledTimes(1);
 });
-it("returns ordered channel histories for every account over a fixed 24-hour window without collection", async () => {
+it("returns ordered histories for enabled accounts over a fixed 24-hour window without collection", async () => {
   const profiles = [
     account({ provider: "glm", order: 8, alias: "同名账号" }),
     account({ provider: "minimax", order: 2 }),
@@ -840,11 +840,8 @@ it("returns ordered channel histories for every account over a fixed 24-hour win
   const { service, store, fake } = await fresh(undefined, {}, profiles);
   for (const row of profiles) store.appendHistory(row.id, result());
   const history = service.protocolHistories("glm");
-  expect(history).toMatchObject({ version: 2, range: "24h", accountCount: 2 });
-  expect(history.accounts.map((row: any) => row.id)).toEqual([
-    profiles[2].id,
-    profiles[0].id,
-  ]);
+  expect(history).toMatchObject({ version: 2, range: "24h", accountCount: 1 });
+  expect(history.accounts.map((row: any) => row.id)).toEqual([profiles[0].id]);
   for (const row of history.accounts) {
     expect(row.points).toHaveLength(288);
     expect(row.points.some((point: any) => !point.isMissing)).toBe(true);
@@ -852,7 +849,24 @@ it("returns ordered channel histories for every account over a fixed 24-hour win
   }
   expect(
     service.protocolHistories().accounts.map((row: any) => row.id),
-  ).toEqual([profiles[2].id, profiles[1].id, profiles[0].id]);
+  ).toEqual([profiles[1].id, profiles[0].id]);
+  expect(service.protocolAccounts().map((row) => row.id)).toEqual([
+    profiles[1].id,
+    profiles[0].id,
+  ]);
+  expect(service.queryQuotas().accounts.map((row: any) => row.id)).toEqual([
+    profiles[1].id,
+    profiles[0].id,
+  ]);
+  expect(
+    service.queryQuotas({ account_ids: [profiles[2].id] }).accounts,
+  ).toEqual([]);
+  expect(() => service.protocolHistory(profiles[2].id, "24h")).toThrow(
+    "账号不存在",
+  );
+  expect(
+    service.dashboard().accounts.find((row: any) => row.id === profiles[2].id),
+  ).toMatchObject({ status: "disabled", enabled: false });
   expect(service.protocolHistories("kimi")).toEqual({
     version: 2,
     range: "24h",

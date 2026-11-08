@@ -18,6 +18,28 @@ const quota: Metric = {
 };
 
 describe("quota cards", () => {
+  it("keeps a disabled account visible and labels it 已禁用", () => {
+    const html = renderToStaticMarkup(
+      <AccountCard
+        account={{
+          id: "disabled-account",
+          provider: "glm",
+          alias: "禁用测试",
+          enabled: false,
+          status: "disabled",
+        }}
+        index={0}
+        displayMode="used"
+        expanded={false}
+        onExpand={() => undefined}
+        range="24h"
+        onRange={() => undefined}
+      />,
+    );
+    expect(html).toContain("禁用测试");
+    expect(html).toContain("已禁用");
+    expect(html).not.toContain("已暂停");
+  });
   it("shows OpenAI grant usage as a percentage without a duplicate currency label", () => {
     const metric: Metric = {
       id: "openai-grant-example",

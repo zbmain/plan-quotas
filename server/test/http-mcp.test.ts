@@ -274,9 +274,21 @@ it("retains account metadata and masks credentials across CRUD, cached quotas an
   expect(app.quota.store.getCredentials(created.id)).toEqual({
     api_key: "fixture-private-key",
   });
-  expect((await request("GET", "/info")).json().accounts[0].status).toBe(
-    "disabled",
+  const disabledInfo = (await request("GET", "/info")).json();
+  expect(disabledInfo).toMatchObject({ accountCount: 0, accounts: [] });
+  const dashboard = (await request("GET", "/api/public/dashboard")).json();
+  expect(dashboard.accounts).toMatchObject([
+    { id: created.id, status: "disabled", enabled: false },
+  ]);
+  await request(
+    "PATCH",
+    `/api/admin/accounts/${created.id}`,
+    { enabled: true },
+    headers,
   );
+  expect((await request("GET", "/info")).json().accounts).toMatchObject([
+    { id: created.id },
+  ]);
   await request(
     "DELETE",
     `/api/admin/accounts/${created.id}`,
@@ -729,7 +741,15 @@ it("discovers and calls all five tools with the official TypeScript MCP client a
   const { app, request, login, createToken } = await fresh(),
     headers = await login();
   const one = account({ provider: "glm", alias: "主账号" });
-  app.quota.store.saveConfig({ ...app.quota.store.config, accounts: [one] });
+  const disabled = account({
+    provider: "glm",
+    alias: "禁用账号",
+    enabled: false,
+  });
+  app.quota.store.saveConfig({
+    ...app.quota.store.config,
+    accounts: [one, disabled],
+  });
   app.quota.store.setCredentials(one.id, { api_key: "fixture-private-key" });
   app.quota.store.saveSnapshot(
     SnapshotSchema.parse({
@@ -772,6 +792,8 @@ it("discovers and calls all five tools with the official TypeScript MCP client a
         arguments: { channel: "glm" },
       });
       expect((listed.structuredContent as any).result[0].channel).toBe("glm");
+      expect((listed.structuredContent as any).result).toHaveLength(1);
+      expect(JSON.stringify(listed)).not.toContain(disabled.id);
       for (const name of ["get_token_quota", "get_tool_quota"]) {
         const response = await client.callTool({
           name,
@@ -785,12 +807,14 @@ it("discovers and calls all five tools with the official TypeScript MCP client a
           low: 0,
           errors: 0,
         });
+        expect(JSON.stringify(response)).not.toContain(disabled.id);
       }
       const history = await client.callTool({
         name: "get_history",
         arguments: { channel: "glm" },
       });
       expect(history.isError).toBe(false);
+      expect(JSON.stringify(history)).not.toContain(disabled.id);
       expect(history.structuredContent).toMatchObject({
         range: "24h",
         accountCount: 1,

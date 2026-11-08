@@ -191,7 +191,10 @@ export class QuotaService {
     } = {},
   ): any {
     return buildResponse(
-      this.getUsage(options.account_ids ?? null, options.provider ?? null),
+      this.getUsage(
+        options.account_ids ?? null,
+        options.provider ?? null,
+      ).filter((account) => account.enabled),
       this.store.config.interval_minutes,
       {
         category: options.category,
@@ -206,7 +209,7 @@ export class QuotaService {
     status: string | null = null,
   ): any[] {
     return this.ordered()
-      .filter((row) => !provider || row.provider === provider)
+      .filter((row) => row.enabled && (!provider || row.provider === provider))
       .map((account) => ({
         ...accountHeader(
           this.publicAccount(account, this.store.getSnapshot(account.id), true),
@@ -231,14 +234,17 @@ export class QuotaService {
   }
   /** Return actual history using the same quota fields as current external queries. */
   protocolHistory(id: string, range: string): any {
-    const account = this.getUsage([id])[0];
+    const account = this.getUsage([id]).find((row) => row.enabled);
     if (!account) throw new Error("账号不存在");
     return historyResponse(account, this.history(id, range));
   }
   /** Read every selected channel account's last twenty-four hours without collecting upstream data. */
   protocolHistories(provider: string | null = null): any {
     const accounts = this.ordered()
-      .filter((account) => !provider || account.provider === provider)
+      .filter(
+        (account) =>
+          account.enabled && (!provider || account.provider === provider),
+      )
       .map((account) => {
         const history = this.protocolHistory(account.id, "24h");
         return { ...history.account, points: history.points };

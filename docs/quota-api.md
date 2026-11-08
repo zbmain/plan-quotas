@@ -4,7 +4,7 @@ HTTP `/info` 和 MCP 的套餐、工具额度查询共用一套返回格式。�
 
 ## 快速查询
 
-查看全部账号：
+查看全部已启用账号：
 
 ```sh
 curl 'http://127.0.0.1:8000/info'
@@ -60,7 +60,7 @@ curl -H 'x-api-key: YOUR_API_KEY' 'http://127.0.0.1:8000/info'
 }
 ```
 
-`accounts` 按管理后台的顺序排列，包括暂停和异常账号。`updatedAt` 是最近一次成功采集时间；顶层取账号中最新的成功时间，没有成功记录时为 `null`。时间统一为 UTC。`refreshIntervalSeconds` 是后台采集间隔，不是浏览器刷新间隔。
+`accounts` 按管理后台的顺序排列，只包含已启用账号（包括异常账号）；已禁用账号不出现在 `/info` 或 MCP 结果中，但仍在网页面板中显示。`updatedAt` 是最近一次成功采集时间；顶层取账号中最新的成功时间，没有成功记录时为 `null`。时间统一为 UTC。`refreshIntervalSeconds` 是后台采集间隔，不是浏览器刷新间隔。
 
 ### 账号与状态
 
@@ -69,14 +69,14 @@ curl -H 'x-api-key: YOUR_API_KEY' 'http://127.0.0.1:8000/info'
 | `id`、`name` | 账号 ID 与管理员填写的公开别名 |
 | `channel` | 统一渠道标识，如 `glm`、`kimi`、`opendesign`；查询参数也使用相同值 |
 | `planName` | 渠道返回的套餐名；未提供时为 `null` |
-| `status` | `ok` 正常、`pending` 等待采集、`stale` 缓存过期、`disabled` 暂停、`auth_required` 认证失效、`rate_limited` 限流、`error` 采集失败 |
+| `status` | `ok` 正常、`pending` 等待采集、`stale` 缓存过期、`auth_required` 认证失效、`rate_limited` 限流、`error` 采集失败 |
 | `isValid` | 是否采集成功且未过期，**不代表供应商承诺套餐有效** |
 | `invalidMessage` | 无效时的脱敏中文说明，正常时为 `null` |
 | `token` | 模型套餐额度；单位以每条记录的 `unit` 为准 |
 | `tools` | 工具额度与共享关系 |
 | `balances` | 余额或消费金额；不与套餐额度相加 |
 
-失败、过期或暂停时仍保留最后成功的额度，但 `isValid=false`，不计入正常账号数。首次采集前数组可以为空。
+失败或过期时仍保留最后成功的额度，但 `isValid=false`，不计入正常账号数。禁用账号不出现在接口结果中。首次采集前数组可以为空。
 
 ### 每条额度
 
@@ -123,13 +123,13 @@ MiniMax 未提供独立搜索计数，`total/used/remaining` 均为 `null`。`sh
 
 | 工具 | 参数示例 | 结果 |
 |---|---|---|
-| `list_accounts` | `{}` 或 `{"channel":"glm"}` | 该渠道全部账号的公开信息数组，附 `order/searchSupported/searchEnabled` |
-| `get_token_quota` | `{"channel":"glm"}` | 该渠道全部账号、全部周期的模型额度和余额 |
-| `get_tool_quota` | `{"channel":"glm"}` | 该渠道全部账号、全部工具额度和必要的共享上下文 |
-| `get_history` | `{"channel":"glm"}` | 该渠道全部账号最近 24 小时的历史观测 |
+| `list_accounts` | `{}` 或 `{"channel":"glm"}` | 该渠道已启用账号的公开信息数组，附 `order/searchSupported/searchEnabled` |
+| `get_token_quota` | `{"channel":"glm"}` | 该渠道已启用账号、全部周期的模型额度和余额 |
+| `get_tool_quota` | `{"channel":"glm"}` | 该渠道已启用账号、全部工具额度和必要的共享上下文 |
+| `get_history` | `{"channel":"glm"}` | 该渠道已启用账号最近 24 小时的历史观测 |
 | `web_search` | `{"query":"Python asyncio 官方文档","channel":"minimax"}` | 搜索结果，标明实际使用的账号和渠道，最多 10 条 |
 
-四个查询工具**只接受 `channel`**，默认 `all`，传 `{}` 查询全部渠道；按后台顺序返回该渠道全部账号，不支持账号、状态、周期、工具类型或历史范围筛选。历史固定为最近 24 小时。
+四个查询工具**只接受 `channel`**，默认 `all`，传 `{}` 查询全部渠道；按后台顺序返回该渠道已启用账号，不支持账号、状态、周期、工具类型或历史范围筛选。历史固定为最近 24 小时。
 
 搜索**只接受 `query/channel`**，`query` 必填，`channel` 默认 `auto`，也可选 `glm/minimax`。指定渠道时只在该渠道内按后台顺序切换账号；`auto` 按全部账号的后台顺序尝试。异常或不可用时尝试下一优先级账号，成功（含正常空结果）即停。最多返回 10 条，不接受 `account/max_results`。账号须已开启搜索，错误参数不会发起上游请求。
 
