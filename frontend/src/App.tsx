@@ -68,11 +68,17 @@ import {
 } from "./quota-mode";
 
 /** Send a same-origin API request and expose only the server's safe detail message. */
-const api = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
+export const api = async <T,>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> => {
+  const headers = new Headers(options.headers);
+  if (options.body != null && !headers.has("Content-Type"))
+    headers.set("Content-Type", "application/json");
   const response = await fetch(path, {
     credentials: "same-origin",
     ...options,
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    headers,
   });
   const body = await response
     .json()
@@ -88,6 +94,7 @@ const providerNames: Record<string, string> = {
   deepseek: "DeepSeek",
   volcengine: "火山引擎",
   aliyun: "阿里云百炼",
+  openai: "OpenAI API",
   codex: "Codex",
   claude: "Claude",
   cursor: "Cursor",
@@ -135,6 +142,10 @@ const formatNumber = (v?: number | null) =>
   v == null || !Number.isFinite(v)
     ? "—"
     : new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(v);
+
+/** Round displayed percentages to whole numbers without changing stored measurements. */
+const formatPercent = (value: number) =>
+  `${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }).format(value)}%`;
 
 /** Format a history sample in the viewer's configured Asia/Shanghai timezone. */
 export function formatHistoryTime(timestamp: string, range: string) {
@@ -246,7 +257,8 @@ export function metricValue(value: number | undefined | null, metric: Metric) {
   if (metric.kind === "balance" || metric.kind === "cost")
     return `${metric.currency === "CNY" ? "¥" : metric.currency === "USD" ? "$" : metric.currency ? `${metric.currency} ` : ""}${formatNumber(value)}`;
   const unit = metricUnitLabel(metric.unit);
-  return `${formatNumber(value)}${unit === "%" ? "%" : unit ? ` ${unit}` : ""}`;
+  if (unit === "%") return formatPercent(value);
+  return `${formatNumber(value)}${unit ? ` ${unit}` : ""}`;
 }
 /** Return the unbounded usage percentage as reported or derived from quota values. */
 export function rawProgressOf(metric: Metric) {
@@ -849,12 +861,30 @@ export function AccountCard({
           displayMode={displayMode}
         />
       )}
+      {a.provider === "openai" &&
+        !displayMetrics.some((m) => m.id === "openai-credit-balance") && (
+          <div className="no-metric">
+            赠送额度和余额请在{" "}
+            <a
+              href="https://platform.openai.com/settings/organization/billing/overview"
+              target="_blank"
+              rel="noreferrer"
+            >
+              OpenAI 账单页面
+            </a>{" "}
+            查看。
+          </div>
+        )}
       <div className="card-foot">
         <span>
           <Clock3 size={12} />
-          {a.data?.fetched_at
-            ? `${a.stale ? "上次成功（已过期）" : "更新于"} ${formatTime(a.data.fetched_at)}`
-            : "尚未采集"}
+          {a.stale
+            ? a.stale_since
+              ? `过期于 ${formatTime(a.stale_since)}`
+              : "过期时间未知"
+            : a.data?.fetched_at
+              ? `更新于 ${formatTime(a.data.fetched_at)}`
+              : "尚未采集"}
         </span>
         <button
           onClick={() => {
@@ -1057,6 +1087,13 @@ export function metricReading(
     };
   if (metric.kind === "cost")
     return { label: "本期消费", value: metricValue(metric.used, metric) };
+  if (metric.id.startsWith("openai-grant-")) {
+    const percent = quotaProgress(metric, displayMode);
+    return {
+      label: displayMode === "used" ? "已用量" : "剩余量",
+      value: percent == null ? "暂无数据" : formatPercent(percent),
+    };
+  }
   const reading = quotaReading(metric, displayMode);
   return {
     label: reading.label,
@@ -1101,10 +1138,11 @@ export function MetricView({
   const hasReset = Boolean(
     m.resets_at && Number.isFinite(Date.parse(m.resets_at)),
   );
+  const expiration = m.id.startsWith("openai-grant-");
   const countdown = hasReset ? resetCountdown(m.resets_at!) : "";
   const resetLabel = hasReset
     ? countdown.endsWith("后")
-      ? `${countdown}重置`
+      ? `${countdown}${expiration ? "到期" : "重置"}`
       : countdown
     : "重置时间暂无数据";
   const readingCaption = reading.label.startsWith("剩余")
@@ -1147,7 +1185,7 @@ export function MetricView({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          aria-valuetext={`${direction} ${formatNumber(displayedPercent)}%`}
+          aria-valuetext={`${direction} ${formatPercent(displayedPercent!)}`}
         >
           <span
             className={`progress-fill ${reportedPercent != null && reportedPercent >= 85 ? "high" : reportedPercent != null && reportedPercent >= 65 ? "medium" : ""}`}
@@ -1177,7 +1215,7 @@ export function MetricView({
             isQuota &&
             m.limit != null &&
             m.unit !== "%" && <span>{`总额 ${metricValue(m.limit, m)}`}</span>}
-          {m.currency && (
+          {m.currency && !(expiration && m.currency === "USD") && (
             <span>
               {m.currency === "CNY"
                 ? "人民币"
@@ -1194,8 +1232,8 @@ export function MetricView({
             {hasReset ? (
               <time
                 dateTime={m.resets_at!}
-                title={`重置时间：${formatTime(m.resets_at)}（北京时间）`}
-                aria-label={`重置时间：${formatTime(m.resets_at)}，${resetLabel}`}
+                title={`${expiration ? "到期" : "重置"}时间：${formatTime(m.resets_at)}（北京时间）`}
+                aria-label={`${expiration ? "到期" : "重置"}时间：${formatTime(m.resets_at)}，${resetLabel}`}
               >
                 {resetLabel}
               </time>

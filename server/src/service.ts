@@ -87,6 +87,22 @@ export class QuotaService {
         snapshot.last_success_at === null ||
         Date.now() - millis(snapshot.last_success_at) >
           this.store.config.interval_minutes * 120000);
+    const deadline = snapshot.last_success_at
+      ? addMillis(
+          snapshot.last_success_at,
+          this.store.config.interval_minutes * 120000,
+        )
+      : null;
+    // Older failed snapshots lack the first failure time, so do not invent one.
+    const staleSince = !stale
+      ? null
+      : snapshot.status === "ok"
+        ? deadline
+        : snapshot.stale_since && deadline
+          ? compare(snapshot.stale_since, deadline) < 0
+            ? snapshot.stale_since
+            : deadline
+          : snapshot.stale_since;
     const result: any = {
       id: account.id,
       provider: account.provider,
@@ -94,6 +110,7 @@ export class QuotaService {
       enabled: account.enabled,
       status: account.enabled ? snapshot.status : "disabled",
       stale,
+      stale_since: staleSince,
       last_attempt_at: snapshot.last_attempt_at,
       last_success_at: snapshot.last_success_at,
       error_code: snapshot.error_code,
@@ -317,6 +334,9 @@ export class QuotaService {
       data: previous.data,
       last_attempt_at: attempted,
       last_success_at: previous.last_success_at,
+      stale_since: previous.data
+        ? (previous.stale_since ?? (previous.status === "ok" ? now() : null))
+        : null,
       error_code: code,
       retry_at,
     });

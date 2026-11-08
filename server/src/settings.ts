@@ -67,6 +67,13 @@ export function validateCredentials(
   const allowed = new Set(fields.map((row) => row.key));
   if (Object.keys(credentials).some((key) => !allowed.has(key)))
     throw new AdapterError("invalid_credentials");
+  if (
+    provider === "openai" &&
+    authType === "api_key" &&
+    !credentials.api_key?.trim() &&
+    !credentials.admin_key?.trim()
+  )
+    throw new AdapterError("invalid_credentials");
   for (const field of fields) {
     const value = credentials[field.key] ?? "";
     if (

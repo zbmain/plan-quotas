@@ -11,6 +11,7 @@ export const ProviderIdSchema = z.enum([
   "deepseek",
   "volcengine",
   "aliyun",
+  "openai",
   "codex",
   "claude",
   "cursor",
@@ -105,6 +106,7 @@ export const SnapshotSchema = z.object({
   data: UsageSchema.nullable().default(null),
   last_attempt_at: text,
   last_success_at: text,
+  stale_since: text,
   error_code: text,
   retry_at: text,
 });
@@ -136,6 +138,7 @@ export type Account = {
   data?: Usage | null;
   last_attempt_at?: string | null;
   last_success_at?: string | null;
+  stale_since?: string | null;
   error_code?: string | null;
   verification?: string;
   credential_configured?: boolean;

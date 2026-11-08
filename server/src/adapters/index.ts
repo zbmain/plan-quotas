@@ -12,6 +12,7 @@ import {
 } from "./global.js";
 import { OpenCodeAdapter } from "./opencode.js";
 import { OpenDesignAdapter } from "./opendesign.js";
+import { OpenAIAdapter } from "./openai.js";
 import type { Adapter } from "./base.js";
 
 /** Register all existing channels against the same typed collection contract. */
@@ -23,6 +24,7 @@ export function buildAdapters(): Record<string, Adapter> {
     deepseek: new DeepSeekAdapter(),
     volcengine: new VolcengineAdapter(),
     aliyun: new AliyunAdapter(),
+    openai: new OpenAIAdapter(),
     codex: new CodexAdapter(),
     claude: new ClaudeAdapter(),
     cursor: new CursorAdapter(),

@@ -2,7 +2,7 @@
 
 自托管的 AI 套餐用量面板，集中查看多个渠道的额度、余额和历史变化。公开首页无需登录；管理员可添加账号、管理凭据和设置采集周期。
 
-支持 MiniMax、GLM、Kimi、DeepSeek、火山引擎、阿里云百炼、Codex、Claude、Cursor、OpenCode、OpenDesign 和 Google Antigravity。各渠道的认证方式和指标见[渠道与凭据说明](docs/providers.md)。
+支持 MiniMax、GLM、Kimi、DeepSeek、火山引擎、阿里云百炼、OpenAI API、Codex、Claude、Cursor、OpenCode、OpenDesign 和 Google Antigravity。各渠道的认证方式和指标见[渠道与凭据说明](docs/providers.md)。
 
 ## 快速开始
 

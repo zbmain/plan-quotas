@@ -18,6 +18,103 @@ const quota: Metric = {
 };
 
 describe("quota cards", () => {
+  it("shows OpenAI grant usage as a percentage without a duplicate currency label", () => {
+    const metric: Metric = {
+      id: "openai-grant-example",
+      label: "额度包",
+      kind: "quota",
+      unit: "USD",
+      currency: "USD",
+      used: 0.0012567,
+      limit: 72,
+      remaining: 71.9987433,
+      used_percent: 0.0017454,
+    };
+    const html = renderToStaticMarkup(<MetricView metric={metric} />);
+    expect(html).toContain('class="metric-value">0%');
+    expect(html).toContain("剩余 100%");
+    expect(html).toContain("总额 72 USD");
+    expect(html).not.toContain("美元");
+    expect(metricReading({ ...metric, used: 0, used_percent: 0 }).value).toBe(
+      "0%",
+    );
+    expect(metricReading({ ...metric, used: 18, used_percent: 25 }).value).toBe(
+      "25%",
+    );
+    const remaining = renderToStaticMarkup(
+      <MetricView metric={metric} displayMode="remaining" />,
+    );
+    expect(remaining).toContain('class="metric-value">100%');
+    expect(remaining).toContain("已用 0%");
+    expect(remaining).toContain("总额 72 USD");
+    expect(
+      metricReading(
+        {
+          ...metric,
+          used: null,
+          used_percent: null,
+          remaining: null,
+          limit: null,
+        },
+        "remaining",
+      ).value,
+    ).toBe("暂无数据");
+  });
+  it.each([
+    "minimax",
+    "glm",
+    "kimi",
+    "deepseek",
+    "volcengine",
+    "aliyun",
+    "openai",
+    "codex",
+    "claude",
+    "cursor",
+    "opencode",
+    "opendesign",
+    "antigravity",
+  ])("renders integer percentage and preserves counts for %s", (provider) => {
+    const metrics: Metric[] = [
+      {
+        id: "quota",
+        label: "百分比额度",
+        kind: "quota",
+        unit: "%",
+        used: 12.6,
+        remaining: 87.4,
+        limit: 100,
+        used_percent: 12.6,
+      },
+      {
+        id: "calls",
+        label: "次数额度",
+        kind: "quota",
+        unit: "次",
+        used: 12,
+        remaining: 988,
+        limit: 1000,
+      },
+    ];
+    const used = renderToStaticMarkup(
+      <AccountMetrics
+        metrics={metrics}
+        provider={provider}
+        displayMode="used"
+      />,
+    );
+    const remaining = renderToStaticMarkup(
+      <AccountMetrics
+        metrics={metrics}
+        provider={provider}
+        displayMode="remaining"
+      />,
+    );
+    expect(used).toContain('class="metric-value">13%');
+    expect(remaining).toContain('class="metric-value">87%');
+    expect(used).toContain('class="metric-value">12 次');
+    expect(remaining).toContain('class="metric-value">988 次');
+  });
   it.each([
     ["minimax", "5h"],
     ["glm", "300m"],
@@ -151,8 +248,8 @@ describe("quota cards", () => {
       remaining: 99.375,
       used_percent: 0.625,
     };
-    expect(metricReading(metric, "used").value).toBe("0.63%");
-    expect(metricReading(metric, "remaining").value).toBe("99.38%");
+    expect(metricReading(metric, "used").value).toBe("1%");
+    expect(metricReading(metric, "remaining").value).toBe("99%");
   });
 
   it("renders OpenDesign plan windows in both modes and keeps a zero USD wallet separate", () => {
@@ -443,10 +540,10 @@ describe("quota cards", () => {
     for (const window of ["5h", "week", "month"]) {
       expect(used).toContain(`>${window}<`);
     }
-    expect(used).toContain('class="metric-value">0.5%');
-    expect(remaining).toContain('class="metric-value">99.5%');
-    expect(used).toContain('aria-valuetext="已用 0.5%"');
-    expect(remaining).toContain('aria-valuetext="剩余 99.5%"');
+    expect(used).toContain('class="metric-value">1%');
+    expect(remaining).toContain('class="metric-value">100%');
+    expect(used).toContain('aria-valuetext="已用 1%"');
+    expect(remaining).toContain('aria-valuetext="剩余 100%"');
     expect(metricReading(balance, "used")).toEqual(
       metricReading(balance, "remaining"),
     );
@@ -727,5 +824,37 @@ describe("quota cards", () => {
     );
     expect(html).toContain("即将重置");
     expect(html).not.toContain("即将重置重置");
+  });
+});
+
+describe("account timestamp", () => {
+  it.each([
+    [{ status: "ok", stale: false }, "更新于"],
+    [
+      { status: "error", stale: true, stale_since: "2026-11-07T01:00:00Z" },
+      "过期于",
+    ],
+    [{ status: "error", stale: true, stale_since: null }, "过期时间未知"],
+  ])("renders the correct label for %o", (state, label) => {
+    const html = renderToStaticMarkup(
+      <AccountCard
+        account={{
+          id: "test",
+          provider: "opendesign",
+          alias: "测试",
+          enabled: true,
+          data: { metrics: [], fetched_at: "2026-11-07T00:00:00Z" },
+          ...state,
+        }}
+        index={0}
+        displayMode="used"
+        expanded={false}
+        onExpand={() => undefined}
+        range="24h"
+        onRange={() => undefined}
+      />,
+    );
+    expect(html).toContain(label);
+    expect(html).not.toContain("上次成功（已过期）");
   });
 });

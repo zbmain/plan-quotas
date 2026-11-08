@@ -942,3 +942,57 @@ it("auto follows global account order across channels and observes administrator
   expect((await search.webSearch("q")).account_id).toBe(profiles[0].id);
   expect(seen).toEqual(["fixture-secret-" + profiles[0].id]);
 });
+
+it("reports the first failure or freshness deadline as the expiry time", async () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  const call = vi.fn(
+    async () => [result(), null] as [ReturnType<typeof result>, null],
+  );
+  const {
+    service,
+    store,
+    profiles: [one],
+  } = await fresh({ fetch: call });
+  await service.refresh(one.id);
+  const success = store.getSnapshot(one.id).last_success_at!;
+  vi.setSystemTime(Date.now() + 30_000);
+  call.mockRejectedValue(new AdapterError("invalid_response"));
+  await service.refresh(one.id);
+  const firstFailure = now();
+  expect(service.dashboard().accounts[0].stale_since).toBe(firstFailure);
+  vi.setSystemTime(Date.now() + 30_000);
+  await service.refresh(one.id);
+  expect(service.dashboard().accounts[0].stale_since).toBe(firstFailure);
+  call.mockImplementation(async () => [result(), null]);
+  await service.refresh(one.id);
+  expect(service.dashboard().accounts[0].stale_since).toBeNull();
+  const nextSuccess = store.getSnapshot(one.id).last_success_at!;
+  vi.setSystemTime(Date.now() + 120_001);
+  expect(service.dashboard().accounts[0].stale_since).toBe(
+    addMillis(nextSuccess, 120_000),
+  );
+  expect(success).not.toBe(firstFailure);
+});
+
+it("does not invent an expiry time for an older failed snapshot", async () => {
+  const {
+    service,
+    store,
+    profiles: [one],
+  } = await fresh({
+    fetch: async () => {
+      throw new AdapterError("invalid_response");
+    },
+  });
+  store.saveSnapshot(
+    SnapshotSchema.parse({
+      account_id: one.id,
+      status: "error",
+      data: result(),
+      last_success_at: now(),
+    }),
+  );
+  expect(service.dashboard().accounts[0].stale_since).toBeNull();
+  await service.refresh(one.id);
+  expect(service.dashboard().accounts[0].stale_since).toBeNull();
+});

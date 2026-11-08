@@ -12,6 +12,7 @@
 | DeepSeek | API Key | 账户余额、赠送余额、充值余额及币种 | 通过 | 尚未实测 |
 | 火山引擎 | Access Key ID 与 Secret Access Key | Coding Plan 用量、额度及周期 | 通过 | 尚未实测 |
 | 阿里云百炼 | 控制台 Cookie／会话凭据 | Coding Plan 用量、额度及周期 | 通过 | 尚未实测 |
+| OpenAI API | 组织 Admin API Key、项目 API Key 或控制台会话和组织 ID | 管理密钥查询本月组织费用（UTC）；控制台会话查询余额及有效额度包的已用比例、到期日 | 通过 | 组织费用和控制台页面接口已实测 |
 | Codex | 用户导入的 OAuth 凭据 | 订阅窗口剩余额度和重置时间 | 通过 | 尚未实测 |
 | Claude | OAuth 凭据或会话 Cookie | 会话、周额度及接口提供的专项窗口 | 通过 | 尚未实测 |
 | Cursor | 控制台 Cookie／会话凭据 | 套餐消费、额外消费、账单周期 | 通过 | 尚未实测 |
@@ -19,7 +20,9 @@
 | OpenDesign | 官方网站 Cookie 或账户凭据 Control Key，均需个人工作区 ID | 个人 Go／Plus／Pro／Max 套餐的实际周期已用／剩余百分比、重置时间、独立 USD 钱包余额 | 通过 | Go 的 Cookie 查询及真实响应已核对；Control Key 认证请求及其他套餐尚未实测 |
 | Google Antigravity | 用户导入的 OAuth 凭据 | 按模型的剩余额度及重置时间 | 通过 | 尚未实测 |
 
-样本解析测试使用测试夹具，不等同于真实供应商账号验证。当前 12 个渠道的样本解析用例均通过；MiniMax API Key、GLM API Key、Kimi API Key 的实际用量查询已通过真实接口验证。
+样本解析测试使用测试夹具，不等同于真实供应商账号验证。MiniMax API Key、GLM API Key、Kimi API Key 和 OpenAI API 的上述实际查询已通过真实接口验证。
+
+OpenAI 的组织费用接口返回组织级费用，不提供赠送额度余额或到期时间，不能将月度费用从赠送额度中直接相减。控制台会话方式使用未公开的 `GET https://api.openai.com/v1/dashboard/billing/credit_grants` 和指定组织 ID，显示 API 总可用余额与尚有效的各额度包。额度包可能包含不同来源，接口未明确来源时不标为赠送额度。会话可能过期，接口和字段可能变化；不要将会话令牌或 Cookie 发到聊天中。参见 [OpenAI 组织账单页面](https://platform.openai.com/settings/organization/billing/overview)、[API credits 说明](https://developers.openai.com/api/docs/guides/chatgpt-api-credits)与[组织费用 API](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/costs)。
 
 ## MCP 搜索额度说明
 

@@ -9,7 +9,7 @@
       "properties": {
         "channel": {
           "default": "all",
-          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；openai：OpenAI API；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
           "enum": [
             "all",
             "minimax",
@@ -18,6 +18,7 @@
             "deepseek",
             "volcengine",
             "aliyun",
+            "openai",
             "codex",
             "claude",
             "cursor",
@@ -70,7 +71,7 @@
       "properties": {
         "channel": {
           "default": "all",
-          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；openai：OpenAI API；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
           "enum": [
             "all",
             "minimax",
@@ -79,6 +80,7 @@
             "deepseek",
             "volcengine",
             "aliyun",
+            "openai",
             "codex",
             "claude",
             "cursor",
@@ -116,7 +118,7 @@
       "properties": {
         "channel": {
           "default": "all",
-          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；openai：OpenAI API；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
           "enum": [
             "all",
             "minimax",
@@ -125,6 +127,7 @@
             "deepseek",
             "volcengine",
             "aliyun",
+            "openai",
             "codex",
             "claude",
             "cursor",
@@ -162,7 +165,7 @@
       "properties": {
         "channel": {
           "default": "all",
-          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
+          "description": "all：全部渠道；minimax：MiniMax；glm：GLM；kimi：Kimi；deepseek：DeepSeek；volcengine：火山引擎；aliyun：阿里云百炼；openai：OpenAI API；codex：Codex；claude：Claude；cursor：Cursor；opencode：OpenCode；opendesign：OpenDesign；antigravity：Google Antigravity。",
           "enum": [
             "all",
             "minimax",
@@ -171,6 +174,7 @@
             "deepseek",
             "volcengine",
             "aliyun",
+            "openai",
             "codex",
             "claude",
             "cursor",

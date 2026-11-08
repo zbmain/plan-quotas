@@ -138,6 +138,43 @@
     "docs_url": "https://bailian.console.aliyun.com/"
   },
   {
+    "id": "openai",
+    "name": "OpenAI API",
+    "auth_types": ["api_key", "oauth"],
+    "fields": {
+      "api_key": [
+        {
+          "key": "api_key",
+          "label": "项目 API Key（可选）",
+          "required": false,
+          "secret": true
+        },
+        {
+          "key": "admin_key",
+          "label": "组织 Admin API Key（可选）",
+          "required": false,
+          "secret": true
+        }
+      ],
+      "oauth": [
+        {
+          "key": "access_token",
+          "label": "OpenAI 控制台会话 Access Token",
+          "required": true,
+          "secret": true
+        },
+        {
+          "key": "organization_id",
+          "label": "组织 ID（org-…）",
+          "required": true,
+          "secret": false
+        }
+      ]
+    },
+    "help": "API Key 模式用于查询组织费用；OAuth 模式使用控制台会话和组织 ID 查询额度包。会话接口未公开且可能过期；不要在聊天中发送会话凭据。",
+    "docs_url": "https://platform.openai.com/settings/organization/billing/overview"
+  },
+  {
     "id": "codex",
     "name": "Codex",
     "auth_types": ["oauth"],
