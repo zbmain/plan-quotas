@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAccountPayload,
+  nextAccountOrder,
   formatHistoryTime,
   historyMetricValue,
   historyRows,
@@ -245,5 +246,10 @@ describe("account request payloads", () => {
       enabled: true,
       order: 4,
     });
+  });
+  it("appends new accounts after sparse or capped sort values", () => {
+    expect(nextAccountOrder([])).toBe(0);
+    expect(nextAccountOrder([{ order: 0 }, { order: 7 }] as any)).toBe(8);
+    expect(nextAccountOrder([{ order: 100000 }] as any)).toBe(100000);
   });
 });

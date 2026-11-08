@@ -286,6 +286,67 @@ it("retains account metadata and masks credentials across CRUD, cached quotas an
   expect((await request("GET", "/info")).json().accounts).toEqual([]);
   expect(app.quota.store.getCredentials(created.id)).toEqual({});
 });
+it("preserves account order and switches on edits, changing order only when explicitly requested", async () => {
+  const { request, login, add } = await fresh();
+  const headers = await login();
+  const first = await add(headers, { alias: "首位", order: 0 });
+  const target = await add(headers, {
+    alias: "待编辑",
+    order: 7,
+    enabled: false,
+    search_enabled: true,
+  });
+  const last = await add(headers, { alias: "末位", order: 9 });
+  const added = await add(headers, { alias: "新账号" });
+  expect(added.order).toBe(10);
+  const route = `/api/admin/accounts/${target.id}`;
+  const edited = await request(
+    "PATCH",
+    route,
+    {
+      alias: "已编辑",
+      credentials: { api_key: "replacement-fixture-key" },
+    },
+    headers,
+  );
+  expect(edited.statusCode).toBe(200);
+  expect(edited.json()).toMatchObject({
+    order: 7,
+    enabled: false,
+    search_enabled: true,
+  });
+  let accounts = (
+    await request("GET", "/api/admin/accounts", undefined, headers)
+  ).json();
+  expect(accounts.map((row: any) => row.id)).toEqual([
+    first.id,
+    target.id,
+    last.id,
+    added.id,
+  ]);
+  const moved = await request("PATCH", route, { order: -1 }, headers);
+  expect(moved.statusCode).toBe(200);
+  expect(moved.json()).toMatchObject({
+    order: -1,
+    enabled: false,
+    search_enabled: true,
+  });
+  await request("PATCH", route, { alias: "再次编辑" }, headers);
+  accounts = (
+    await request("GET", "/api/admin/accounts", undefined, headers)
+  ).json();
+  expect(accounts.map((row: any) => row.id)).toEqual([
+    target.id,
+    first.id,
+    last.id,
+    added.id,
+  ]);
+  expect(accounts[0]).toMatchObject({
+    order: -1,
+    enabled: false,
+    search_enabled: true,
+  });
+});
 it("validates credential fields and connection failures without leaking raw supplier text", async () => {
   const secret = "fixture-private-key",
     { request, login } = await fresh({

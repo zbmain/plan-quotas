@@ -49,7 +49,7 @@ const accountFields = {
   credentials: credentialSchema,
   enabled: z.boolean().default(true),
   search_enabled: z.boolean().default(false),
-  order: z.number().int().min(-100000).max(100000).default(0),
+  order: z.number().int().min(-100000).max(100000).optional(),
 };
 const addSchema = z.strictObject(accountFields);
 const patchSchema = z.strictObject({
@@ -58,7 +58,7 @@ const patchSchema = z.strictObject({
   credentials: credentialSchema.nullable().optional(),
   enabled: z.boolean().nullable().optional(),
   search_enabled: z.boolean().nullable().optional(),
-  order: accountFields.order.nullable().optional(),
+  order: z.number().int().min(-100000).max(100000).nullable().optional(),
 });
 const testSchema = z.strictObject({
   provider: ProviderIdSchema,
@@ -393,6 +393,12 @@ export function createApp(options: Options = {}) {
       throw new HttpError(422, "仅智谱和 MiniMax 套餐 API Key 账号支持搜索");
     const account = StoredAccountSchema.parse({
       ...body,
+      order:
+        body.order ??
+        Math.min(
+          100000,
+          Math.max(-1, ...store.config.accounts.map((item) => item.order)) + 1,
+        ),
       id: randomUUID(),
       created_at: now(),
     });

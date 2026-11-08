@@ -303,6 +303,13 @@ export function buildAccountPayload(
     order,
   };
 }
+/** Append new accounts after existing sort values, even when values have gaps. */
+export function nextAccountOrder(accounts: Account[]): number {
+  return Math.min(
+    100000,
+    Math.max(-1, ...accounts.map((a) => a.order ?? 0)) + 1,
+  );
+}
 /** Convert the supported auth identifiers into human-readable labels. */
 function authName(auth: string) {
   return (
@@ -1503,7 +1510,7 @@ function Admin({
       const payload = buildAccountPayload(
         { provider: providerId, alias, auth_type: authType, credentials },
         Boolean(editing),
-        accounts.length,
+        nextAccountOrder(accounts),
       );
       if (editing)
         await adminApi(`/api/admin/accounts/${editing.id}`, "PATCH", payload);
