@@ -13,10 +13,10 @@ curl 'http://127.0.0.1:8000/info'
 如果管理员开启了密钥访问，使用已申请的任一有效 Token 访问 `/info` 和 `/mcp`：
 
 ```sh
-curl -H 'apikey: YOUR_API_KEY' 'http://127.0.0.1:8000/info'
+curl -H 'x-api-key: YOUR_API_KEY' 'http://127.0.0.1:8000/info'
 ```
 
-也支持 `?apikey=...`。同时传入请求头和查询参数时，两者必须一致，同名字段重复时拒绝。最多申请 5 个 Token，后台默认隐藏、可查看和撤销；旧 `password` 与 `X-API-Password` 不再鉴权。Token 与管理员登录密码独立；渠道密钥、工作区等认证材料不在结果中返回。
+也支持 `?x-api-key=...`，建议优先使用请求头。**原 `apikey` 请求头和查询参数不再鉴权**，现有 API、MCP 客户端需要同步修改配置；已创建的 Token 无需更换。同时传入请求头和查询参数时，两者必须一致，同名字段重复时拒绝。最多申请 5 个 Token，后台默认隐藏、可查看和撤销；旧 `password` 与 `X-API-Password` 不再鉴权。Token 与管理员登录密码独立；渠道密钥、工作区等认证材料不在结果中返回。
 
 ## 返回格式
 
@@ -181,4 +181,4 @@ MCP 返回 `isError:true`，内容为 `{"errorCode":"invalid_parameters","messag
 | MCP 单账号历史 `account/points` | 改为 `accounts` 数组，每个账号包含 `id/name/channel/points`，固定最近 24 小时 |
 | MCP 历史 `timestamp/gap/reset/metrics` | `time/isMissing/isReset/token+tools+balances` |
 
-现有账号、采集设置、加密凭据及历史文件继续保留。接口鉴权统一改为 `apikey` Token：原免密实例保持免密，原密码保护实例保持受保护状态，管理员申请 Token 后更新客户端。公开页面与管理页面继续工作，无需配置自定义请求地址或执行脚本。
+现有账号、采集设置、加密凭据及历史文件继续保留。接口鉴权统一改为 `x-api-key` Token：原免密实例保持免密，原密码保护实例保持受保护状态，管理员申请 Token 后更新客户端。公开页面与管理页面继续工作，无需配置自定义请求地址或执行脚本。

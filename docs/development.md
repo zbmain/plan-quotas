@@ -64,7 +64,7 @@ GLM 保留原始持久化指标，但卡片、HTTP/MCP 和趋势仅展示 MCP �
 
 MCP 使用官方 TypeScript SDK v2，Streamable HTTP 无状态传输。五个工具名称、参数、中文标题、说明和默认值保存在 `shared/src/mcp-tools.json`；低层 `Server` 注册协议处理器，`server/src/mcp.ts` 提供严格白名单和安全中文校验。四个只读工具只接受 `channel`（默认 `all`），不再解析账号、周期、状态或工具筛选；`protocolHistories` 按渠道和配置顺序批量返回固定 24 小时的历史。搜索只接受 `query/channel`（默认 `auto`），移除账号和结果条数输入。额外参数拒绝执行，查询不触发采集，搜索参数错误不能消耗额度。
 
-`/info` 与 `/mcp` 共用最多 5 个访问 Token，仅接受 `apikey` 请求头或 `?apikey=`。请求头字段名不区分大小写，查询参数固定小写；头与查询参数必须一致，同名字段重复、格式错误或冲突时拒绝。旧 `password`、`X-API-Password` 和 Bearer 不再鉴权。解析发生于路由和日志前，查询字符串清空，规范化及原始请求头中的新旧敏感字段均移除；日志仅记录方法、路径和状态。保留管理员会话、CSRF、Host/Origin 和失败限流，API Token 不授予管理权限。
+`/info` 与 `/mcp` 共用最多 5 个访问 Token，仅接受 `x-api-key` 请求头或 `?x-api-key=`。请求头字段名不区分大小写，查询参数固定小写；头与查询参数必须一致，同名字段重复、格式错误或冲突时拒绝。旧 `apikey`、`password`、`X-API-Password` 和 Bearer 不再鉴权。解析发生于路由和日志前，查询字符串清空，规范化及原始请求头中的新旧敏感字段均移除；日志仅记录方法、路径和状态。保留管理员会话、CSRF、Host/Origin 和失败限流，API Token 不授予管理权限。
 
 Token 为 `sk-` 加 32 个密码学随机字节的 Base64url 编码，使用固定长度 SHA-256 摘要恒定时间比较。访问方式及完整 Token 存在独立 `api-access.enc` 中，由现有 `master.key` 使用 AES-256-GCM 加密，AAD 为 `plan-quotas-api-access-v1`。原子写入、不自动恢复旧 Token 备份；配置和配置备份记录迁移标记。备份与恢复须包含完整数据目录及原主密钥。迁移后访问文件缺失、损坏或主密钥缺失均拒绝启动；原密码保护实例保留密钥模式，等待管理员创建新 Token。
 

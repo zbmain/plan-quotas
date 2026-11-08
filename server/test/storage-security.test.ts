@@ -366,8 +366,8 @@ it.each(["/info", "/info/", "/info/private", "/mcp", "/mcp/", "/mcp/private"])(
   "extracts keys and redacts the entire query at %s",
   (route) => {
     expect(
-      extractApiKey(route + "?apikey=" + fixtureKey + "&private=hidden", [
-        "APIKEY",
+      extractApiKey(route + "?x-api-key=" + fixtureKey + "&private=hidden", [
+        "X-API-KEY",
         fixtureKey,
       ]),
     ).toEqual({
@@ -378,13 +378,13 @@ it.each(["/info", "/info/", "/info/private", "/mcp", "/mcp/", "/mcp/private"])(
     });
   },
 );
-it.each(["apikey", "ApiKey", "APIKEY"])(
+it.each(["x-api-key", "X-Api-Key", "X-API-KEY"])(
   "accepts only canonical %s authentication",
   (name) => {
     expect(extractApiKey("/mcp", [name, fixtureKey]).apikey).toBe(fixtureKey);
   },
 );
-it.each(["password", "X-API-Password"])(
+it.each(["apikey", "password", "X-API-Password"])(
   "never authenticates a retired %s field",
   (name) => {
     expect(
@@ -392,13 +392,17 @@ it.each(["password", "X-API-Password"])(
     ).toBeNull();
   },
 );
+it("does not authenticate the former apikey query parameter", () => {
+  const result = extractApiKey("/info?apikey=" + fixtureKey, []);
+  expect(result).toMatchObject({ url: "/info", apikey: null, protected: true });
+});
 it.each([
-  ["?apikey=" + fixtureKey + "&apikey=" + fixtureKey, []],
-  ["?apikey=" + fixtureKey, ["apikey", otherKey]],
-  ["", ["apikey", fixtureKey, "APIKEY", fixtureKey]],
-  ["?apikey=", []],
-  ["?apikey=sk-short", []],
-  ["?apikey=" + "x".repeat(16385), []],
+  ["?x-api-key=" + fixtureKey + "&x-api-key=" + fixtureKey, []],
+  ["?x-api-key=" + fixtureKey, ["x-api-key", otherKey]],
+  ["", ["x-api-key", fixtureKey, "X-API-KEY", fixtureKey]],
+  ["?x-api-key=", []],
+  ["?x-api-key=sk-short", []],
+  ["?x-api-key=" + "x".repeat(16385), []],
 ] as [string, string[]][])(
   "rejects ambiguous or malformed API credentials (%#)",
   (query, headers) => {

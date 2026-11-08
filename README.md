@@ -67,7 +67,7 @@ docker compose up -d --build
 `GET /info` 返回已采集的用量数据；`/mcp` 提供 MCP 工具。两者默认免密，可在管理后台的“访问权限”中申请 Token 并启用密钥访问：
 
 ```sh
-curl -H 'apikey: YOUR_API_KEY' http://127.0.0.1:8000/info
+curl -H 'x-api-key: YOUR_API_KEY' http://127.0.0.1:8000/info
 ```
 
 MCP 客户端可在后台“MCP 接入”复制配置示例。用量查询读取已有缓存；联网搜索需在后台为支持的账号启用，且可能消耗渠道额度。接口字段、MCP 工具和参数详见[额度接口使用说明](docs/quota-api.md)。

@@ -3,6 +3,7 @@ import { API_KEY_PATTERN } from "./access.js";
 export const COOKIE_NAME = "pq_session",
   SESSION_TTL = 8 * 60 * 60;
 export const INTERFACE_SECRET_HEADERS: readonly string[] = [
+  "x-api-key",
   "apikey",
   "password",
   "x-api-password",
@@ -105,7 +106,7 @@ export class ApiKeyAuth {
     return matched === 1;
   }
 }
-/** Extract only the apikey field and remove query/header material before routing or access logging. */
+/** Extract the x-api-key credential and remove query/header material before routing or access logging. */
 export function extractApiKey(
   rawURL: string,
   rawHeaders: string[],
@@ -125,12 +126,12 @@ export function extractApiKey(
       ? rawURL.slice(rawURL.indexOf("?") + 1)
       : "",
     params = new URLSearchParams(query),
-    apikeys = params.getAll("apikey"),
+    apikeys = params.getAll("x-api-key"),
     headers = new Map<string, string>();
   let duplicatedHeader = false;
   for (let i = 0; i < rawHeaders.length; i += 2) {
     const name = rawHeaders[i].toLowerCase();
-    if (name !== "apikey") continue;
+    if (name !== "x-api-key") continue;
     if (headers.has(name)) duplicatedHeader = true;
     headers.set(name, rawHeaders[i + 1]);
   }

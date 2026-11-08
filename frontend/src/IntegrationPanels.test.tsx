@@ -3,13 +3,13 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { IntegrationPanels, mcpTemplate } from "./IntegrationPanels";
 
 describe("API and MCP connection examples", () => {
-  it("uses the canonical apikey field with a placeholder and readable JSON", () => {
+  it("uses the canonical x-api-key field with a placeholder and readable JSON", () => {
     const text = mcpTemplate("https://quota.example", true);
     expect(JSON.parse(text)).toEqual({
       mcpServers: {
         "plan-quotas": {
           url: "https://quota.example/mcp",
-          headers: { apikey: "YOUR_API_KEY" },
+          headers: { "x-api-key": "YOUR_API_KEY" },
         },
       },
     });
@@ -45,8 +45,8 @@ describe("API and MCP connection examples", () => {
         onNotice={() => {}}
       />,
     );
-    expect(markup).toContain("apikey: YOUR_API_KEY");
-    expect(markup).toContain("?apikey=YOUR_API_KEY");
+    expect(markup).toContain("x-api-key: YOUR_API_KEY");
+    expect(markup).toContain("?x-api-key=YOUR_API_KEY");
     expect(markup).not.toContain("password");
   });
 });

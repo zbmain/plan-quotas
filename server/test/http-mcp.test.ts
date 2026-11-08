@@ -524,34 +524,39 @@ it("shares key protection across info and MCP with immediate revocation and reda
   for (const route of ["/info", "/info/", "/mcp", "/mcp/"]) {
     const byQuery = await request(
       "GET",
-      route + "?apikey=" + first.apikey + "&private=hidden",
+      route + "?x-api-key=" + first.apikey + "&private=hidden",
     );
     expect(byQuery.statusCode).not.toBe(401);
     const byHeader = await request("GET", route, undefined, {
-      ApiKey: second.apikey,
+      "X-Api-Key": second.apikey,
     });
     expect(byHeader.statusCode).not.toBe(401);
-    expect(byHeader.raw.req.headers).not.toHaveProperty("apikey");
+    expect(byHeader.raw.req.headers).not.toHaveProperty("x-api-key");
     expect(JSON.stringify(byHeader.raw.req.rawHeaders)).not.toContain(
       second.apikey,
     );
   }
-  const both = await request("GET", "/info?apikey=" + first.apikey, undefined, {
-    apikey: first.apikey,
-    password: "retired-secret",
-    "X-API-Password": "retired-secret",
-  });
+  const both = await request(
+    "GET",
+    "/info?x-api-key=" + first.apikey,
+    undefined,
+    {
+      "x-api-key": first.apikey,
+      password: "retired-secret",
+      "X-API-Password": "retired-secret",
+    },
+  );
   expect(both.statusCode).toBe(200);
   expect(both.raw.req.url).toBe("/info");
-  for (const name of ["apikey", "password", "x-api-password"])
+  for (const name of ["x-api-key", "apikey", "password", "x-api-password"])
     expect(both.raw.req.headers).not.toHaveProperty(name);
   expect(JSON.stringify(both.raw.req.rawHeaders)).not.toMatch(
     /sk-|retired-secret/,
   );
   expect(
     (
-      await request("GET", "/info?apikey=" + first.apikey, undefined, {
-        apikey: second.apikey,
+      await request("GET", "/info?x-api-key=" + first.apikey, undefined, {
+        "x-api-key": second.apikey,
       })
     ).statusCode,
   ).toBe(401);
@@ -559,19 +564,19 @@ it("shares key protection across info and MCP with immediate revocation and reda
     (
       await request(
         "GET",
-        "/info?apikey=" + first.apikey + "&apikey=" + first.apikey,
+        "/info?x-api-key=" + first.apikey + "&x-api-key=" + first.apikey,
       )
     ).statusCode,
   ).toBe(401);
   const rejected = await request(
     "GET",
-    "/info?apikey=" + first.apikey,
+    "/info?x-api-key=" + first.apikey,
     undefined,
-    { apikey: first.apikey, origin: "https://untrusted.example" },
+    { "x-api-key": first.apikey, origin: "https://untrusted.example" },
   );
   expect(rejected.statusCode).toBe(403);
   expect(rejected.raw.req.url).toBe("/info");
-  expect(rejected.raw.req.headers).not.toHaveProperty("apikey");
+  expect(rejected.raw.req.headers).not.toHaveProperty("x-api-key");
   await request(
     "DELETE",
     "/api/admin/access-tokens/" + first.id,
@@ -579,14 +584,15 @@ it("shares key protection across info and MCP with immediate revocation and reda
     headers,
   );
   expect(
-    (await request("GET", "/info", undefined, { apikey: first.apikey }))
+    (await request("GET", "/info", undefined, { "x-api-key": first.apikey }))
       .statusCode,
   ).toBe(401);
   expect(
-    (await request("GET", "/info", undefined, { apikey: second.apikey }))
+    (await request("GET", "/info", undefined, { "x-api-key": second.apikey }))
       .statusCode,
   ).toBe(200);
   for (const legacy of [
+    { apikey: second.apikey },
     { password: second.apikey },
     { "X-API-Password": second.apikey },
     { authorization: "Bearer " + second.apikey },
@@ -622,7 +628,8 @@ it("protects metadata, generation, reveal and revocation with administrator sess
   ];
   for (const [method, route, body] of cases) {
     expect(
-      (await request(method, route, body, { apikey: token.apikey })).statusCode,
+      (await request(method, route, body, { "x-api-key": token.apikey }))
+        .statusCode,
     ).toBe(401);
     if (method !== "GET")
       expect(
@@ -704,7 +711,7 @@ it("persists API keys across restart while invalidating administrator sessions",
   expect(
     (
       await next.inject({
-        url: "/info?apikey=" + token.apikey,
+        url: "/info?x-api-key=" + token.apikey,
         headers: { host: "testserver" },
       })
     ).statusCode,
@@ -747,11 +754,11 @@ it("discovers and calls all five tools with the official TypeScript MCP client a
   async function session(
     apikey?: string,
     query = false,
-    headerName = "apikey",
+    headerName = "x-api-key",
   ) {
     const client = new Client({ name: "migration-test", version: "1" });
     const url = new URL(address + "/mcp");
-    if (query && apikey) url.searchParams.set("apikey", apikey);
+    if (query && apikey) url.searchParams.set("x-api-key", apikey);
     const transport = new StreamableHTTPClientTransport(url, {
       requestInit: {
         headers: apikey && !query ? { [headerName]: apikey } : {},
@@ -816,9 +823,9 @@ it("discovers and calls all five tools with the official TypeScript MCP client a
     headers,
   );
   await session(token.apikey);
-  await session(token.apikey, false, "APIKEY");
+  await session(token.apikey, false, "X-API-KEY");
   await session(token.apikey, true);
-  const initialized = await fetch(address + "/mcp?apikey=" + token.apikey, {
+  const initialized = await fetch(address + "/mcp?x-api-key=" + token.apikey, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -851,7 +858,7 @@ it("discovers and calls all five tools with the official TypeScript MCP client a
     headers: {
       "content-type": "application/json",
       accept: "application/json, text/event-stream",
-      apikey: token.apikey,
+      "x-api-key": token.apikey,
     },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
   });

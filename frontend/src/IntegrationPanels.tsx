@@ -10,7 +10,7 @@ export function mcpTemplate(origin: string, required: boolean): string {
       mcpServers: {
         "plan-quotas": {
           url: `${origin}/mcp`,
-          ...(required ? { headers: { apikey: "YOUR_API_KEY" } } : {}),
+          ...(required ? { headers: { "x-api-key": "YOUR_API_KEY" } } : {}),
         },
       },
     },
@@ -30,7 +30,7 @@ export function IntegrationPanels({
   origin?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const curl = `curl${required ? " -H 'apikey: YOUR_API_KEY'" : ""} '${origin}/info'`;
+  const curl = `curl${required ? " -H 'x-api-key: YOUR_API_KEY'" : ""} '${origin}/info'`;
   return (
     <>
       <section
@@ -75,11 +75,11 @@ export function IntegrationPanels({
             <p className="info-access-hint">
               {required ? (
                 <>
-                  当前需要密钥。使用 <code>apikey</code> 请求头，也支持{" "}
-                  <code>?apikey=YOUR_API_KEY</code>。
+                  当前需要密钥。使用 <code>x-api-key</code> 请求头，也支持{" "}
+                  <code>?x-api-key=YOUR_API_KEY</code>。
                 </>
               ) : (
-                "当前免密，无需传入 apikey。"
+                "当前免密，无需传入 x-api-key。"
               )}
             </p>
           </>
