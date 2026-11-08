@@ -16,6 +16,7 @@
 | DeepSeek           | `deepseek-color.svg`    |
 | 火山引擎           | `volcengine-color.svg`  |
 | 阿里云百炼         | `bailian-color.svg`     |
+| OpenAI API         | `openai.svg`            |
 | Codex              | `codex.svg`             |
 | Claude             | `claude-color.svg`      |
 | Cursor             | `cursor.svg`            |

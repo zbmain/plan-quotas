@@ -5,6 +5,7 @@ import kimi from "./assets/providers/kimi.svg";
 import deepseek from "./assets/providers/deepseek.svg";
 import volcengine from "./assets/providers/volcengine.svg";
 import aliyun from "./assets/providers/aliyun.svg";
+import openai from "./assets/providers/openai.svg";
 import codex from "./assets/providers/codex.svg";
 import claude from "./assets/providers/claude.svg";
 import cursor from "./assets/providers/cursor.svg";
@@ -19,6 +20,7 @@ const icons: Record<string, string> = {
   deepseek,
   volcengine,
   aliyun,
+  openai,
   codex,
   claude,
   cursor,
@@ -28,6 +30,7 @@ const icons: Record<string, string> = {
 };
 const monochrome = new Set([
   "kimi",
+  "openai",
   "codex",
   "cursor",
   "opencode",

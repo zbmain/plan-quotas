@@ -38,6 +38,12 @@
       "sha256": "5cc26dc961b2ecd0912f4e023c8ce745bcc52ac45b1c4baeadd7201f6b60de25"
     },
     {
+      "channel": "openai",
+      "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/openai.svg",
+      "bytes": 1687,
+      "sha256": "a595df6b423920c67a7f8f73c063e4bfb72d415948097b6cac063a2366bb5186"
+    },
+    {
       "channel": "codex",
       "source": "https://unpkg.com/@lobehub/icons-static-svg@1.102.0/icons/codex.svg",
       "bytes": 1368,
