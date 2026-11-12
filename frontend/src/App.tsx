@@ -3,6 +3,8 @@ import { version as appVersion } from "../../package.json";
 import { InfoAccessPanel } from "./InfoAccessPanel";
 import { ProviderIcon } from "./ProviderIcon";
 import { AccountSummary } from "./AccountSummary";
+import { QuotaAlertSwitch } from "./QuotaAlertSwitch";
+import { useQuotaAlerts } from "./useQuotaAlerts";
 import { accountIsAvailable } from "./account-availability";
 import {
   Activity,
@@ -63,6 +65,9 @@ import {
 import {
   quotaReading,
   quotaProgress,
+  progressSeverity,
+  warningRemaining,
+  severeRemaining,
   usedQuotaPercent,
   type QuotaDisplayMode,
 } from "./quota-mode";
@@ -143,9 +148,18 @@ const formatNumber = (v?: number | null) =>
     ? "—"
     : new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(v);
 
-/** Round displayed percentages to whole numbers without changing stored measurements. */
-const formatPercent = (value: number) =>
-  `${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }).format(value)}%`;
+/** Keep percentage labels compact without rounding a reading into the next alert band. */
+function formatPercent(value: number, mode?: QuotaDisplayMode) {
+  const rounded = Math.round(value);
+  if (
+    mode &&
+    progressSeverity(value, mode) !== progressSeverity(rounded, mode)
+  ) {
+    if (rounded === 0 && value > 0) return "<1%";
+    return `${value < rounded ? "<" : ">"}${rounded}%`;
+  }
+  return `${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }).format(value)}%`;
+}
 
 /** Format a history sample in the viewer's configured Asia/Shanghai timezone. */
 export function formatHistoryTime(timestamp: string, range: string) {
@@ -252,12 +266,16 @@ export function historySeriesLabel(
 }
 
 /** Format a metric using its own currency or unit, without combining unlike measures. */
-export function metricValue(value: number | undefined | null, metric: Metric) {
+export function metricValue(
+  value: number | undefined | null,
+  metric: Metric,
+  mode?: QuotaDisplayMode,
+) {
   if (value == null || !Number.isFinite(value)) return "暂无数据";
   if (metric.kind === "balance" || metric.kind === "cost")
     return `${metric.currency === "CNY" ? "¥" : metric.currency === "USD" ? "$" : metric.currency ? `${metric.currency} ` : ""}${formatNumber(value)}`;
   const unit = metricUnitLabel(metric.unit);
-  if (unit === "%") return formatPercent(value);
+  if (unit === "%") return formatPercent(value, mode);
   return `${formatNumber(value)}${unit ? ` ${unit}` : ""}`;
 }
 /** Return the unbounded usage percentage as reported or derived from quota values. */
@@ -360,24 +378,44 @@ function App() {
   const [page, setPage] = useState(
     location.pathname.startsWith("/admin") ? "admin" : "home",
   );
+  const alerts = useQuotaAlerts();
+  const { checkDashboard } = alerts;
+  const refreshing = useRef(false);
   const refresh = useCallback(async () => {
+    if (refreshing.current) return;
+    refreshing.current = true;
     try {
       const [data, settings] = await Promise.all([
         api<Dashboard>("/api/public/dashboard"),
         api<PublicSettings>("/api/public/settings"),
       ]);
       setDashboard(data);
+      void checkDashboard(data);
       setPageTitle(settings.page_title);
       setLoadError("");
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "暂时无法连接服务");
     } finally {
+      refreshing.current = false;
       setLoading(false);
     }
-  }, []);
+  }, [checkDashboard]);
   useEffect(() => {
     void refresh();
-  }, [refresh]);
+  }, [page, refresh]);
+  useEffect(() => {
+    if (page !== "home" || !alerts.enabled) return;
+    /** Refresh suspended tabs as soon as they become visible or return from the page cache. */
+    const resume = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", resume);
+    window.addEventListener("pageshow", resume);
+    return () => {
+      document.removeEventListener("visibilitychange", resume);
+      window.removeEventListener("pageshow", resume);
+    };
+  }, [page, alerts.enabled, refresh]);
   useEffect(() => {
     const id = setInterval(() => void refresh(), refreshSeconds * 1000);
     return () => clearInterval(id);
@@ -553,6 +591,14 @@ function App() {
         <main className="page-wrap">
           <div className="hero-row">
             <h1>订阅状态</h1>
+            <QuotaAlertSwitch
+              enabled={alerts.enabled}
+              pending={alerts.pending}
+              hint={alerts.hint}
+              onToggle={async () => {
+                if (await alerts.toggle()) void refresh();
+              }}
+            />
           </div>
           <AccountSummary
             total={dashboard ? accounts.length : undefined}
@@ -1098,13 +1144,17 @@ export function metricReading(
     const percent = quotaProgress(metric, displayMode);
     return {
       label: displayMode === "used" ? "已用量" : "剩余量",
-      value: percent == null ? "暂无数据" : formatPercent(percent),
+      value: percent == null ? "暂无数据" : formatPercent(percent, displayMode),
     };
   }
   const reading = quotaReading(metric, displayMode);
   return {
     label: reading.label,
-    value: metricValue(reading.value, { ...metric, unit: reading.unit }),
+    value: metricValue(
+      reading.value,
+      { ...metric, unit: reading.unit },
+      displayMode,
+    ),
   };
 }
 
@@ -1141,7 +1191,16 @@ export function MetricView({
     m.quota_scope === "shared" && m.availability === "unavailable";
   const glmSharedSearch =
     m.tool === "web_search" && m.quota_scope === "shared" && m.used != null;
-  const critical = isQuota && reportedPercent != null && reportedPercent >= 85;
+  const severity =
+    displayedPercent == null
+      ? 0
+      : progressSeverity(displayedPercent, displayMode);
+  const warningMark =
+    displayMode === "used" ? 100 - warningRemaining : warningRemaining;
+  const severeMark =
+    displayMode === "used" ? 100 - severeRemaining : severeRemaining;
+  const tone =
+    severity >= 2 ? "critical" : severity === 1 ? "warning" : "normal";
   const hasReset = Boolean(
     m.resets_at && Number.isFinite(Date.parse(m.resets_at)),
   );
@@ -1158,14 +1217,20 @@ export function MetricView({
       ? "已用"
       : reading.label;
   const warning =
-    reportedPercent != null && reportedPercent > 100
+    (reportedPercent != null && reportedPercent > 100) ||
+    (displayedPercent != null &&
+      displayMode === "remaining" &&
+      displayedPercent < 0)
       ? "已超额度"
-      : reportedPercent === 100
+      : severity === 3
         ? "额度用尽"
-        : "余量偏低";
+        : severity === 2
+          ? "余量紧张"
+          : "余量偏低";
   return (
     <div
-      className={`metric-block ${critical ? "quota-critical" : ""} ${reading.value === "暂无数据" ? "quota-unknown" : ""}`}
+      className={`metric-block${reading.value === "暂无数据" ? " quota-unknown" : ""}`}
+      data-tone={tone}
     >
       <div className="metric-main">
         <div className="metric-label-row">
@@ -1188,15 +1253,22 @@ export function MetricView({
         <div
           className="progress-track"
           role="progressbar"
-          aria-label={`${metricDisplayLabel(m)}${direction}比例`}
+          aria-label={`${displayLabel}${direction}比例`}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          aria-valuetext={`${direction} ${formatPercent(displayedPercent!)}`}
+          aria-valuetext={`${direction} ${formatPercent(displayedPercent!, displayMode)}`}
         >
+          <span className="progress-fill" style={{ width: `${percent}%` }} />
           <span
-            className={`progress-fill ${reportedPercent != null && reportedPercent >= 85 ? "high" : reportedPercent != null && reportedPercent >= 65 ? "medium" : ""}`}
-            style={{ width: `${percent}%` }}
+            aria-hidden="true"
+            className="progress-mark warning-mark"
+            style={{ left: `${warningMark}%` }}
+          />
+          <span
+            aria-hidden="true"
+            className="progress-mark severe-mark"
+            style={{ left: `${severeMark}%` }}
           />
         </div>
       )}
@@ -1231,7 +1303,7 @@ export function MetricView({
                   : m.currency}
             </span>
           )}
-          {critical && <span className="quota-warning">{warning}</span>}
+          {severity > 0 && <span className="quota-warning">{warning}</span>}
         </div>
         {isQuota && (!sharedSearch || hasReset) && (
           <div className="metric-reset">

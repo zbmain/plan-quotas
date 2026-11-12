@@ -3,6 +3,22 @@ import type { Metric } from "./types";
 /** Select which side of a reported quota the cards should emphasize. */
 export type QuotaDisplayMode = "used" | "remaining";
 
+export const warningRemaining = 20;
+export const severeRemaining = 10;
+
+/** Classify the measured remainder before formatting or clamping it for display. */
+export function quotaSeverity(remaining: number): 0 | 1 | 2 | 3 {
+  if (remaining <= 0) return 3;
+  if (remaining <= severeRemaining) return 2;
+  if (remaining <= warningRemaining) return 1;
+  return 0;
+}
+
+/** Interpret either bar scale against the same remaining-quota thresholds. */
+export function progressSeverity(value: number, mode: QuotaDisplayMode) {
+  return quotaSeverity(mode === "remaining" ? value : 100 - value);
+}
+
 /** Return a finite reported number, treating missing and malformed values as unknown. */
 function finite(value?: number | null): number | null {
   return value != null && Number.isFinite(value) ? value : null;

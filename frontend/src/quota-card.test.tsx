@@ -761,8 +761,70 @@ describe("quota cards", () => {
     ).toEqual({ label: "已用量", value: "37%" });
     const html = renderToStaticMarkup(<MetricView metric={quota} />);
     expect(html).not.toContain('role="progressbar"');
+    expect(html).not.toContain("progress-mark");
     expect(html).toContain("暂无数据");
     expect(html).not.toContain("0%");
+    const balance = renderToStaticMarkup(
+      <MetricView metric={{ ...quota, kind: "balance", remaining: 10 }} />,
+    );
+    expect(balance).not.toContain('role="progressbar"');
+    expect(balance).not.toContain("progress-mark");
+  });
+
+  it.each([
+    [79.9, "normal"],
+    [80, "warning"],
+    [89.9, "warning"],
+    [90, "critical"],
+    [100, "critical"],
+  ])(
+    "shows the same threshold tone for %s%% used in both views",
+    (used, tone) => {
+      const metric = { ...quota, used_percent: used };
+      const usedView = renderToStaticMarkup(<MetricView metric={metric} />);
+      const remainingView = renderToStaticMarkup(
+        <MetricView metric={metric} displayMode="remaining" />,
+      );
+      for (const html of [usedView, remainingView]) {
+        expect(html).toContain(`data-tone="${tone}"`);
+        expect(html).toContain(
+          'aria-hidden="true" class="progress-mark warning-mark"',
+        );
+        expect(html).toContain(
+          'aria-hidden="true" class="progress-mark severe-mark"',
+        );
+      }
+      expect(usedView).toContain(
+        'class="progress-mark warning-mark" style="left:80%"',
+      );
+      expect(usedView).toContain(
+        'class="progress-mark severe-mark" style="left:90%"',
+      );
+      expect(remainingView).toContain(
+        'class="progress-mark warning-mark" style="left:20%"',
+      );
+      expect(remainingView).toContain(
+        'class="progress-mark severe-mark" style="left:10%"',
+      );
+      expect(usedView).toContain(`aria-valuenow="${used}"`);
+      expect(remainingView).toContain(`aria-valuenow="${100 - used}"`);
+    },
+  );
+
+  it("keeps a rounded reading on the correct side of a coloured tick", () => {
+    for (const [used, threshold] of [
+      [79.9, 80],
+      [89.9, 90],
+    ]) {
+      const metric = { ...quota, used_percent: used };
+      expect(metricReading(metric, "used").value).toBe(`<${threshold}%`);
+      expect(metricReading(metric, "remaining").value).toBe(
+        `>${100 - threshold}%`,
+      );
+    }
+    expect(
+      metricReading({ ...quota, used_percent: 99.9 }, "remaining").value,
+    ).toBe("<1%");
   });
 
   it("displays MCP totals and per-tool observations without assigning each tool a limit", () => {
@@ -822,7 +884,7 @@ describe("quota cards", () => {
     );
     expect(remaining).toContain('class="metric-value">0%');
     expect(remaining).toContain('aria-valuenow="0"');
-    expect(remaining).toContain('class="progress-fill high"');
+    expect(remaining).toContain('data-tone="critical"');
     expect(remaining).toContain("已超额度");
   });
 

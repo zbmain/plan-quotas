@@ -19,7 +19,7 @@ function normalizedWindow(window?: string | null): string {
 }
 
 /** Identify only quota windows with a confirmed five-hour duration. */
-function isShortWindow(window?: string | null): boolean {
+export function isShortWindow(window?: string | null): boolean {
   const key = normalizedWindow(window).replace(/\s/g, "");
   return [
     "5h",
@@ -40,7 +40,7 @@ function isShortWindow(window?: string | null): boolean {
 }
 
 /** Identify weekly cycles using provider-reported week or seven-day aliases. */
-function isLongWindow(window?: string | null): boolean {
+export function isLongWindow(window?: string | null): boolean {
   const key = normalizedWindow(window).replace(/\s/g, "");
   return [
     "week",
